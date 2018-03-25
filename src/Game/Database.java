@@ -1,23 +1,21 @@
 package Game;
 import java.sql.*;
-
+import java.util.ResourceBundle;
 
 public class Database {
     private Connection cn;
     private Statement st;
     private ResultSet rs;
-    public static final String ADMIN_USER = "aphan_admin";
-    public static final String ADMIN_PASS = "q8zRXwQMqOpl";
-    public static final String READER_USER = "aphan_reader";
-    public static final String READER_PASS = "KI8o7SuBuTLe";
-    public static final String WRITER_USER = "aphan_writer";
-    public static final String WRITE_PASS = "ZgUXmB5wCSSg";
 
     public Database(){
+        ResourceBundle properties = ResourceBundle.getBundle("MySqlConnect");
+        String url = properties.getString("URL");
+        String admin_user = properties.getString("ADMIN_USER");
+        String admin_pass = properties.getString("ADMIN_PASS");
         try{
             
             Class.forName("com.mysql.jdbc.Driver");
-            cn = DriverManager.getConnection("jdbc:mysql://webdb.uvm.edu:3306/APHAN_cs275", ADMIN_USER, ADMIN_PASS);
+            cn = DriverManager.getConnection(url, admin_user, admin_pass);
             st = cn.createStatement();
             
         } catch(Exception ex){
@@ -40,6 +38,25 @@ public class Database {
         } catch(Exception ex){
             System.out.println(ex);
         }
+    }
+    
+    public void savePieceInfo(){
+        
+    }
+    public void getPieceInfo(){
+        
+    }
+    public void saveCardInfo(){
+        
+    }
+    public void getCardInfo(){
+        
+    }
+    public void saveHomeInfo(){
+        
+    }
+    public void getHomeInfo(){
+        
     }
 }
 
