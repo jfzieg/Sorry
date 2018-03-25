@@ -15,7 +15,7 @@ public class Card extends Rectangle {
      * @param card
      */
     public Card(Enums.CardType card) {
-//        setType(card);
+        setType(card);
 //
 //        setFill(c); // set card color
 //        setStroke(c.darker()); // Set border color
