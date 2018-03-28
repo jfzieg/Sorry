@@ -7,7 +7,7 @@ public class Enums {
     public enum CardType{
         ONE(1), TWO(2), THREE(3), FOUR(4), FIVE(5), SEVEN(7), EIGHT(8), NINE(9), TEN(10), ELEVEN(11), TWELVE(12), SORRY(0);
 
-        int number;
+        private int number;
 
         CardType(int i){
             number = i;
@@ -28,7 +28,7 @@ public class Enums {
     public enum Color{
         RED(0), YELLOW(1), GREEN(2), BLUE(3);
 
-        int side;
+        private int side;
         Color(int i){
             side = i;
         }

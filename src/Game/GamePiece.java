@@ -65,8 +65,8 @@ public class GamePiece extends Circle{
      *
      * @return
      */
-    public Color getC() {
-        return c;
+    public int getColor() {
+        return color.getSide();
     }
 
 }
