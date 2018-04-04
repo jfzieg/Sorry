@@ -1,7 +1,7 @@
 package Game;
 
-import com.sun.org.apache.xpath.internal.functions.FuncFalse;
-import sun.awt.image.ImageWatched;
+//import com.sun.org.apache.xpath.internal.functions.FuncFalse;
+//import sun.awt.image.ImageWatched;
 
 import java.util.Random;
 
@@ -10,9 +10,10 @@ import java.util.ArrayList;
 
 public class Controller {
 
-    boolean game_paused = False;
-    boolean game_over = False;
-    boolean new_game = True; // if false, game is a resumed game
+    boolean game_paused = false;
+    boolean game_over = false;
+    boolean new_game = true; // if false, game is a resumed game
+    MenuControllers menus;
 
     /**
      * Setup for a new game
@@ -63,7 +64,7 @@ public class Controller {
     public ArrayList<Card> ShuffleDeck(ArrayList<Card> deck) {
         Random rng = new Random();
         ArrayList<Card> ShuffledDeck = new ArrayList<>();
-        ArrayList<int> rng_tracker = new ArrayList<>();
+        ArrayList<Integer> rng_tracker = new ArrayList<>();
         while (ShuffledDeck.size() < deck.size()) {
 
             int r = rng.nextInt(deck.size());
@@ -118,12 +119,12 @@ public class Controller {
      * @param board
      * @return bool
      */
-    public boolean CheckGameOver(GameBoard board) {
-        boolean GameOver;
-        // if all pieces of one color in HOME, GameOver = True
-        // else, GameOver = False
-        // return GameOver
-    }
+//    public boolean CheckGameOver(GameBoard board) {
+//        boolean GameOver;
+//        // if all pieces of one color in HOME, GameOver = True
+//        // else, GameOver = False
+//        // return GameOver
+//    }
 
     /**
      * User takes a turn: draw and discard top card from the deck, choose a piece and move it, update board state, check game over, check deck emtpy
@@ -136,8 +137,8 @@ public class Controller {
         ArrayList<Card> DeckAfterDiscard = Discard(Deck);
 
         // What if there are no valid moves?
-        GamePiece piece = ChoosePiece();
-        MovePiece(piece);
+//        GamePiece piece = ChoosePiece();
+//        MovePiece(piece);
 
         // update game state and piece locations on board --> we can do this in MovePiece(piece) method
 
@@ -185,31 +186,30 @@ public class Controller {
 
     /**
      * List eligible pieces based on opponent being nice or mean
-     * @param PlayerColor
+     * @param
      * @return EligiblePieces
      */
-    public ArrayList<GamePiece> GetEligiblePieces(ArrayList<GamePiece> PlayersPieces, boolean Nice, int card_num) {
+    public ArrayList<GamePiece> GetEligiblePieces(ArrayList<GamePiece> PlayersPieces, int card_num) {
         ArrayList<GamePiece> EligiblePieces = new ArrayList<>();
         for (GamePiece piece : PlayersPieces) {
             boolean ValidMove = CheckValidMove(piece, card_num);
             if (ValidMove) {
                 boolean check_bump = CheckBump(piece, card_num);
-                if (Nice && !check_bump) {
+                if (!piece.isMean() && !check_bump) {
                     EligiblePieces.add(piece);
                 }
-                if (!Nice && check_bump) {
+                if (piece.isMean() && check_bump) {
                     EligiblePieces.add(piece);
                 }
             }
 
-            if ((Nice) && EligiblePieces.size() == 0) {
-                for (piece:
-                     PlayersPieces) {
-                    if (CheckValidMove(piece, card_num)) {
-                        EligiblePieces.add(piece);
-                    }
-                }
-            }
+//            if ((piece.isMean()) && EligiblePieces.size() == 0) {
+//                for (piece : PlayersPieces) {
+//                    if (CheckValidMove(piece, card_num)) {
+//                        EligiblePieces.add(piece);
+//                    }
+//                }
+//            }
         }
         return EligiblePieces;
     }
@@ -219,10 +219,10 @@ public class Controller {
     /**
      * Choose piece to move
      */
-    public GamePiece ChoosePiece(ArrayList<GamePiece> EligiblePieces, boolean Smart, int card_num) {
+    public GamePiece ChoosePiece(ArrayList<GamePiece> EligiblePieces, int card_num) {
         GamePiece ChosenPiece = EligiblePieces.get(0);
-        Enums.Color color = ChosenPiece.color;
-        if (Smart) {
+//        Enums.Color color = ChosenPiece.getColor();
+        if (ChosenPiece.isSmart()) {
 
             // score each possible move
 
@@ -247,6 +247,15 @@ public class Controller {
         return ChosenPiece;
 
     }
+    private boolean CheckValidMove(GamePiece piece, int card_num){
+
+        return true;
+    }
+
+    private boolean CheckBump(GamePiece piece, int card_num){
+
+        return true;
+    }
 
 
 
@@ -266,6 +275,10 @@ public class Controller {
         int next_index = (index + 1) % 4;
         String next_player = players.get(next_index);
         return next_player;
+    }
+
+    public void setMenuControllers(MenuControllers menus){
+        this.menus = menus;
     }
 
 }

@@ -11,7 +11,7 @@ public class Card extends Rectangle {
     protected Text number;
 
     public int getType() {
-        return type.number;
+        return type.getNumber();
     }
 
     protected Enums.CardType type;
