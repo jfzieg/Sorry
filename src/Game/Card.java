@@ -10,6 +10,12 @@ public class Card extends Rectangle {
     protected Color c;
     protected Text number;
 
+    public int getType() {
+        return type.number;
+    }
+
+    protected Enums.CardType type;
+
     /**
      *
      * @param card
@@ -22,6 +28,8 @@ public class Card extends Rectangle {
 //        setStrokeWidth(5); // Set border size
 
 //        loc = new Point2D(getCenterX(), getCenterY()); // Cell's center coordinates
+
+        type = card;
     }
 
     /**
