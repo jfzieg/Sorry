@@ -10,19 +10,26 @@ public class Card extends Rectangle {
     protected Color c;
     protected Text number;
 
+    public int getType() {
+        return type.getNumber();
+    }
+
+    protected Enums.CardType type;
 
     /**
      *
      * @param card
      */
     public Card(Enums.CardType card) {
-        setType(card);
-
+//        setType(card);
+//
 //        setFill(c); // set card color
 //        setStroke(c.darker()); // Set border color
 //        setStrokeWidth(5); // Set border size
 
 //        loc = new Point2D(getCenterX(), getCenterY()); // Cell's center coordinates
+
+        type = card;
     }
 
     /**
@@ -80,8 +87,5 @@ public class Card extends Rectangle {
                 number = new Text("SORRY");
                 break;
         }
-    }
-    public void draw(Enums.CardType card){
-
     }
 }

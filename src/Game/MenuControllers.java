@@ -4,10 +4,12 @@ import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -20,10 +22,12 @@ public class MenuControllers {
     private Pane gameBoard;
     private Pane endMenu;
     private ScrollPane helpMenu;
-
+    private boolean gameStart = false;
+    private Controller game;
 
     /**
-     * @return
+     * Start menu pane constructor
+     * @return A start menu pane
      */
     public BorderPane startMenu() {
         //Initialize pane and prefs
@@ -37,17 +41,35 @@ public class MenuControllers {
         options.setPadding(new Insets(Settings.X_SIZE * .01));
 
         //Initalize title TEXT and buttons
-        Text title = makeTitle("Sorry!");
+        Text title = makeText("Sorry!", Settings.FONT);
+        Button resume = resumeButton();
         Button start = newGameButton();
         Button load = loadButton();
         Button leaderboard = leaderboardButton();
         Button help = helpButton();
         Button quit = quitButton();
 
-        //Add the buttons and title to the pane
-        options.getChildren().addAll(title, start.getText(), load.getText(), leaderboard.getText(), help.getText(), quit.getText());
-        pane.setLeft(options);
+        Circle red = makeCircle(Settings.Y_SIZE * .1, Settings.RED);
+        Circle yellow = makeCircle(Settings.Y_SIZE * .1, Settings.YELLOW);
 
+        yellow.setCenterX(Settings.X_SIZE / 3);
+        yellow.setCenterY(Settings.Y_SIZE / 3);
+        red.setCenterX(Settings.X_SIZE / 3 + red.getRadius());
+        red.setCenterY(Settings.Y_SIZE / 3 - red.getRadius());
+
+        Pane graphic = new Pane();
+        graphic.getChildren().addAll(red, yellow);
+//        graphic.setLayoutX(300);
+//        graphic.setLayoutY(300);
+
+        //Add the buttons and title to the pane
+        options.getChildren().addAll(title, resume.getText(), start.getText(), load.getText(),
+                                        leaderboard.getText(), help.getText(), quit.getText());
+        pane.setLeft(options);
+        pane.setCenter(graphic);
+        pane.setAlignment(graphic, Pos.CENTER);
+
+        //Add references for object retrieval
         startMenu = pane;
         menus.add(pane);
 
@@ -68,11 +90,34 @@ public class MenuControllers {
         options.setSpacing(Settings.Y_SIZE * .05);
         options.setPadding(new Insets(Settings.X_SIZE * .01));
 
+        VBox innerOptions = new VBox();
+        innerOptions.setLayoutY(Settings.Y_SIZE);
+        innerOptions.setSpacing(Settings.Y_SIZE * .05);
+        innerOptions.setPadding(new Insets(Settings.X_SIZE * .01));
+
+        HBox colorChoice = new HBox();
+        colorChoice.setLayoutY(Settings.Y_SIZE);
+        colorChoice.setSpacing(Settings.Y_SIZE * .05);
+        colorChoice.setPadding(new Insets(Settings.X_SIZE * .01));
+
+        colorChoice.getChildren().addAll(makeText("Choose Color", Settings.MEDIUM_FONT),
+                                            makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.RED),
+                                            makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.YELLOW),
+                                            makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.BLUE),
+                                            makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.GREEN));
+
+
+
+        innerOptions.getChildren().addAll(colorChoice,
+                                            makeOpponent(Settings.YELLOW),
+                                            makeOpponent(Settings.BLUE),
+                                            makeOpponent(Settings.GREEN));
+
         //Initalize title text and buttons
-        Text title =  makeTitle("New Game!");
+        Text title =  makeText("New Game!", Settings.FONT);
         Button main = startButton();
 
-        options.getChildren().addAll(title, main.getText());
+        options.getChildren().addAll(title, innerOptions, main.getText());
         pane.setLeft(options);
 
         newGameMenu = pane;
@@ -91,6 +136,7 @@ public class MenuControllers {
 
         GridPane gameboard = new GridPane();
 
+        //Add references for object retrieval
         gameBoard = pane;
         menus.add(pane);
 
@@ -111,7 +157,7 @@ public class MenuControllers {
         options.setSpacing(Settings.Y_SIZE * .05);
         options.setPadding(new Insets(Settings.X_SIZE * .01));
 
-        Text title = makeTitle("You Win! (Filler)");
+        Text title = makeText("You Win! (Filler)", Settings.FONT);
 
         Button main = startButton();
 
@@ -120,6 +166,7 @@ public class MenuControllers {
         options.getChildren().addAll(title, main.getText(), quit.getText());
         pane.setLeft(options);
 
+        //Add references for object retrieval
         endMenu = pane;
         menus.add(pane);
 
@@ -144,7 +191,7 @@ public class MenuControllers {
         options.setPadding(new Insets(Settings.X_SIZE * .01));
 
         //Initalize title TEXT and buttons
-        Text title = makeTitle("Help!");
+        Text title = makeText("Help!", Settings.FONT);
 
         Button main = startButton();
 
@@ -163,6 +210,7 @@ public class MenuControllers {
         options.getChildren().addAll(title, filler, main.getText());
         pane.setContent(options);
 
+        //Add references for object retrieval
         helpMenu = pane;
         menus.add(pane);
 
@@ -173,18 +221,58 @@ public class MenuControllers {
         return menus;
     }
 
-    private Text makeTitle(String text){
-        Text title = new Text(text);
-        title.setFont(Settings.FONT);
-        title.setFill(Settings.TEXT);
-        title.setStroke(Settings.TEXT);
-        title.setStrokeWidth(2);
+    public void changeGameBool(boolean tf){
+        gameStart = !tf;
+    }
+    //
+    // GUI Element Constructors
+    //
 
-        return title;
+    private Circle makeCircle(double radius, Color color){
+        Circle circle = new Circle(radius, color);
+        circle.setStroke(color.darker());
+        circle.setStrokeWidth(radius * .1);
+        return circle;
+    }
+
+    private Text makeText(String string, Font font){
+        Text text = new Text(string);
+        text.setFont(font);
+        text.setFill(Settings.TEXT);
+        text.setStroke(Settings.TEXT);
+        text.setStrokeWidth(font.getSize() * .05);
+
+        return text;
+    }
+
+    private HBox makeOpponent(Color color){
+        HBox options = new HBox();
+        options.setSpacing(Settings.Y_SIZE * .05);
+        Circle opponent = makeCircle(Settings.MEDIUM_FONT.getSize() / 2, color);
+        options.getChildren().addAll(opponent, difficultyButton().getText());
+
+        return options;
+    }
+
+    /**
+     * Update with better newgame/resumegame testing
+     * @return
+     */
+    private Button resumeButton(){
+        Button resume = new Button("Resume Game", Settings.MEDIUM_FONT);
+//        setButtonEventHandlers(resume);
+        setResumeEventHandler(resume);
+
+        if(!gameStart) {
+            resume.getText().setFill(resume.getColor().darker());
+            resume.getText().setStroke(resume.getColor().darker());
+        }
+
+        return resume;
     }
 
     private Button startButton(){
-        Button main = new Button("Main Menu", Settings.TEXT_SIZE * .6);
+        Button main = new Button("Main Menu", Settings.MEDIUM_FONT);
         setButtonEventHandlers(main);
         setStartMenuEventHandler(main);
 
@@ -192,7 +280,7 @@ public class MenuControllers {
     }
 
     private Button newGameButton(){
-        Button start = new Button("New Game", Settings.TEXT_SIZE * .6);
+        Button start = new Button("New Game", Settings.MEDIUM_FONT);
         setButtonEventHandlers(start);
         setNewGameMenuEventHandler(start);
 
@@ -200,21 +288,21 @@ public class MenuControllers {
     }
 
     private Button loadButton(){
-        Button load = new Button("Load Game", Settings.TEXT_SIZE * .6);
+        Button load = new Button("Load Game", Settings.MEDIUM_FONT);
         setButtonEventHandlers(load);
 
         return load;
     }
 
     private Button leaderboardButton(){
-        Button leaderboard = new Button("Leaderboard", Settings.TEXT_SIZE * .6);
+        Button leaderboard = new Button("Leaderboard", Settings.MEDIUM_FONT);
         setButtonEventHandlers(leaderboard);
 
         return leaderboard;
     }
 
     private Button helpButton(){
-        Button help = new Button("Help", Settings.TEXT_SIZE * .6);
+        Button help = new Button("Help", Settings.MEDIUM_FONT);
         setButtonEventHandlers(help);
         setHelpMenuEventHandler(help);
 
@@ -222,38 +310,71 @@ public class MenuControllers {
     }
 
     private Button quitButton(){
-        Button quit = new Button("Quit", Settings.TEXT_SIZE * .6);
+        Button quit = new Button("Quit", Settings.MEDIUM_FONT);
         setButtonEventHandlers(quit);
         setQuitEventHandler(quit);
 
         return quit;
     }
 
-    /**
-     * @param button
-     */
+    private Button difficultyButton(){
+        Button difficulty = new Button("Easy", Settings.MEDIUM_FONT);
+        difficulty.getText().setOnMouseReleased(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+//                if (difficulty.getText().toString().equals("Easy")) {
+                    difficulty.getText().setFill(difficulty.getColor().darker());
+                    difficulty.getText().setStroke(difficulty.getColor().darker());
+                    difficulty.setText(makeText("Hard", Settings.SMALL_FONT));
+//                } else {
+//                    difficulty.getText().setFill(difficulty.getColor().brighter());
+//                    difficulty.getText().setStroke(difficulty.getColor().brighter());
+//                    difficulty.setText(makeText("Easy", Settings.SMALL_FONT));
+//                }
+            }
+        });
+
+        return difficulty;
+    }
+    //
+    // Event Handlers
+    //
+
     private void setButtonEventHandlers(Button button) {
         Text text = button.getText();
         button.getText().setOnMouseEntered(new EventHandler() {
             @Override
             public void handle(Event event) {
-                text.setFill(button.c.darker());
-                text.setStroke(button.c.darker());
+                text.setFill(button.getColor().darker());
+                text.setStroke(button.getColor().darker());
             }
         });
 
         button.getText().setOnMouseExited(new EventHandler() {
             @Override
             public void handle(Event event) {
-                text.setFill(button.c.brighter());
-                text.setStroke(button.c.brighter());
+                text.setFill(button.getColor().brighter());
+                text.setStroke(button.getColor().brighter());
             }
         });
 
     }
 
+    private void setResumeEventHandler(Button button) {
+        button.getText().setOnMouseReleased(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                if(gameStart) {
+                    setButtonEventHandlers(button);
+                    gameBoard.toFront();
+                    gameBoard.requestFocus();
+
+                }
+            }
+        });
+    }
+
     private void setStartMenuEventHandler(Button button) {
-        Text text = button.getText();
         button.getText().setOnMouseReleased(new EventHandler() {
             @Override
             public void handle(Event event) {
@@ -308,15 +429,13 @@ public class MenuControllers {
     public class Button {
         private Text text;
         private Color c = Settings.TEXT;
-        private int size;
 
-        public Button(String innerText, double size) {
+        public Button(String innerText, Font font) {
             text = new Text(innerText);
-            text.setFont(new Font("Arial Rounded MT Bold", size));
+            text.setFont(font);
             text.setFill(Settings.TEXT);
             text.setStroke(c.brighter());
-            text.setStrokeWidth(2);
-
+            text.setStrokeWidth(font.getSize() * .05);
         }
 
         public Text getText() {
@@ -335,4 +454,10 @@ public class MenuControllers {
             this.c = c;
         }
     }
+
+    public void setController(Controller game){
+        this.game = game;
+    }
+
+
 }
