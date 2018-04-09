@@ -1,7 +1,6 @@
 package Game;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 /**
 
@@ -16,9 +15,9 @@ public class GameBoard implements Serializable{
     private GamePiece[][] homeList;
     
     //Constructor for GameBoard
-    public GameBoard(GamePiece[][] tileList, GamePiece[][] homeList){
-        this.tileList = tileList;
-        this.homeList = homeList;
+    public GameBoard(){
+        this.tileList = new GamePiece[4][16];
+        this.homeList = new GamePiece[4][6];
     }
     
     
@@ -37,10 +36,12 @@ void slide(GamePiece[][] tileList, GamePiece piece){
         if(tileList[i][2].equals(piece) && piece.getBoardSide() != i){
             tileList[i][2] = null;
             tileList[i][5] = piece;
+            piece.setLocation(i, 5);
         }
         if(tileList[i][9].equals(piece) && piece.getBoardSide() != i){
             tileList[i][9] = null;
             tileList[i][13] = piece;
+            piece.setLocation(i, 13);
         }
     }
 }
@@ -70,6 +71,7 @@ void movePiece(GamePiece[][] tileList, GamePiece[][] homeList, GamePiece piece, 
                         //in home
                         int homeMove = needMove - 2;
                         homeList[i][homeMove - 1] = piece;
+
                     } else{
                      //Else we just add the piece to an index of next tile           
                     tileList[i+1][needMove] = piece;
@@ -137,7 +139,6 @@ boolean checkHomeTile(GamePiece[][] tileList, GamePiece piece, int i, int j){
     return check;
 }
 /**
- * @param tileList
  * @param piece
  * @param card
  */
@@ -145,41 +146,22 @@ boolean checkHomeTile(GamePiece[][] tileList, GamePiece piece, int i, int j){
 // if card is either 1 or 2, get the board side of the piece
 // check if the spot to get out is occupy or not, if its not
 // add the piece to the spot.
-void homeGetOut(GamePiece[][] tileList, GamePiece piece, Card card){
-    int i = 1;
-    if(i == 1 || i == 2){
+private void homeGetOut(GamePiece piece, Card card){
+    if(card.getType() == 1 || card.getType() == 2){
         int homeIndex = piece.getBoardSide();
         if(tileList[homeIndex][5] == null){
             tileList[homeIndex][5] = piece;
+            piece.setLocation(homeIndex, 5);
         }
         else{
             System.out.println("There is a piece in the place");
-    }
-}
-    
-}
-
-    /**
-     * @param tileList
-     * @param piece
-     * @param card
-     */
-    void homeGetOut(ArrayList<ArrayList<GamePiece>> tileList, GamePiece piece, Card card){
-        int i = 1;
-        if(i == 1 || i == 2){
-            int homeIndex = piece.getBoardSide();
-            if(tileList.get(homeIndex).get(5) == null){
-                tileList.get(homeIndex).add(5, piece);
-            }
-            else{
-                System.out.println("There is a piece in the place");
-            }
         }
     }
+}
 
 
-boolean bump(GamePiece[][] tileList, GamePiece piece, Card card){
-    //temproray variable for card
+private boolean bump(GamePiece[][] tileList, GamePiece piece, Card card){
+    //temporay variable for card
     int move = 0;
     boolean checkBump = false;
     //Go through a nested loop

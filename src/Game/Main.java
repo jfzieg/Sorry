@@ -3,7 +3,6 @@ package Game;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -16,7 +15,7 @@ public class Main extends Application {
         Controller game = new Controller();
 
         // Initialize game from load or new game, set references for logic loop <-> event handlers
-//        game.SetupNewGame();
+        game.SetupNewGame();
         menus.setController(game);
 //        game.setMenuControllers(menus);
 

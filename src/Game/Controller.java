@@ -14,6 +14,7 @@ public class Controller implements Serializable{
     boolean game_paused = false;
     boolean game_over = false;
     boolean new_game = true; // if false, game is a resumed game
+    GameBoard board;
     MenuControllers menus;
 
     /**
@@ -21,10 +22,7 @@ public class Controller implements Serializable{
      * Break this into multiple subfunctions --> how to code for user input from GUI?
      */
     public void SetupNewGame() {
-        // get user color --> define GetUserColor(), return type?
-        // get opponents and settings for smart/dumb and mean/nice --> define GetOpponents() and GetSettings(opponents)
-        // draw initial board setup, oriented correctly, and including pawns and cards
-        // initialize and shuffle the deck
+        this.board = new GameBoard();
     }
 
 
@@ -74,7 +72,6 @@ public class Controller implements Serializable{
                 ShuffledDeck.add(deck.get(r));
             }
         }
-
         return ShuffledDeck;
     }
 
@@ -84,35 +81,19 @@ public class Controller implements Serializable{
      * @param deck
      * @return
      */
-    public boolean CheckDeckEmpty(ArrayList<Card> deck) {
-        if (deck.size() == 0) {
-            return true;
-        }
-        else {
-            return false;
-        }
+    private boolean CheckDeckEmpty(ArrayList<Card> deck) {
+        return deck.size() == 0;
     }
 
     /**
-     * Draw a card (get its value)
+     * Draw a card (get its value), and remove from deck
      * @param deck
      * @return int value on card
      */
     public int DrawCard(ArrayList<Card> deck) {
         Card card = deck.get(0);
-        int card_num = card.getType();
-        return card_num;
-    }
-
-
-    /**
-     * Discard a card
-     * @param deck
-     * @return the updated deck
-     */
-    public ArrayList<Card> Discard(ArrayList<Card> deck) {
-        deck.remove(0);
-        return deck;
+        deck.remove(card);
+        return card.getType();
     }
 
     /**
@@ -135,7 +116,6 @@ public class Controller implements Serializable{
     public ArrayList<Card> TakeTurn(ArrayList<Card> Deck) {
 
         int card_num = DrawCard(Deck);
-        ArrayList<Card> DeckAfterDiscard = Discard(Deck);
 
         // What if there are no valid moves?
 //        GamePiece piece = ChoosePiece();
@@ -154,7 +134,7 @@ public class Controller implements Serializable{
             return ReshuffledDeck;
         }
         else {
-            return DeckAfterDiscard;
+            return Deck;
         }
 
     }

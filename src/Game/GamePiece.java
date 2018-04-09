@@ -1,8 +1,6 @@
 package Game;
 
-import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
-
 import java.io.Serializable;
 
 /**
@@ -43,6 +41,11 @@ public class GamePiece implements Serializable{
         return boardSide;
     }
 
+
+    public void setLocation(int boardSide, int innerLocation){
+        this.boardSide = boardSide;
+        this.innerLocation = innerLocation;
+    }
     /**
      *
      * @param boardSide
