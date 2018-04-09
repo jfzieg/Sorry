@@ -13,6 +13,7 @@ public class Controller {
     boolean game_paused = False;
     boolean game_over = False;
     boolean new_game = True; // if false, game is a resumed game
+    private MenuControllers menucontrollers;
 
     /**
      * Setup for a new game
@@ -227,22 +228,31 @@ public class Controller {
             // score each possible move
 
         }
-        else {
+        else { // opponent dumb
 
             // choose random piece
             Random rng = new Random();
             int r = rng.nextInt(EligiblePieces.size());
             ChosenPiece = EligiblePieces.get(r);
 
-            // if (card_num == 7)
+            if (card_num == 1 || card_num == 2 || card_num == 7) {              // move this functionality (deciding which option to do for 1,2,7) to main game loop
+                int r2 = rng.nextInt(2);
 
-            // if (card_num == 10)
+                if (r2 == 0) {
+                    // ChosenPiece.MovePieceForward(card_num)
+                }
 
-            // if (card_num == 11)
-
-
+                else {
+                    // move piece from home or split move 3/4
+                    if (card_num == 0 || card_num == 1) {
+                        // ChosenPiece.MoveFromStart()
+                    }
+                    else {
+                        // ChosenPiece.Split3_4()
+                    }
+                }
             }
-
+        }
 
         return ChosenPiece;
 
