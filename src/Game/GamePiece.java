@@ -3,10 +3,12 @@ package Game;
 import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
 
+import java.io.Serializable;
+
 /**
  *
  */
-public class GamePiece{
+public class GamePiece implements Serializable{
     private Enums.Color color;
     private int boardSide;
     private int innerLocation;
@@ -21,6 +23,8 @@ public class GamePiece{
      */
     public GamePiece(Enums.Color color) {
         this.color = color;
+        this.boardSide = color.getSide();
+        this.c = color.getColor();
     }
 
     /**
@@ -67,8 +71,8 @@ public class GamePiece{
      *
      * @return
      */
-    public int getColor() {
-        return color.getSide();
+    public Color getColor() {
+        return c;
     }
 
     public boolean isSmart() {

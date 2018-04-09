@@ -3,12 +3,13 @@ package Game;
 //import com.sun.org.apache.xpath.internal.functions.FuncFalse;
 //import sun.awt.image.ImageWatched;
 
+import java.io.Serializable;
 import java.util.Random;
 
 import java.util.ArrayList;
 
 
-public class Controller {
+public class Controller implements Serializable{
 
     boolean game_paused = false;
     boolean game_over = false;

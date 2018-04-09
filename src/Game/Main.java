@@ -21,8 +21,8 @@ public class Main extends Application {
 //        game.setMenuControllers(menus);
 
 
-        Parent root = new StackPane(menus.startMenu(), menus.newGameMenu(), menus.helpMenu(), menus.endMenu());
-        menus.getChildren().get(0).toFront();
+        Parent root = new StackPane(menus.startMenu(), menus.newGameMenu(), menus.loadMenu(), menus.leaderboardMenu(), menus.helpMenu(), menus.endMenu());
+        menus.getMenus().get(0).toFront();
 
         primaryStage.setTitle("Sorry!");
         primaryStage.setScene(new Scene(root, Settings.X_SIZE, Settings.Y_SIZE));

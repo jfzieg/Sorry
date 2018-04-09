@@ -1,5 +1,6 @@
 package Game;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -9,7 +10,7 @@ import java.util.ArrayList;
  * @version 1.0	
  */
 
-public class GameBoard {
+public class GameBoard implements Serializable{
     //Variables for game board
     private GamePiece[][] tileList;
     private GamePiece[][] homeList;
@@ -127,7 +128,7 @@ boolean checkChangeTile(GamePiece[][] tileList, GamePiece piece, Card card, int 
 // otherwise, false
 boolean checkHomeTile(GamePiece[][] tileList, GamePiece piece, int i, int j){
     boolean check = false;
-    if(i + 1 == tileList[i][j].color.side || (tileList[i][j].color.side == i && j <= 2)){
+    if(i + 1 == tileList[i][j].getBoardSide() || (tileList[i][j].getBoardSide()== i && j <= 2)){
         check = true;
     } else{
         check = false;
@@ -175,7 +176,7 @@ void homeGetOut(GamePiece[][] tileList, GamePiece piece, Card card){
             }
         }
     }
-}
+
 
 boolean bump(GamePiece[][] tileList, GamePiece piece, Card card){
     //temproray variable for card
