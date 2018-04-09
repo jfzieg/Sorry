@@ -3,11 +3,11 @@ package Game;
 import java.util.ArrayList;
 
 /**
+
  * @author Anh Phan
  * @date 2018-03-14
  * @version 1.0	
  */
-
 
 public class GameBoard {
     //Variables for game board
@@ -158,6 +158,24 @@ void homeGetOut(GamePiece[][] tileList, GamePiece piece, Card card){
     
 }
 
+    /**
+     * @param tileList
+     * @param piece
+     * @param card
+     */
+    void homeGetOut(ArrayList<ArrayList<GamePiece>> tileList, GamePiece piece, Card card){
+        int i = 1;
+        if(i == 1 || i == 2){
+            int homeIndex = piece.getBoardSide();
+            if(tileList.get(homeIndex).get(5) == null){
+                tileList.get(homeIndex).add(5, piece);
+            }
+            else{
+                System.out.println("There is a piece in the place");
+            }
+        }
+    }
+}
 
 boolean bump(GamePiece[][] tileList, GamePiece piece, Card card){
     //temproray variable for card
