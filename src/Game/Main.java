@@ -20,7 +20,7 @@ public class Main extends Application {
 //        game.setMenuControllers(menus);
 
 
-        Parent root = new StackPane(menus.startMenu(), menus.newGameMenu(), menus.loadMenu(), menus.leaderboardMenu(), menus.helpMenu(), menus.endMenu());
+        Parent root = new StackPane(menus.startMenu(), menus.newGameMenu(), menus.loadMenu(), menus.leaderboardMenu(), menus.helpMenu(), menus.endMenu(), menus.gameBoard());
         menus.getMenus().get(0).toFront();
 
         primaryStage.setTitle("Sorry!");
