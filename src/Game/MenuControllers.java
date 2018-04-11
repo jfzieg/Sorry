@@ -10,6 +10,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -19,6 +20,8 @@ public class MenuControllers {
     private ArrayList<Node> menus = new ArrayList<>();
     private Pane startMenu;
     private Pane newGameMenu;
+    private Pane loadMenu;
+    private Pane leaderboard;
     private Pane gameBoard;
     private Pane endMenu;
     private ScrollPane helpMenu;
@@ -77,9 +80,11 @@ public class MenuControllers {
     }
 
     /**
+     * TODO: Add button functionalities for choosing color, opponents and difficulties
      * @return
      */
     public BorderPane newGameMenu() {
+
         //Initialize pane and prefs
         BorderPane pane = new BorderPane();
         pane.setBackground(new Background(new BackgroundFill(Settings.BACKGROUND, null, null)));
@@ -106,10 +111,7 @@ public class MenuControllers {
                                             makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.BLUE),
                                             makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.GREEN));
 
-
-
-        innerOptions.getChildren().addAll(colorChoice,
-                                            makeOpponent(Settings.YELLOW),
+        innerOptions.getChildren().addAll(makeOpponent(Settings.YELLOW),
                                             makeOpponent(Settings.BLUE),
                                             makeOpponent(Settings.GREEN));
 
@@ -117,7 +119,7 @@ public class MenuControllers {
         Text title =  makeText("New Game!", Settings.FONT);
         Button main = startButton();
 
-        options.getChildren().addAll(title, innerOptions, main.getText());
+        options.getChildren().addAll(title, colorChoice, innerOptions, main.getText());
         pane.setLeft(options);
 
         newGameMenu = pane;
@@ -127,6 +129,8 @@ public class MenuControllers {
     }
 
     /**
+     * TODO: Create gameboard from GridPane, init colors and etc
+     * TODO: Add menu items
      * @return
      */
     public BorderPane gameBoard() {
@@ -134,7 +138,37 @@ public class MenuControllers {
         BorderPane pane = new BorderPane();
         pane.setBackground(new Background(new BackgroundFill(Settings.BACKGROUND, null, null)));
 
-        GridPane gameboard = new GridPane();
+        GridPane gameboard = makeBoard();
+        Button main = startButton();
+        StackPane board = new StackPane();
+
+        for(int i = 0; i < 17; i++){
+            gameboard.add(makeTile(Color.WHITE), i, 0);
+            gameboard.add(makeTile(Color.WHITE), i, 16);
+            gameboard.add(makeTile(Color.WHITE), 0, i);
+            gameboard.add(makeTile(Color.WHITE), 16, i);
+        }
+        for(int j = 1; j < 6; j++){
+            gameboard.add(makeTile(Settings.RED), 2, j);
+            gameboard.add(makeTile(Settings.YELLOW), 14, 16 - j);
+            gameboard.add(makeTile(Settings.BLUE), j, 14);
+            gameboard.add(makeTile(Settings.GREEN), 16 - j, 2);
+        }
+        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.RED),2, 5 , 2, 2);
+        gameboard.add(makeTile(Settings.RED), 4,1);
+        gameboard.add(makeCircle(Settings.TILE_SIZE , Settings.RED),4, 1, 3, 2);
+
+//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.YELLOW),13, 11, 2, 2);
+//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.YELLOW),13, 9, 2, 2);
+//
+//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.BLUE),6, 13 , 2, 2);
+//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.BLUE),6, 10, 2, 2);
+//
+//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.GREEN),10, 2 , 2, 2);
+//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.GREEN),10, 4, 2, 2 );
+
+        pane.setCenter(gameboard);
+        pane.setLeft(main.getText());
 
         //Add references for object retrieval
         gameBoard = pane;
@@ -144,6 +178,67 @@ public class MenuControllers {
     }
 
     /**
+     * TODO: Add FileIO for loading saved serialized versions of Controller
+     * @return
+     */
+    public BorderPane loadMenu(){
+        //Initialize pane and prefs
+        BorderPane pane = new BorderPane();
+        pane.setBackground(new Background(new BackgroundFill(Settings.BACKGROUND, null, null)));
+
+        //Initalize container and prefs
+        VBox options = new VBox();
+        options.setLayoutY(Settings.Y_SIZE);
+        options.setSpacing(Settings.Y_SIZE * .05);
+        options.setPadding(new Insets(Settings.X_SIZE * .01));
+
+        Text title = makeText("Load Game", Settings.FONT);
+
+        Button main = startButton();
+
+
+        options.getChildren().addAll(title, main.getText());
+        pane.setLeft(options);
+
+        //Add references for object retrieval
+        loadMenu = pane;
+        menus.add(pane);
+
+        return pane;
+    }
+
+    /**
+     * TODO: Pull info from database to display for user
+     * @return
+     */
+    public BorderPane leaderboardMenu(){
+        //Initialize pane and prefs
+        BorderPane pane = new BorderPane();
+        pane.setBackground(new Background(new BackgroundFill(Settings.BACKGROUND, null, null)));
+
+        //Initalize container and prefs
+        VBox options = new VBox();
+        options.setLayoutY(Settings.Y_SIZE);
+        options.setSpacing(Settings.Y_SIZE * .05);
+        options.setPadding(new Insets(Settings.X_SIZE * .01));
+
+        Text title = makeText("Leaderboard", Settings.FONT);
+
+        Button main = startButton();
+
+
+        options.getChildren().addAll(title, main.getText());
+        pane.setLeft(options);
+
+        //Add references for object retrieval
+        leaderboard = pane;
+        menus.add(pane);
+
+        return pane;
+    }
+
+    /**
+     * TODO: Get game end state and display appropriate options
      * @return
      */
     public BorderPane endMenu() {
@@ -174,6 +269,7 @@ public class MenuControllers {
     }
 
     /**
+     * TODO: Write instructions for game
      * @return
      */
     public ScrollPane helpMenu() {
@@ -217,13 +313,10 @@ public class MenuControllers {
         return pane;
     }
 
-    public ArrayList<Node> getChildren() {
-        return menus;
-    }
-
     public void changeGameBool(boolean tf){
         gameStart = !tf;
     }
+
     //
     // GUI Element Constructors
     //
@@ -233,6 +326,13 @@ public class MenuControllers {
         circle.setStroke(color.darker());
         circle.setStrokeWidth(radius * .1);
         return circle;
+    }
+
+    private Rectangle makeTile(Color color){
+        Rectangle tile = new Rectangle(Settings.TILE_SIZE, Settings.TILE_SIZE, color);
+        tile.setStroke(color.darker());
+        tile.setStrokeWidth(Settings.TILE_SIZE * .05);
+        return tile;
     }
 
     private Text makeText(String string, Font font){
@@ -245,6 +345,36 @@ public class MenuControllers {
         return text;
     }
 
+    private GridPane makeBoard(){
+        GridPane gameboard = new GridPane();
+        gameboard.setPadding(new Insets(Settings.X_SIZE * .01));
+        for(int i = 0; i < 17; i++){
+            gameboard.add(makeTile(Color.WHITE), i, 0);
+            gameboard.add(makeTile(Color.WHITE), i, 16);
+            gameboard.add(makeTile(Color.WHITE), 0, i);
+            gameboard.add(makeTile(Color.WHITE), 16, i);
+        }
+        for(int j = 1; j < 6; j++){
+            gameboard.add(makeTile(Settings.RED), 2, j);
+            gameboard.add(makeTile(Settings.YELLOW), 14, 16 - j);
+            gameboard.add(makeTile(Settings.BLUE), j, 14);
+            gameboard.add(makeTile(Settings.GREEN), 16 - j, 2);
+        }
+        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.RED),2, 5 , 2, 2);
+        gameboard.add(makeTile(Settings.RED), 4,1);
+        gameboard.add(makeCircle(Settings.TILE_SIZE , Settings.RED),4, 1, 3, 2);
+
+//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.YELLOW),13, 11, 2, 2);
+//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.YELLOW),13, 9, 2, 2);
+//
+//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.BLUE),6, 13 , 2, 2);
+//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.BLUE),6, 10, 2, 2);
+//
+//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.GREEN),10, 2 , 2, 2);
+//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.GREEN),10, 4, 2, 2 );
+        return gameboard;
+    }
+
     private HBox makeOpponent(Color color){
         HBox options = new HBox();
         options.setSpacing(Settings.Y_SIZE * .05);
@@ -255,7 +385,7 @@ public class MenuControllers {
     }
 
     /**
-     * Update with better newgame/resumegame testing
+     * TODO: Update with better newgame/resumegame testing
      * @return
      */
     private Button resumeButton(){
@@ -290,14 +420,14 @@ public class MenuControllers {
     private Button loadButton(){
         Button load = new Button("Load Game", Settings.MEDIUM_FONT);
         setButtonEventHandlers(load);
-
+        setLoadMenuEventHandler(load);
         return load;
     }
 
     private Button leaderboardButton(){
         Button leaderboard = new Button("Leaderboard", Settings.MEDIUM_FONT);
         setButtonEventHandlers(leaderboard);
-
+        setLeaderboardEventHandler(leaderboard);
         return leaderboard;
     }
 
@@ -319,7 +449,7 @@ public class MenuControllers {
 
     private Button difficultyButton(){
         Button difficulty = new Button("Easy", Settings.MEDIUM_FONT);
-        difficulty.getText().setOnMouseReleased(new EventHandler() {
+        difficulty.getText().setOnMouseClicked(new EventHandler() {
             @Override
             public void handle(Event event) {
 //                if (difficulty.getText().toString().equals("Easy")) {
@@ -336,6 +466,7 @@ public class MenuControllers {
 
         return difficulty;
     }
+
     //
     // Event Handlers
     //
@@ -389,8 +520,19 @@ public class MenuControllers {
         button.getText().setOnMouseReleased(new EventHandler() {
             @Override
             public void handle(Event event) {
-                newGameMenu.toFront();
-                newGameMenu.requestFocus();
+                gameBoard.toFront();
+                gameBoard.requestFocus();
+            }
+        });
+    }
+
+    private void setLoadMenuEventHandler(Button button) {
+        Text text = button.getText();
+        button.getText().setOnMouseReleased(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                loadMenu.toFront();
+                loadMenu.requestFocus();
             }
         });
     }
@@ -400,7 +542,8 @@ public class MenuControllers {
         button.getText().setOnMouseReleased(new EventHandler() {
             @Override
             public void handle(Event event) {
-//                leaderboard.toFront();
+                leaderboard.toFront();
+                leaderboard.requestFocus();
             }
         });
     }
@@ -459,5 +602,7 @@ public class MenuControllers {
         this.game = game;
     }
 
-
+    public ArrayList<Node> getMenus() {
+        return menus;
+    }
 }

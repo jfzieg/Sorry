@@ -49,7 +49,7 @@ public class Database {
                 for(int i = 0; i < 4; i++){
                     for(int j = 0; j < 16; j++){
                         if(tileList[i][j] != null){
-                            int color = tileList[i][j].getC();
+                            int color = tileList[i][j].getBoardSide();
                             
                             String query = "insert into tblPieceInfo(pmkUserName, fldColor, fldLocation, fldTileNum, fldTileType) " + 
                             "values  (?, ?, ?, ?, ?)";
@@ -69,7 +69,7 @@ public class Database {
                     
                     for(int j = 0; j < 6; j++){
                         if(tileList[i][j] != null){
-                            int color = tileList[i][j].getC();
+                            int color = tileList[i][j].getBoardSide();
                             
                             String query = "insert into tblPieceInfo(pmkUserName, fldColor, fldLocation, fldTileNum, fldTileType) " + 
                             "values  (?, ?, ?, ?, ?)";
@@ -97,7 +97,7 @@ public class Database {
                 for(int i = 0; i < 4; i++){
                     for(int j = 0; j < 16; j++){
                         if(tileList[i][j] != null){
-                            int color = tileList[i][j].getC();
+                            int color = tileList[i][j].getBoardSide();
                             
                             String query = "update tblPieceInfo set fldLocation = ?, fldTileNum = ?, fldTileType = ?, fldColor = ?, pmkTime = CURRENT_TIMESTAMP where"
                                     + " pmkUserName = ?";
@@ -116,7 +116,7 @@ public class Database {
                         }
                     for(int j = 0; j < 6; j++){
                         if(tileList[i][j] != null){
-                            int color = tileList[i][j].getC();
+                            int color = tileList[i][j].getBoardSide();
                             
                             String query = "update tblPieceInfo set fldLocation = ?, fldTileNum = ?, fldTileType = ?, fldColor = ?, pmkTime = CURRENT_TIMESTAMP where"
                                     + "pmkUserName = ?";

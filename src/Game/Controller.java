@@ -3,27 +3,26 @@ package Game;
 //import com.sun.org.apache.xpath.internal.functions.FuncFalse;
 //import sun.awt.image.ImageWatched;
 
+import java.io.Serializable;
 import java.util.Random;
 
 import java.util.ArrayList;
 
 
-public class Controller {
+public class Controller implements Serializable{
 
     boolean game_paused = false;
     boolean game_over = false;
     boolean new_game = true; // if false, game is a resumed game
+    GameBoard board;
     MenuControllers menus;
 
     /**
      * Setup for a new game
      * Break this into multiple subfunctions --> how to code for user input from GUI?
      */
-    public void SetupNewGame() {
-        // get user color --> define GetUserColor(), return type?
-        // get opponents and settings for smart/dumb and mean/nice --> define GetOpponents() and GetSettings(opponents)
-        // draw initial board setup, oriented correctly, and including pawns and cards
-        // initialize and shuffle the deck
+    public void setupNewGame() {
+        this.board = new GameBoard();
     }
 
 
@@ -31,7 +30,7 @@ public class Controller {
      * Initialize full deck
      * @return deck
      */
-    public ArrayList<Card> InitializeFullDeck() {
+    public ArrayList<Card> initializeFullDeck() {
 
 
         ArrayList<Card> Deck = new ArrayList<>();
@@ -61,7 +60,7 @@ public class Controller {
      * @param deck
      * @return shuffled deck
      */
-    public ArrayList<Card> ShuffleDeck(ArrayList<Card> deck) {
+    public ArrayList<Card> shuffleDeck(ArrayList<Card> deck) {
         Random rng = new Random();
         ArrayList<Card> ShuffledDeck = new ArrayList<>();
         ArrayList<Integer> rng_tracker = new ArrayList<>();
@@ -73,7 +72,6 @@ public class Controller {
                 ShuffledDeck.add(deck.get(r));
             }
         }
-
         return ShuffledDeck;
     }
 
@@ -83,35 +81,19 @@ public class Controller {
      * @param deck
      * @return
      */
-    public boolean CheckDeckEmpty(ArrayList<Card> deck) {
-        if (deck.size() == 0) {
-            return true;
-        }
-        else {
-            return false;
-        }
+    private boolean checkDeckEmpty(ArrayList<Card> deck) {
+        return deck.size() == 0;
     }
 
     /**
-     * Draw a card (get its value)
+     * Draw a card (get its value), and remove from deck
      * @param deck
      * @return int value on card
      */
-    public int DrawCard(ArrayList<Card> deck) {
+    public Card drawCard(ArrayList<Card> deck) {
         Card card = deck.get(0);
-        int card_num = card.getType();
-        return card_num;
-    }
-
-
-    /**
-     * Discard a card
-     * @param deck
-     * @return the updated deck
-     */
-    public ArrayList<Card> Discard(ArrayList<Card> deck) {
-        deck.remove(0);
-        return deck;
+        deck.remove(card);
+        return card;
     }
 
     /**
@@ -131,10 +113,9 @@ public class Controller {
      * @param Deck
      * @return deck after discarding
      */
-    public ArrayList<Card> TakeTurn(ArrayList<Card> Deck) {
+    public ArrayList<Card> takeTurn(ArrayList<Card> Deck) {
 
-        int card_num = DrawCard(Deck);
-        ArrayList<Card> DeckAfterDiscard = Discard(Deck);
+         int card_num = drawCard(Deck).getType();
 
         // What if there are no valid moves?
 //        GamePiece piece = ChoosePiece();
@@ -146,14 +127,14 @@ public class Controller {
         // if game over --> exit and display end game screens (return an empty ArrayList<Card> ?
         // if game not over --> continue with what is below
 
-        boolean deck_empty = CheckDeckEmpty(Deck);
+        boolean deck_empty = checkDeckEmpty(Deck);
         if (deck_empty) {
-            ArrayList<Card> InitialDeck = InitializeFullDeck();
-            ArrayList<Card> ReshuffledDeck = ShuffleDeck(InitialDeck);
+            ArrayList<Card> InitialDeck = initializeFullDeck();
+            ArrayList<Card> ReshuffledDeck = shuffleDeck(InitialDeck);
             return ReshuffledDeck;
         }
         else {
-            return DeckAfterDiscard;
+            return Deck;
         }
 
     }
@@ -171,7 +152,7 @@ public class Controller {
      * @param color
      * @return ListOfPieces
      */
-    public ArrayList<GamePiece> GetPlayersPieces(Enums.Color color) {
+    public ArrayList<GamePiece> getPlayersPieces(Enums.Color color) {
 
         ArrayList<GamePiece> PlayersPieces = new ArrayList<>();
         // make a list (AllPieces) of all the pieces
@@ -189,12 +170,12 @@ public class Controller {
      * @param
      * @return EligiblePieces
      */
-    public ArrayList<GamePiece> GetEligiblePieces(ArrayList<GamePiece> PlayersPieces, int card_num) {
+    public ArrayList<GamePiece> getEligiblePieces(ArrayList<GamePiece> PlayersPieces, int card_num) {
         ArrayList<GamePiece> EligiblePieces = new ArrayList<>();
         for (GamePiece piece : PlayersPieces) {
             boolean ValidMove = CheckValidMove(piece, card_num);
             if (ValidMove) {
-                boolean check_bump = CheckBump(piece, card_num);
+                boolean check_bump = checkBump(piece, card_num);
                 if (!piece.isMean() && !check_bump) {
                     EligiblePieces.add(piece);
                 }
@@ -252,7 +233,7 @@ public class Controller {
         return true;
     }
 
-    private boolean CheckBump(GamePiece piece, int card_num){
+    private boolean checkBump(GamePiece piece, int card_num){
 
         return true;
     }
@@ -265,7 +246,7 @@ public class Controller {
      * @return
      */
 
-    public String NextPlayer(String current_player) {
+    public String nextPlayer(String current_player) {
         ArrayList<String> players = new ArrayList<>();
         players.add("USER");
         players.add("C1");
