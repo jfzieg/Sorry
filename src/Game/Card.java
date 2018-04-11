@@ -22,4 +22,13 @@ public class Card {
     public int getType() {
         return type.getNumber();
     }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public String toString(){
+        return Integer.toString(getType());
+    }
 }
