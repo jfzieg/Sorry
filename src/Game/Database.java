@@ -41,119 +41,77 @@ public class Database {
         }
     }
     
-    public void savePieceInfo(GamePiece[][] tileList, GamePiece[][] homeList, int numberOfPause, String userName){
+    public void saveGameData(String userName, int score){
         
-        if (numberOfPause == 1){
             try {
                 Statement st = con.createStatement();
-                for(int i = 0; i < 4; i++){
-                    for(int j = 0; j < 16; j++){
-                        if(tileList[i][j] != null){
-                            int color = tileList[i][j].getC();
                             
-                            String query = "insert into tblPieceInfo(pmkUserName, fldColor, fldLocation, fldTileNum, fldTileType) " + 
-                            "values  (?, ?, ?, ?, ?)";
+                            String query = "insert into tblGameInfo(fldUserName, fldScore) " + 
+                            "values  (?, ?)";
                            
                             
                             PreparedStatement preparedStmt = con.prepareStatement(query);
                             preparedStmt.setString(1, userName);
-                            preparedStmt.setInt(2, color);
-                            preparedStmt.setInt(3, j);
-                            preparedStmt.setInt(4, i);
-                            preparedStmt.setInt(5, 0);
+                            preparedStmt.setInt(2, score);
+                            
                             
                             preparedStmt.execute();
-                            
-                        }
-                    }
-                    
-                    for(int j = 0; j < 6; j++){
-                        if(tileList[i][j] != null){
-                            int color = tileList[i][j].getC();
-                            
-                            String query = "insert into tblPieceInfo(pmkUserName, fldColor, fldLocation, fldTileNum, fldTileType) " + 
-                            "values  (?, ?, ?, ?, ?)";
-                           
-                            
-                            PreparedStatement preparedStmt = con.prepareStatement(query);
-                            preparedStmt.setString(1, userName);
-                            preparedStmt.setInt(2, color);
-                            preparedStmt.setInt(3, j);
-                            preparedStmt.setInt(4, i);
-                            preparedStmt.setInt(5, 1);
-                            
-                            preparedStmt.execute();
-                            
-                        }
-                    }
+                                              
                 }
-            } catch (SQLException e) {
+             catch (SQLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        }
-        else{
-            try {
-                for(int i = 0; i < 4; i++){
-                    for(int j = 0; j < 16; j++){
-                        if(tileList[i][j] != null){
-                            int color = tileList[i][j].getC();
-                            
-                            String query = "update tblPieceInfo set fldLocation = ?, fldTileNum = ?, fldTileType = ?, fldColor = ?, pmkTime = CURRENT_TIMESTAMP where"
-                                    + " pmkUserName = ?";
-                            
-                            PreparedStatement preparedStmt = con.prepareStatement(query);
-                            preparedStmt.setInt(1, j );
-                            preparedStmt.setInt(2, i);
-                            preparedStmt.setInt(3, 0);
-                            preparedStmt.setInt(4, color);
-                            preparedStmt.setString(5, userName);
-                            
-                            preparedStmt.executeUpdate();
-                            
-                        }
-                        
-                        }
-                    for(int j = 0; j < 6; j++){
-                        if(tileList[i][j] != null){
-                            int color = tileList[i][j].getC();
-                            
-                            String query = "update tblPieceInfo set fldLocation = ?, fldTileNum = ?, fldTileType = ?, fldColor = ?, pmkTime = CURRENT_TIMESTAMP where"
-                                    + "pmkUserName = ?";
-                            
-                            PreparedStatement preparedStmt = con.prepareStatement(query);
-                            preparedStmt.setInt(1, j );
-                            preparedStmt.setInt(2, i);
-                            preparedStmt.setInt(3, 1);
-                            preparedStmt.setInt(4, color);
-                            preparedStmt.setString(5, userName);
-                            
-                            preparedStmt.executeUpdate();
-                            
-                        }
-                        
-                        }
-                }
-            } catch (SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+       
+}
+    
+    public void loadGameByUser(String userName){
+        try {
+            Statement st = con.createStatement();
+            
+            String query = "SELECT pmkGameId, fldUsername, fldTime, fldScore FROM tblGameInfo where fldUsername = '" + userName + "'";
+            
+            ResultSet rs = st.executeQuery(query);
+            
+            while (rs.next()){
+                int id = rs.getInt("pmkGameId");
+                String user = rs.getString("fldUsername");
+                Timestamp t = rs.getTimestamp("fldTime");
+                int score = rs.getInt("fldScore");
+                
+                System.out.format( id + " " + user + " " + t.toString() + " " + score + "\n");
+            
             }
+            st.close();
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-    }
-    public void getPieceInfo(){
+        
         
     }
-    public void saveCardInfo(){
-        
-    }
-    public void getCardInfo(){
-        
-    }
-    public void saveHomeInfo(){
-        
-    }
-    public void getHomeInfo(){
-        
+    
+    public void loadGameData(){
+        try {
+            Statement st = con.createStatement();
+            
+            String query = "SELECT * FROM tblGameInfo";
+            
+            ResultSet rs = st.executeQuery(query);
+            
+            while (rs.next()){
+                int id = rs.getInt("pmkGameId");
+                String user = rs.getString("fldUsername");
+                Timestamp t = rs.getTimestamp("fldTime");
+                int score = rs.getInt("fldScore");
+                
+                System.out.format("%s, %s, %s, %s\n", id, user, t, score);
+            
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }
 

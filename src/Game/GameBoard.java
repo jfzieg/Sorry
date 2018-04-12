@@ -44,7 +44,7 @@ void slide(GamePiece[][] tileList, GamePiece piece){
     }
 }
 //Move Piece method or maybe just move forward method
-void movePiece(GamePiece[][] tileList, GamePiece[][] homeList, GamePiece piece, Card card){
+void movePieceForward(GamePiece[][] tileList, GamePiece[][] homeList, GamePiece piece, Card card){
     //temporary move variable for card
     int move = 0;
    //Go through a nested loop
@@ -84,6 +84,74 @@ void movePiece(GamePiece[][] tileList, GamePiece[][] homeList, GamePiece piece, 
     }
 }
 
+void movePieceBackWard(GamePiece[][] tileList, GamePiece piece, Card card){
+  //temporary move variable for card
+    int move = 0;
+   //Go through a nested loop
+   //First loop that go through 4 tiles
+   //Second loop that go through each slot in each tile
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 16; j++){
+            if(tileList[i][j].equals(piece)){
+              boolean checkChangeTileBackWard = checkChangeTileBackWard(move, j);
+                  int needMove = 0;
+                  int availableMove = 0;
+                  if(checkChangeTileBackWard == true){
+                      switch (move){
+                          case 4:
+                              availableMove = 4 - j;
+                              needMove = 16 - availableMove;
+                              tileList[i-1][needMove] = piece;
+                              break;
+                          case 10:
+                              availableMove = 1 - j;
+                              needMove = 16 - availableMove;
+                              tileList[i-1][needMove] = piece;
+                              break;
+                      }
+                  } else{
+                  switch (move){
+                      case 4:
+                          needMove = j - 4;
+                          tileList[i][needMove] = piece;
+                          break;
+                      case 10:
+                          needMove = j - 1;
+                          tileList[i][needMove] = piece;
+                          break;
+                  }
+                  
+              }
+            }
+        }
+    }
+}
+
+
+void moveInHome(GamePiece[][] homeList, GamePiece piece, Card card){
+  //temporary move variable for card
+    int move = 0;
+   //Go through a nested loop
+   //First loop that go through 4 tiles
+   //Second loop that go through each slot in each tile
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 6; j++){
+            if(tileList[i][j].equals(piece)){
+                int availableMove = 5 - j;
+                if(availableMove <= move){
+                    if(tileList[i][move] == null){
+                        tileList[i][move] = piece;
+                    } else{
+                        System.out.println("There is a piece infront of you");
+                    }
+                } else{
+                    System.out.println("You cannot move");
+                }
+        }
+        }
+}
+}
+
 //Only get called if checkChangeTile return true
 //temporary variable move represent the card number
 //Since each tile has 16 index, we calculate the available move in the tile that the piece is on by
@@ -120,6 +188,17 @@ boolean checkChangeTile(GamePiece[][] tileList, GamePiece piece, Card card, int 
     return check;
 }
 
+boolean checkChangeTileBackWard( int move, int j){
+    boolean check = false;
+    if(move == 4 && j <= 3){
+        check = true;
+    } else if(move == 10 && j == 0){
+        check = true;
+    }
+    
+    return check;
+}
+
 //This method check if the piece is about to get into home or not
 //tile list, a piece, a card, two int variables for the nested loops are passed as parameters
 //if the next tile or i + 1 equal the piece color or the piece is currently on the tile has the same color
@@ -127,7 +206,7 @@ boolean checkChangeTile(GamePiece[][] tileList, GamePiece piece, Card card, int 
 // otherwise, false
 boolean checkHomeTile(GamePiece[][] tileList, GamePiece piece, int i, int j){
     boolean check = false;
-    if(i + 1 == tileList[i][j].color.side || (tileList[i][j].color.side == i && j <= 2)){
+    if(i + 1 == tileList[i][j].getBoardSide() || (tileList[i][j].getBoardSide() == i && j <= 2)){
         check = true;
     } else{
         check = false;
@@ -135,11 +214,7 @@ boolean checkHomeTile(GamePiece[][] tileList, GamePiece piece, int i, int j){
     
     return check;
 }
-/**
- * @param tileList
- * @param piece
- * @param card
- */
+
 //Temporary variable i to represent the number in card
 // if card is either 1 or 2, get the board side of the piece
 // check if the spot to get out is occupy or not, if its not
@@ -157,26 +232,90 @@ void homeGetOut(GamePiece[][] tileList, GamePiece piece, Card card){
 }
     
 }
-
-    /**
-     * @param tileList
-     * @param piece
-     * @param card
-     */
-    void homeGetOut(ArrayList<ArrayList<GamePiece>> tileList, GamePiece piece, Card card){
-        int i = 1;
-        if(i == 1 || i == 2){
-            int homeIndex = piece.getBoardSide();
-            if(tileList.get(homeIndex).get(5) == null){
-                tileList.get(homeIndex).add(5, piece);
-            }
-            else{
-                System.out.println("There is a piece in the place");
+boolean checkBump(GamePiece[][] tileList, GamePiece piece, Card card, boolean backWard){
+  //temproray variable for card
+    int move = 0;
+    boolean checkBump = false;
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 16; j++){
+            //If we find a a piece that we are looking for, we will check if it needs to change tile or if it needs to go home
+            //as you pick up the card. We are doing this by having 2 boolean variables that take boolean from checkChangeTile
+            //and checkhomeTile. We remove the piece from its current position.
+            if(tileList[i][j].equals(piece)){
+                boolean checkChangeTile = checkChangeTile(tileList, piece, card, i, j);
+                boolean checkHomeTile = checkHomeTile(tileList, piece, i, j);
+                //If the piece needs to change tile
+                if(checkChangeTile == true){
+                    //We calculate the move that need to move 
+                    int needMove = changeTile(tileList, piece, card, i, j);
+                    //If checkHomeTile is true but the move makes the piece not get into home yet
+                    //We check if there anything ahead to bump, if yes, return true, else false
+                    if(checkHomeTile == true && needMove < 2){
+                        if(tileList[i+1][needMove] != null){
+                            checkBump = true;
+                        }
+                    }
+                    //If checkHomeTile is false
+                    //We check if there anything ahead to bump, if yes, return true, else false
+                    else if(checkHomeTile == false){
+                        if(tileList[i+1][needMove] != null){
+                            checkBump = true;
+                        }
+                    }
+                    
+                }
+                else{
+                    if((move == 4 && backWard == true) || (move == 10 && backWard == true)){
+                    int needMove = 0;
+                    int availableMove = 0;
+                    boolean checkChangeTileBackWard = checkChangeTileBackWard(move, j);
+                    if(checkChangeTileBackWard == true){
+                        switch (move){
+                            case 4:
+                                availableMove = 4 - j;
+                                needMove = 16 - availableMove;
+                                if(tileList[i][needMove] != null){
+                                    checkBump = true;
+                                }
+                                break;
+                            case 10:
+                                availableMove = 1 - j;
+                                needMove = 16 - availableMove;
+                                if(tileList[i][needMove] != null){
+                                    checkBump = true;
+                                }
+                                break;
+                        }
+                    } else{
+                    switch (move){
+                        case 4:
+                            needMove = j - 4;
+                            if(tileList[i][needMove] != null){
+                                checkBump = true;
+                            }
+                            break;
+                        case 10:
+                            needMove = j - 1;
+                            if(tileList[i][needMove] != null){
+                                checkBump = true;
+                            }
+                            break;
+                    }
+                    
+                }
+                    }
+                    else{
+                        int needMove = j + move;
+                        if(tileList[i][needMove] != null){
+                            checkBump = true;
+                        }
+                    }
             }
         }
+            }
     }
+    return checkBump;
 }
-
 boolean bump(GamePiece[][] tileList, GamePiece piece, Card card){
     //temproray variable for card
     int move = 0;
