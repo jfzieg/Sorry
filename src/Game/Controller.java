@@ -14,6 +14,8 @@ public class Controller implements Serializable{
     boolean game_paused = false;
     boolean game_over = false;
     boolean new_game = true; // if false, game is a resumed game
+    private ArrayList<Card> deck;
+
     GameBoard board;
     MenuControllers menus;
 
@@ -23,11 +25,26 @@ public class Controller implements Serializable{
      */
     public void setupNewGame() {
         this.board = new GameBoard();
+
+        deck = initializeFullDeck();
+        shuffleDeck(deck);
+    }
+
+    /**
+     * Main gameplay method call this for playing a game
+     */
+    public void playGame(){
+        while(!game_over){
+
+        }
     }
 
 
     /**
      * Initialize full deck
+     *
+     * HAS TEST CASE
+     *
      * @return deck
      */
     public ArrayList<Card> initializeFullDeck() {
@@ -57,6 +74,9 @@ public class Controller implements Serializable{
 
     /**
      * Shuffle the deck
+     *
+     * HAS TEST CASE
+     *
      * @param deck
      * @return shuffled deck
      */
@@ -78,19 +98,23 @@ public class Controller implements Serializable{
 
     /**
      * Checks to see if the deck is empty
-     * @param deck
+     *
+     * HAS TEST CASE
+     *
      * @return
      */
-    private boolean checkDeckEmpty(ArrayList<Card> deck) {
+    private boolean checkDeckEmpty() {
         return deck.size() == 0;
     }
 
     /**
      * Draw a card (get its value), and remove from deck
-     * @param deck
+     *
+     * HAS TEST CASE
+     *
      * @return int value on card
      */
-    public Card drawCard(ArrayList<Card> deck) {
+    public Card drawCard() {
         Card card = deck.get(0);
         deck.remove(card);
         return card;
@@ -109,13 +133,15 @@ public class Controller implements Serializable{
 //    }
 
     /**
+     *
+     * TODO: WRITE TEST CASE
+     *
      * User takes a turn: draw and discard top card from the deck, choose a piece and move it, update board state, check game over, check deck emtpy
-     * @param Deck
      * @return deck after discarding
      */
-    public ArrayList<Card> takeTurn(ArrayList<Card> Deck) {
+    public void takeTurn() {
 
-         int card_num = drawCard(Deck).getType();
+        int card_num = drawCard().getType();
 
         // What if there are no valid moves?
 //        GamePiece piece = ChoosePiece();
@@ -127,20 +153,17 @@ public class Controller implements Serializable{
         // if game over --> exit and display end game screens (return an empty ArrayList<Card> ?
         // if game not over --> continue with what is below
 
-        boolean deck_empty = checkDeckEmpty(Deck);
-        if (deck_empty) {
-            ArrayList<Card> InitialDeck = initializeFullDeck();
-            ArrayList<Card> ReshuffledDeck = shuffleDeck(InitialDeck);
-            return ReshuffledDeck;
-        }
-        else {
-            return Deck;
+        if (checkDeckEmpty()) {
+            deck = initializeFullDeck();
+            shuffleDeck(deck);
         }
 
     }
 
 
     /**
+     * TODO: WRITE TEST CASE
+     *
      * Move piece
      */
     public void MovePiece(GamePiece piece, int num_spaces) {
@@ -166,6 +189,11 @@ public class Controller implements Serializable{
     }
 
     /**
+     *
+     * TODO: WRITE TEST CASE
+     *
+     * Maybe convert
+     *
      * List eligible pieces based on opponent being nice or mean
      * @param
      * @return EligiblePieces
@@ -198,6 +226,9 @@ public class Controller implements Serializable{
 
 
     /**
+     *
+     * TODO: WRITE TEST CASE
+     *
      * Choose piece to move
      */
     public GamePiece ChoosePiece(ArrayList<GamePiece> EligiblePieces, int card_num) {
@@ -224,7 +255,6 @@ public class Controller implements Serializable{
 
             }
 
-
         return ChosenPiece;
 
     }
@@ -238,7 +268,13 @@ public class Controller implements Serializable{
         return true;
     }
 
+    public ArrayList<Card> getDeck() {
+        return deck;
+    }
 
+    public void setDeck(ArrayList<Card> deck) {
+        this.deck = deck;
+    }
 
     /**
      * DON'T THINK WE NEED THIS METHOD --> can loop through players in main
