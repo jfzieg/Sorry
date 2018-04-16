@@ -10,6 +10,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -137,38 +138,16 @@ public class MenuControllers {
         //Initialize pane and prefs
         BorderPane pane = new BorderPane();
         pane.setBackground(new Background(new BackgroundFill(Settings.BACKGROUND, null, null)));
-
+        VBox leftMenu = new VBox();
+        leftMenu.setSpacing(Settings.Y_SIZE * .05);
+        leftMenu.setPadding(new Insets(Settings.X_SIZE * .01));
         GridPane gameboard = makeBoard();
+        Text title = makeText("Sorry!", Settings.FONT);
         Button main = startButton();
-        StackPane board = new StackPane();
-
-        for(int i = 0; i < 17; i++){
-            gameboard.add(makeTile(Color.WHITE), i, 0);
-            gameboard.add(makeTile(Color.WHITE), i, 16);
-            gameboard.add(makeTile(Color.WHITE), 0, i);
-            gameboard.add(makeTile(Color.WHITE), 16, i);
-        }
-        for(int j = 1; j < 6; j++){
-            gameboard.add(makeTile(Settings.RED), 2, j);
-            gameboard.add(makeTile(Settings.YELLOW), 14, 16 - j);
-            gameboard.add(makeTile(Settings.BLUE), j, 14);
-            gameboard.add(makeTile(Settings.GREEN), 16 - j, 2);
-        }
-        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.RED),2, 5 , 2, 2);
-        gameboard.add(makeTile(Settings.RED), 4,1);
-        gameboard.add(makeCircle(Settings.TILE_SIZE , Settings.RED),4, 1, 3, 2);
-
-//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.YELLOW),13, 11, 2, 2);
-//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.YELLOW),13, 9, 2, 2);
-//
-//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.BLUE),6, 13 , 2, 2);
-//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.BLUE),6, 10, 2, 2);
-//
-//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.GREEN),10, 2 , 2, 2);
-//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.GREEN),10, 4, 2, 2 );
+        leftMenu.getChildren().addAll(title, main.getText());
 
         pane.setCenter(gameboard);
-        pane.setLeft(main.getText());
+        pane.setLeft(leftMenu);
 
         //Add references for object retrieval
         gameBoard = pane;
@@ -335,6 +314,56 @@ public class MenuControllers {
         return tile;
     }
 
+    private Polygon makeSlide(Color c, int boardSide, int length){
+        Double longSide = Settings.TILE_SIZE * (length - .1) , shortSide = Settings.TILE_SIZE - .15;
+        Polygon slide = new Polygon();
+        slide.setFill(c);
+        slide.setStroke(c.darker());
+        slide.setStrokeWidth(Settings.TILE_SIZE * .05);
+
+        switch (boardSide) {
+            //RED
+            case 0:
+                slide.getPoints().addAll(new Double[]{
+                        0.0, 0.0,
+                        longSide, Settings.TILE_SIZE / 2,
+                        0.0, shortSide
+
+                });
+                break;
+            //YELLOW
+            case 1:
+                slide.getPoints().addAll(new Double[]{
+                    0.0, 0.0,
+                    -longSide, Settings.TILE_SIZE / 2,
+                    0.0, shortSide
+
+                });
+                break;
+            //GREEN
+            case 2:
+                slide.getPoints().addAll(new Double[]{
+                        0.0, 0.0,
+                        shortSide, 0.0,
+                        Settings.TILE_SIZE / 2, longSide,
+
+                });
+                break;
+            //BLUE
+            case 3:
+                slide.getPoints().addAll(new Double[]{
+                        0.0, 0.0,
+                        shortSide, 0.0,
+                        Settings.TILE_SIZE / 2, -longSide
+
+                });
+                default:
+
+                break;
+        }
+        return slide;
+    }
+
     private Text makeText(String string, Font font){
         Text text = new Text(string);
         text.setFont(font);
@@ -348,30 +377,48 @@ public class MenuControllers {
     private GridPane makeBoard(){
         GridPane gameboard = new GridPane();
         gameboard.setPadding(new Insets(Settings.X_SIZE * .01));
-        for(int i = 0; i < 17; i++){
+        for(int i = 0; i < 16; i++){
             gameboard.add(makeTile(Color.WHITE), i, 0);
-            gameboard.add(makeTile(Color.WHITE), i, 16);
+            gameboard.add(makeTile(Color.WHITE), i, 15);
             gameboard.add(makeTile(Color.WHITE), 0, i);
-            gameboard.add(makeTile(Color.WHITE), 16, i);
+            gameboard.add(makeTile(Color.WHITE), 15, i);
         }
         for(int j = 1; j < 6; j++){
             gameboard.add(makeTile(Settings.RED), 2, j);
-            gameboard.add(makeTile(Settings.YELLOW), 14, 16 - j);
-            gameboard.add(makeTile(Settings.BLUE), j, 14);
-            gameboard.add(makeTile(Settings.GREEN), 16 - j, 2);
+            gameboard.add(makeTile(Settings.YELLOW), 13, 15 - j);
+            gameboard.add(makeTile(Settings.BLUE), j, 13);
+            gameboard.add(makeTile(Settings.GREEN), 15 - j, 2);
         }
+
         gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.RED),2, 5 , 2, 2);
         gameboard.add(makeTile(Settings.RED), 4,1);
-        gameboard.add(makeCircle(Settings.TILE_SIZE , Settings.RED),4, 1, 3, 2);
+        gameboard.add(makeCircle(Settings.TILE_SIZE , Settings.RED),4, 1, 2, 2);
 
-//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.YELLOW),13, 11, 2, 2);
-//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.YELLOW),13, 9, 2, 2);
-//
-//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.BLUE),6, 13 , 2, 2);
-//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.BLUE),6, 10, 2, 2);
-//
-//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.GREEN),10, 2 , 2, 2);
-//        gameboard.add(makeCircle(Settings.TILE_SIZE * 1.1, Settings.GREEN),10, 4, 2, 2 );
+        gameboard.add(makeSlide(Settings.RED, 0, 4), 1, 0, 5, 1);
+        gameboard.add(makeSlide(Settings.RED, 0, 5), 9, 0, 5, 1);
+
+
+        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.YELLOW),12, 9, 2, 2);
+        gameboard.add(makeTile(Settings.YELLOW), 11,14);
+        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.YELLOW),10, 13, 2, 2);
+
+        gameboard.add(makeSlide(Settings.YELLOW, 1, 4), 11, 15, 4, 1);
+        gameboard.add(makeSlide(Settings.YELLOW, 1, 5), 2, 15, 5, 1);
+
+        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.BLUE),5, 12 , 2, 2);
+        gameboard.add(makeTile(Settings.BLUE), 1,11);
+        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.BLUE),1, 10, 2, 2);
+
+        gameboard.add(makeSlide(Settings.BLUE, 3, 4), 0, 11, 1, 4);
+        gameboard.add(makeSlide(Settings.BLUE, 3, 5), 0, 2, 1, 5);
+
+        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.GREEN),9, 2 , 2, 2);
+        gameboard.add(makeTile(Settings.GREEN), 14,4);
+        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.GREEN),13, 4, 2, 2 );
+
+        gameboard.add(makeSlide(Settings.GREEN, 2, 4), 15, 1, 1, 4);
+        gameboard.add(makeSlide(Settings.GREEN, 2, 5), 15, 9, 1, 5);
+
         return gameboard;
     }
 
@@ -520,8 +567,8 @@ public class MenuControllers {
         button.getText().setOnMouseReleased(new EventHandler() {
             @Override
             public void handle(Event event) {
-                gameBoard.toFront();
-                gameBoard.requestFocus();
+                newGameMenu.toFront();
+                newGameMenu.requestFocus();
             }
         });
     }
