@@ -1,7 +1,6 @@
 package Game;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 public class TestMethods {
@@ -69,7 +68,7 @@ public class TestMethods {
         }
         else System.out.println("shuffleDeck() FAILED");
 
-        Card testCard = game.drawCard(testDeck);
+        Card testCard = game.drawCard();
         if(!testCard.equals(null) && testDeck.size() < sampleDeck.size()) {
             System.out.println("drawCard() PASSED");
             numPassed++;
@@ -77,7 +76,7 @@ public class TestMethods {
         else System.out.println("drawCard() FAILED");
 
         while(testDeck.size() > 0){
-            game.drawCard(testDeck);
+            game.drawCard();
         }
         if (testDeck.isEmpty()) {
             System.out.println("isEmpty PASSED");
@@ -87,8 +86,10 @@ public class TestMethods {
 
         System.out.format("%d out of %d tests PASSED\n", numPassed, numTests);
     }
+
+
+
     public static void main(String[] args) {
         testGameMethods();
     }
-
 }
