@@ -392,7 +392,7 @@ public class MenuControllers {
     }
 
     /**
-     * TODO: Finish GUI buttons
+     * TODO: Finish GUI buttons, Add 1 more home tile
      * @return
      */
     private GridPane makeBoard(){

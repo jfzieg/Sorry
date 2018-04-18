@@ -10,6 +10,7 @@ public class GamePiece implements Serializable{
     private Enums.Color color;
     private int boardSide;
     private int innerLocation;
+    private int movesLeft;
     private boolean isSmart;
     private boolean isMean;
 
@@ -23,6 +24,7 @@ public class GamePiece implements Serializable{
         this.color = color;
         this.boardSide = color.getSide();
         this.c = color.getColor();
+//        this.movesLeft =
     }
 
     /**
@@ -36,7 +38,7 @@ public class GamePiece implements Serializable{
         this.c = color.getColor();
         this.isSmart = isSmart;
         this.isMean = isMean;
-        this.boardSide = color.getSide();
+        this.boardSide = -1; // Initial value for home location
     }
 
     /**
@@ -84,12 +86,24 @@ public class GamePiece implements Serializable{
         this.innerLocation = innerLocation;
     }
 
+    public int getMovesLeft() {
+        return movesLeft;
+    }
+
+    /**
+     *
+     * @param deltaMoves The +/- change in moves
+     */
+    public void setMovesLeft(int deltaMoves) {
+        this.movesLeft += movesLeft;
+    }
+
     /**
      *
      * @return
      */
-    public Color getColor() {
-        return c;
+    public Enums.Color getColor() {
+        return color;
     }
 
     public boolean isSmart() {

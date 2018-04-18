@@ -1,13 +1,8 @@
 package Game;
 
-//import com.sun.org.apache.xpath.internal.functions.FuncFalse;
-//import sun.awt.image.ImageWatched;
-
 import java.io.Serializable;
 import java.util.Random;
-
 import java.util.ArrayList;
-
 
 public class Controller implements Serializable{
 
@@ -23,9 +18,8 @@ public class Controller implements Serializable{
      * Setup for a new game
      * Break this into multiple subfunctions --> how to code for user input from GUI?
      */
-    public void setupNewGame() {
-        this.board = new GameBoard();
-
+    public void setupNewGame(Enums.Color color, GamePiece ... pieces) {
+        this.board = new GameBoard(color, pieces);
         game_paused = false;
         game_over = false;
         new_game = true; // if false, game is a resumed game
