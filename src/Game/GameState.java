@@ -9,20 +9,20 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import javax.swing.JOptionPane;
+import javax.swing.border.EmptyBorder;
 
 public class GameState {
 
     public GameState(){
     }
     
-    public void saveGameDataToFile(File file, GamePiece[][] tileList, GamePiece[][] homeList){
+    public void saveGameDataToFile(File file, GameBoard board){
         try{
             FileOutputStream fileStream = new FileOutputStream(file);
             ObjectOutputStream objectStream = new ObjectOutputStream(fileStream);
             
   
-                    objectStream.writeObject(tileList);
-                    objectStream.writeObject(homeList);
+                    objectStream.writeObject(board);
                     //Need to store enimies personality
                     //Game mode
                     //and Card
@@ -36,8 +36,18 @@ public class GameState {
                 }
 }
     
-    public void loadGameDataFromFilr(File file, GamePiece[][] tileList, GamePiece[][] homeList) throws ClassNotFoundException, IOException{
+    public GameBoard loadGameDataFromFile(File file) throws ClassNotFoundException, IOException{
         FileInputStream fileStream = new FileInputStream(file);
         ObjectInputStream objectStream = new ObjectInputStream(fileStream);
+        
+        GameBoard board = (GameBoard) objectStream.readObject();
+        
+        objectStream.close();
+        fileStream.close();
+        System.out.println("Load game state successfully");
+        return board;
+        //Need to load enemies personality
+        //Game Mode
+        //And Card
     }
 }

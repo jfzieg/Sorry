@@ -7,9 +7,6 @@ import javafx.scene.text.Text;
 public class Card {
     protected Color c;
     protected Text number;
-
-
-
     protected Enums.CardType type;
 
     /**
@@ -18,6 +15,12 @@ public class Card {
      */
     public Card(Enums.CardType card) {
         type = card;
+        number = new Text(Integer.toString(type.getNumber()));
+        number.setFont(Settings.FONT);
+        number.setFill(Settings.TEXT);
+        number.setStroke(Settings.TEXT);
+        number.setStrokeWidth(Settings.FONT.getSize() * .05);
+        c = Settings.BACKGROUND;
     }
     public int getType() {
         return type.getNumber();
