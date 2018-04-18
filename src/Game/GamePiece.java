@@ -6,10 +6,12 @@ import javafx.scene.paint.Color;
 /**
  *
  */
-public class GamePiece extends Circle{
-    protected Enums.Color color;
-    protected int boardSide;
-    protected int innerLocation;
+public class GamePiece{
+    private Enums.Color color;
+    private int boardSide;
+    private int innerLocation;
+    private boolean isSmart;
+    private boolean isMean;
 
     protected Color c;
 
@@ -65,8 +67,23 @@ public class GamePiece extends Circle{
      *
      * @return
      */
-    public Color getC() {
-        return c;
+    public int getColor() {
+        return color.getSide();
     }
 
+    public boolean isSmart() {
+        return isSmart;
+    }
+
+    public void setSmart(boolean smart) {
+        isSmart = smart;
+    }
+
+    public boolean isMean() {
+        return isMean;
+    }
+
+    public void setMean(boolean mean) {
+        isMean = mean;
+    }
 }
