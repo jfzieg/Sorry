@@ -22,12 +22,10 @@ public class GameBoard implements Serializable{
         this.homeList = homeList;
     }
     
+    public GameBoard(){
+        
+    }
     
-//void homeMove(GamePiece[][] tileList, GamePiece[][] homeList, GamePiece piece){
-//        int homeIndex = piece.getColor();
-//        int i = 0;
-//        
-//}
 
 public GamePiece[][] getTileList() {
         return tileList;

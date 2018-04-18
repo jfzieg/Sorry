@@ -35,15 +35,17 @@ public class GameState {
                 }
 }
     
-    public void loadGameDataFromFile(File file, GameBoard board) throws ClassNotFoundException, IOException{
+    public GameBoard loadGameDataFromFile(File file) throws ClassNotFoundException, IOException{
         FileInputStream fileStream = new FileInputStream(file);
         ObjectInputStream objectStream = new ObjectInputStream(fileStream);
+        GameBoard board = new GameBoard();
         
         board = (GameBoard) objectStream.readObject();
         
         objectStream.close();
         fileStream.close();
         System.out.println("Load game state successfully");
+        return board;
         //Need to load enemies personality
         //Game Mode
         //And Card

@@ -12,7 +12,7 @@ public class Test_SaveGameState {
     
     static void TestLoad(GameState gt, GameBoard gb2) throws ClassNotFoundException, IOException{
         File file = new File("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\save.txt");
-        gt.loadGameDataFromFile(file, gb2);
+        gb2 = gt.loadGameDataFromFile(file);
     }
     
     static void TestNewGameBoard(GameBoard gb2){
