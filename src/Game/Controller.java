@@ -14,6 +14,12 @@ public class Controller implements Serializable{
     private GameBoard board;
     private MenuControllers menus;
 
+    public Controller(boolean test){
+        if(test){
+            setupNewGame(Enums.Color.BLUE, new GamePiece(Enums.Color.YELLOW, true, true));
+        }
+    }
+
     /**
      * Setup for a new game
      * Break this into multiple subfunctions --> how to code for user input from GUI?

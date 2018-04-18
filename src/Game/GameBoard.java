@@ -156,53 +156,6 @@ public class GameBoard implements Serializable{
     }
 
     void movePieceBackWard( GamePiece piece, int card){
-//      //temporary move variable for card
-//        int move = card;
-//       //Go through a nested loop
-//       //First loop that go through 4 tiles
-//       //Second loop that go through each slot in each tile
-//        outerloop:
-//        for(int i = 0; i < 4; i++){
-//            for(int j = 0; j < 16; j++){
-//                if(tileList[i][j] == piece){
-//                  boolean checkChangeTileBackWard = checkChangeTileBackWard(move, j);
-//                      int needMove = 0;
-//                      int availableMove = 0;
-//                      if(checkChangeTileBackWard == true){
-//                          switch (move){
-//                              case 4:
-//                                  availableMove = 4 - j;
-//                                  needMove = 15 - availableMove;
-//                                  tileList[i][j] = null;
-//                                  tileList[i-1][needMove] = piece;
-//                                  break;
-//                              case 10:
-//                                  availableMove = 1 - j;
-//                                  needMove = 15 - availableMove;
-//                                  tileList[i][j] = null;
-//                                  tileList[i-1][needMove] = piece;
-//                                  break;
-//                          }
-//                          break outerloop;
-//                      } else{
-//                      switch (move){
-//                          case 4:
-//                              needMove = j - 4;
-//                              tileList[i][j] = null;
-//                              tileList[i][needMove] = piece;
-//                              break;
-//                          case 10:
-//                              needMove = j - 1;
-//                              tileList[i][j] = null;
-//                              tileList[i][needMove] = piece;
-//                              break;
-//                      }
-//                      break outerloop;
-//
-//                  }
-//                }
-//            }
-//        }
         // Move specified number of places on the same side
         if(piece.getInnerLocation() - card > 0){
             piece.setMovesLeft(+card);
@@ -215,7 +168,9 @@ public class GameBoard implements Serializable{
             piece.setBoardSide(changeBoardSide(piece.getBoardSide(), false));
             piece.setInnerLocation(card);
         }
+//        checkBump();
         checkSlide(piece);
+
     }
 
 
@@ -261,22 +216,22 @@ public class GameBoard implements Serializable{
         return check;
     }
 
-    //This method check if the piece is about to get into home or not
-    //tile list, a piece, a card, two int variables for the nested loops are passed as parameters
-    //if the next tile or i + 1 equal the piece color or the piece is currently on the tile has the same color
-    // and the piece has to be less or equal than index 2 since after 2, it needs to move up to home, return true
-    // otherwise, false
-    boolean checkHomeTile(GamePiece[][] tileList, GamePiece piece, int i, int j){
-        boolean check = false;
-        int test = tileList[i][j].getColor();
-        if(i + 1 == tileList[i][j].getColor() || (tileList[i][j].getColor() == i && j <= 2) || (i == 3 && tileList[i][j].getColor() == 0)){
-            check = true;
-        } else{
-            check = false;
-        }
-
-        return check;
-    }
+//    //This method check if the piece is about to get into home or not
+//    //tile list, a piece, a card, two int variables for the nested loops are passed as parameters
+//    //if the next tile or i + 1 equal the piece color or the piece is currently on the tile has the same color
+//    // and the piece has to be less or equal than index 2 since after 2, it needs to move up to home, return true
+//    // otherwise, false
+//    boolean checkHomeTile(GamePiece[][] tileList, GamePiece piece, int i, int j){
+//        boolean check = false;
+//        int test = tileList[i][j].getColor();
+//        if(i + 1 == tileList[i][j].getColor() || (tileList[i][j].getColor() == i && j <= 2) || (i == 3 && tileList[i][j].getColor() == 0)){
+//            check = true;
+//        } else{
+//            check = false;
+//        }
+//
+//        return check;
+//    }
 
     //Temporary variable i to represent the number in card
     // if card is either 1 or 2, get the board side of the piece
@@ -287,186 +242,120 @@ public class GameBoard implements Serializable{
         if (card == 1 || card == 2) {
             if (player) {
                 for (GamePiece piece : playerPieces) {
+                    // Move a piece out of home if there is one
                     if (piece.getBoardSide() == -1) {
                         piece.setBoardSide(piece.getColor().getSide());
                         break;
                     }
                 }
-            } else {
+            }
+            // If the piece is an opponents
+            else {
                 for (GamePiece[] opponent : opponentsPieces) {
+                    // Find the opponent's array
                     if (opponent[0].getColor() == color) {
                         for (GamePiece piece : opponent) {
+                            // Move a piece out of home if there is one
                             if (piece.getBoardSide() == -1) {
                                 piece.setBoardSide(piece.getColor().getSide());
                                 break;
                             }
                         }
-
-
-//                    int homeIndex = piece.getColor().get;
-//                    if (tileList[homeIndex][5] == null) {
-//                        tileList[homeIndex][5] = piece;
-//                    } else {
-//                        System.out.println("There is a piece in the place");
+                    }
+                }
+            }
+        }
+    }
+    void checkBump(GamePiece piece, int card, boolean backWard){
+//      //temproray variable for card
+//        int move = card;
+//        boolean checkBump = false;
+//        for(int i = 0; i < 4; i++){
+//            for(int j = 0; j < 16; j++){
+//                //If we find a a piece that we are looking for, we will check if it needs to change tile or if it needs to go home
+//                //as you pick up the card. We are doing this by having 2 boolean variables that take boolean from checkChangeTile
+//                //and checkhomeTile. We remove the piece from its current position.
+//                if(tileList[i][j] == piece){
+//                    boolean checkChangeTile = checkChangeTile(tileList, piece, card, i, j);
+//                    boolean checkHomeTile = checkHomeTile(tileList, piece, i, j);
+//                    //If the piece needs to change tile
+//                    if(checkChangeTile == true){
+//                        //We calculate the move that need to move
+//                        int needMove = changePiecePos(tileList, piece, card, i, j);
+//                        //If checkHomeTile is true but the move makes the piece not get into home yet
+//                        //We check if there anything ahead to bump, if yes, return true, else false
+//                        if(checkHomeTile == true && needMove < 2){
+//                            if(tileList[i+1][needMove] != null){
+//                                checkBump = true;
+//                            }
+//                        }
+//                        //If checkHomeTile is false
+//                        //We check if there anything ahead to bump, if yes, return true, else false
+//                        else if(checkHomeTile == false){
+//                            if(tileList[i+1][needMove] != null){
+//                                checkBump = true;
+//                            }
+//                        }
+//
 //                    }
-                    }
-                }
-            }
-        }
-    }
-    boolean checkBump(GamePiece piece, int card, boolean backWard){
-      //temproray variable for card
-        int move = card;
-        boolean checkBump = false;
-        for(int i = 0; i < 4; i++){
-            for(int j = 0; j < 16; j++){
-                //If we find a a piece that we are looking for, we will check if it needs to change tile or if it needs to go home
-                //as you pick up the card. We are doing this by having 2 boolean variables that take boolean from checkChangeTile
-                //and checkhomeTile. We remove the piece from its current position.
-                if(tileList[i][j] == piece){
-                    boolean checkChangeTile = checkChangeTile(tileList, piece, card, i, j);
-                    boolean checkHomeTile = checkHomeTile(tileList, piece, i, j);
-                    //If the piece needs to change tile
-                    if(checkChangeTile == true){
-                        //We calculate the move that need to move
-                        int needMove = changePiecePos(tileList, piece, card, i, j);
-                        //If checkHomeTile is true but the move makes the piece not get into home yet
-                        //We check if there anything ahead to bump, if yes, return true, else false
-                        if(checkHomeTile == true && needMove < 2){
-                            if(tileList[i+1][needMove] != null){
-                                checkBump = true;
-                            }
-                        }
-                        //If checkHomeTile is false
-                        //We check if there anything ahead to bump, if yes, return true, else false
-                        else if(checkHomeTile == false){
-                            if(tileList[i+1][needMove] != null){
-                                checkBump = true;
-                            }
-                        }
+//                    else{
+//                        if((move == 4 && backWard == true) || (move == 10 && backWard == true)){
+//                        int needMove = 0;
+//                        int availableMove = 0;
+//                        boolean checkChangeTileBackWard = checkChangeTileBackWard(move, j);
+//                        if(checkChangeTileBackWard == true){
+//                            switch (move){
+//                                case 4:
+//                                    availableMove = 4 - j;
+//                                    needMove = 16 - availableMove;
+//                                    if(tileList[i][needMove] != null){
+//                                        checkBump = true;
+//                                    }
+//                                    break;
+//                                case 10:
+//                                    availableMove = 1 - j;
+//                                    needMove = 16 - availableMove;
+//                                    if(tileList[i][needMove] != null){
+//                                        checkBump = true;
+//                                    }
+//                                    break;
+//                            }
+//                        } else{
+//                        switch (move){
+//                            case 4:
+//                                needMove = j - 4;
+//                                if(tileList[i][needMove] != null){
+//                                    checkBump = true;
+//                                }
+//                                break;
+//                            case 10:
+//                                needMove = j - 1;
+//                                if(tileList[i][needMove] != null){
+//                                    checkBump = true;
+//                                }
+//                                break;
+//                        }
+//
+//                    }
+//                        }
+//                        else{
+//                            int needMove = j + move;
+//                            if(tileList[i][needMove] != null){
+//                                checkBump = true;
+//                            }
+//                        }
+//                }
+//                    break;
+//            }
+//                }
+//        }
 
-                    }
-                    else{
-                        if((move == 4 && backWard == true) || (move == 10 && backWard == true)){
-                        int needMove = 0;
-                        int availableMove = 0;
-                        boolean checkChangeTileBackWard = checkChangeTileBackWard(move, j);
-                        if(checkChangeTileBackWard == true){
-                            switch (move){
-                                case 4:
-                                    availableMove = 4 - j;
-                                    needMove = 16 - availableMove;
-                                    if(tileList[i][needMove] != null){
-                                        checkBump = true;
-                                    }
-                                    break;
-                                case 10:
-                                    availableMove = 1 - j;
-                                    needMove = 16 - availableMove;
-                                    if(tileList[i][needMove] != null){
-                                        checkBump = true;
-                                    }
-                                    break;
-                            }
-                        } else{
-                        switch (move){
-                            case 4:
-                                needMove = j - 4;
-                                if(tileList[i][needMove] != null){
-                                    checkBump = true;
-                                }
-                                break;
-                            case 10:
-                                needMove = j - 1;
-                                if(tileList[i][needMove] != null){
-                                    checkBump = true;
-                                }
-                                break;
-                        }
+    }
 
-                    }
-                        }
-                        else{
-                            int needMove = j + move;
-                            if(tileList[i][needMove] != null){
-                                checkBump = true;
-                            }
-                        }
-                }
-                    break;
-            }
-                }
-        }
-        return checkBump;
-    }
-    boolean bump(GamePiece piece, int card){
-        //temproray variable for card
-        int move = card;
-        boolean checkBump = false;
-        //Go through a nested loop
-        //First loop that go through 4 tiles
-        //Second loop that go through each slot in each tile
-        for(int i = 0; i < 4; i++){
-            for(int j = 0; j < 16; j++){
-                //If we find a a piece that we are looking for, we will check if it needs to change tile or if it needs to go home
-                //as you pick up the card. We are doing this by having 2 boolean variables that take boolean from checkChangeTile
-                //and checkhomeTile. We remove the piece from its current position.
-                if(tileList[i][j] == piece){
-                    boolean checkChangeTile = checkChangeTile(tileList, piece, card, i, j);
-                    boolean checkHomeTile = checkHomeTile(tileList, piece, i, j);
-                    //If the piece needs to change tile
-                    if(checkChangeTile == true){
-                        //We calculate the move that need to move
-                        int needMove = changePiecePos(tileList, piece, card, i, j);
-                        //If checkHomeTile is true but the move makes the piece not get into home yet
-                        //We check if there anything ahead to bump, if yes, return true, else false
-                        if(checkHomeTile == true && needMove < 2){
-                            if(tileList[i+1][needMove] != null){
-                                checkBump = true;
-                                tileList[i+1][needMove] = null;
-                                tileList[i+1][needMove] = piece;
-                            } else{
-                                tileList[i+1][needMove] = piece;
-                            }
-                            }
-                        //If checkHomeTile is false
-                        //We check if there anything ahead to bump, if yes, return true, else false
-                        else if(checkHomeTile == false){
-                            if(tileList[i+1][needMove] != null){
-                                checkBump = true;
-                                tileList[i+1][needMove] = null;
-                                tileList[i+1][needMove] = piece;
-                            } else{
-                                tileList[i+1][needMove] = piece;
-                            }
-                        }
-                    }
-                    //Else check if bump in the same tile
-                    else{
-                        int needMove = j + move;
-                        if(tileList[i][needMove] != null){
-                            checkBump = true;
-                            tileList[i][needMove] = null;
-                            tileList[i][needMove] = piece;
-                        } else{
-                            tileList[i][needMove] = piece;
-                        }
-                    }
-                }
-            }
-        }
-        return checkBump;
-    }
 
     public GamePiece[][] getTileList() {
         return tileList;
     }
-//void add(GamePiece[][] tileList, GamePiece[][] homeList, GamePiece piece){
-//    tileList[2][6] = piece;
-//}
-//void add2(GamePiece[][] tileList, GamePiece[][] homeList, GamePiece piece){
-//    tileList[1][5] = piece;
-//}
 }
 
 

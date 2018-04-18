@@ -24,7 +24,7 @@ public class GamePiece implements Serializable{
         this.color = color;
         this.boardSide = color.getSide();
         this.c = color.getColor();
-//        this.movesLeft =
+        this.movesLeft = 60;
     }
 
     /**
