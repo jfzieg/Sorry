@@ -10,9 +10,10 @@ public class Test_SaveGameState {
         gt.saveGameDataToFile(file, gb);
     }
     
-    static void TestLoad(GameState gt, GameBoard gb2) throws ClassNotFoundException, IOException{
+    static GameBoard TestLoad(GameState gt) throws ClassNotFoundException, IOException{
         File file = new File("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\save.txt");
-        gb2 = gt.loadGameDataFromFile(file);
+        GameBoard gb2 = gt.loadGameDataFromFile(file);
+        return gb2;
     }
     
     static void TestNewGameBoard(GameBoard gb2){
@@ -21,7 +22,7 @@ public class Test_SaveGameState {
         
         for(int i = 0; i < 4; i++){
             for(int j = 0; j < 16; j++){
-                if(tileListTest != null){
+                if(tileListTest[i][j] != null){
                     System.out.println("Color: " + tileListTest[i][j].getColor() + ", " + "position i = " + i + ", " + 
                 "position j = " + j);
                 }
@@ -30,7 +31,7 @@ public class Test_SaveGameState {
         
         for(int i = 0; i < 4; i++){
             for(int j = 0; j < 6; j++){
-                if(homeListTest != null){
+                if(homeListTest[i][j] != null){
                     System.out.println("Color: " + homeListTest[i][j].getColor() + ", " + "position i = " + i + ", " + 
                 "position j = " + j);
                 }
@@ -62,9 +63,10 @@ public class Test_SaveGameState {
         //Load game board to a new empty gameboard to make sure load game is working
         GamePiece[][] tileList2 = new GamePiece[4][16];
         GamePiece[][] homeList2 = new GamePiece[4][6];
-        GameBoard gb2 = new GameBoard(tileList2, homeList2);
+        
          try {
-            TestLoad(gt, gb2);
+            GameBoard gb2 = TestLoad(gt);
+            TestNewGameBoard(gb2);
         } catch (ClassNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -73,7 +75,7 @@ public class Test_SaveGameState {
             e.printStackTrace();
         }
          
-         TestNewGameBoard(gb2);
+         
         
         
     }
