@@ -26,6 +26,20 @@ public class GamePiece implements Serializable{
     }
 
     /**
+     *
+     * @param color
+     * @param isSmart
+     * @param isMean
+     */
+    public GamePiece(Enums.Color color, boolean isSmart, boolean isMean){
+        this.color = color;
+        this.c = color.getColor();
+        this.isSmart = isSmart;
+        this.isMean = isMean;
+        this.boardSide = color.getSide();
+    }
+
+    /**
      * Check to determine whether a colored piece is on the same side as its home.
      * @return True if it is on the same side, False otherwise.
      */

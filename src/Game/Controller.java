@@ -11,13 +11,13 @@ import java.util.ArrayList;
 
 public class Controller implements Serializable{
 
-    boolean game_paused = false;
-    boolean game_over = false;
-    boolean new_game = true; // if false, game is a resumed game
+    private boolean game_paused;
+    private boolean game_over;
+    private boolean new_game;
     private ArrayList<Card> deck;
 
-    GameBoard board;
-    MenuControllers menus;
+    private GameBoard board;
+    private MenuControllers menus;
 
     /**
      * Setup for a new game
@@ -25,6 +25,10 @@ public class Controller implements Serializable{
      */
     public void setupNewGame() {
         this.board = new GameBoard();
+
+        game_paused = false;
+        game_over = false;
+        new_game = true; // if false, game is a resumed game
 
         deck = initializeFullDeck();
         shuffleDeck(deck);
@@ -274,6 +278,30 @@ public class Controller implements Serializable{
 
     public void setDeck(ArrayList<Card> deck) {
         this.deck = deck;
+    }
+
+    public boolean isGame_paused() {
+        return game_paused;
+    }
+
+    public void setGame_paused(boolean game_paused) {
+        this.game_paused = game_paused;
+    }
+
+    public boolean isGame_over() {
+        return game_over;
+    }
+
+    public void setGame_over(boolean game_over) {
+        this.game_over = game_over;
+    }
+
+    public boolean isNew_game() {
+        return new_game;
+    }
+
+    public void setNew_game(boolean new_game) {
+        this.new_game = new_game;
     }
 
     /**
