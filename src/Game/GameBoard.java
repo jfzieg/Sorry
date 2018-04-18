@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 public class GameBoard implements Serializable{
     //Variables for game board
+    private static final long serialVersionUID = -862206733593296676L;
     private GamePiece[][] tileList;
 
     private GamePiece[] playerPieces;

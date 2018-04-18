@@ -7,11 +7,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 import javax.swing.border.EmptyBorder;
 
-public class GameState {
+public class GameState implements Serializable {
 
     public GameState(){
     }
@@ -23,6 +25,8 @@ public class GameState {
             
   
                     objectStream.writeObject(board);
+
+//                    objectStream.writeObject(card);
                     //Need to store enimies personality
                     //Game mode
                     //and Card
@@ -36,7 +40,7 @@ public class GameState {
                 }
 }
     
-    public GameBoard loadGameDataFromFile(File file) throws ClassNotFoundException, IOException{
+    public GameBoard loadGameBoardFromFile(File file) throws ClassNotFoundException, IOException{
         FileInputStream fileStream = new FileInputStream(file);
         ObjectInputStream objectStream = new ObjectInputStream(fileStream);
         
@@ -46,8 +50,44 @@ public class GameState {
         fileStream.close();
         System.out.println("Load game state successfully");
         return board;
-        //Need to load enemies personality
-        //Game Mode
-        //And Card
     }
+    
+//    public GamePiece[] loadPlayerPieceFromFile(File file) throws ClassNotFoundException, IOException{
+//        FileInputStream fileStream = new FileInputStream(file);
+//        ObjectInputStream objectStream = new ObjectInputStream(fileStream);
+//        GamePiece[] player = new GamePiece[4];
+//        
+//        player = (GamePiece[]) objectStream.readObject();
+//        
+//        objectStream.close();
+//        fileStream.close();
+//        System.out.println("Load game state successfully");
+//        return player;
+//    }
+//    
+//    public ArrayList<GamePiece[]> loadOpponentFromFile(File file) throws ClassNotFoundException, IOException{
+//        FileInputStream fileStream = new FileInputStream(file);
+//        ObjectInputStream objectStream = new ObjectInputStream(fileStream);
+//        ArrayList<GamePiece[]> opponent = new ArrayList<GamePiece[]>();
+//        
+//        opponent = (ArrayList<GamePiece[]>) objectStream.readObject();
+//        
+//        objectStream.close();
+//        fileStream.close();
+//        System.out.println("Load game state successfully");
+//        return opponent;
+//    }
+//    
+//    public ArrayList<Card> loadCardFromFile(File file) throws ClassNotFoundException, IOException{
+//        FileInputStream fileStream = new FileInputStream(file);
+//        ObjectInputStream objectStream = new ObjectInputStream(fileStream);
+//        ArrayList<Card> card = new ArrayList<Card>();
+//        
+//        card = (ArrayList<Card>) objectStream.readObject();
+//        
+//        objectStream.close();
+//        fileStream.close();
+//        System.out.println("Load game state successfully");
+//        return card;
+//    }
 }
