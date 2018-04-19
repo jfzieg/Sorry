@@ -20,7 +20,7 @@ public class Test_SaveGameState {
     
     static void TestNewGameBoard(GameBoard gb2){
         GamePiece[][] tileListTest = gb2.getTileList();
-        GamePiece[][] homeListTest = gb2.getHomeList();
+//        GamePiece[][] homeListTest = gb2.getHomeList();
         
         for(int i = 0; i < 4; i++){
             for(int j = 0; j < 16; j++){
@@ -31,14 +31,14 @@ public class Test_SaveGameState {
             }
         }
         
-        for(int i = 0; i < 4; i++){
-            for(int j = 0; j < 6; j++){
-                if(homeListTest[i][j] != null){
-                    System.out.println("Color: " + homeListTest[i][j].getColor() + ", " + "position i = " + i + ", " + 
-                "position j = " + j);
-                }
-            }
-        }
+//        for(int i = 0; i < 4; i++){
+//            for(int j = 0; j < 6; j++){
+//                if(homeListTest[i][j] != null){
+//                    System.out.println("Color: " + homeListTest[i][j].getColor() + ", " + "position i = " + i + ", " +
+//                "position j = " + j);
+//                }
+//            }
+//        }
     }
     
     public static void main (String[] args) {
@@ -54,7 +54,7 @@ public class Test_SaveGameState {
         tileList[3][7] = p2;
         homeList[2][4] = p3;
         homeList[2][3] = p4;
-        GameBoard gb = new GameBoard(tileList, homeList);
+        GameBoard gb = new GameBoard(Enums.Color.BLUE, new GamePiece(Enums.Color.RED, true, false));
         
 //        Card c = new Card(Enums.CardType.EIGHT);
 //        Card c2 = new Card(Enums.CardType.SEVEN);

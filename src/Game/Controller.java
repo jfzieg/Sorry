@@ -5,7 +5,7 @@ import java.util.Random;
 import java.util.ArrayList;
 
 public class Controller implements Serializable{
-
+    private static boolean TEST = true;
     private boolean game_paused;
     private boolean game_over;
     private boolean new_game;
@@ -14,9 +14,12 @@ public class Controller implements Serializable{
     private GameBoard board;
     private MenuControllers menus;
 
-    public Controller(boolean test){
-        if(test){
-            setupNewGame(Enums.Color.BLUE, new GamePiece(Enums.Color.YELLOW, true, true));
+    /**
+     * Test Constructor
+     */
+    public Controller(){
+        if(TEST){
+            setupNewGame(Enums.Color.BLUE, new GamePiece(Enums.Color.YELLOW, true, true), new GamePiece(Enums.Color.RED, false, true));
         }
     }
 
