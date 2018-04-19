@@ -16,7 +16,7 @@ public class Controller implements Serializable{
 
     public Controller(boolean test){
         if(test){
-            setupNewGame(Enums.Color.BLUE, new GamePiece(Enums.Color.YELLOW, true, true));
+            setupNewGame(Enums.Color.BLUE, new GamePiece(Enums.Color.YELLOW, true, true), new GamePiece(Enums.Color.RED, false, false));
         }
     }
 

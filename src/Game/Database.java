@@ -1,6 +1,9 @@
 package Game;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class Database {
@@ -41,21 +44,37 @@ public class Database {
         }
     }
     
-    public void saveGameData(String userName, int score){
+    public void saveGameData(String userName, float score){
+        Map<String, Float> dictionary = new HashMap<String, Float>();
+        dictionary = loadGameData();
         
             try {
                 Statement st = con.createStatement();
+                            if(dictionary.containsKey(userName)){
+                                float newScore = dictionary.get(userName) + score;
+                                String query = "UPDATE tblGameInfo SET fldScore = ?, fldTime = CURRENT_TIMESTAMP WHERE fldUserName = ?";
+                                
+                                PreparedStatement preparedStmt = con.prepareStatement(query);
+                                preparedStmt.setFloat(1, newScore);
+                                preparedStmt.setString(2, userName);
+                                
+                                preparedStmt.executeUpdate();
+                                preparedStmt.close();
+                            } 
+                            else{
+                                String query = "insert into tblGameInfo(fldUserName, fldScore) " + 
+                                        "values  (?, ?)";
+                                       
+                                        
+                                        PreparedStatement preparedStmt = con.prepareStatement(query);
+                                        preparedStmt.setString(1, userName);
+                                        preparedStmt.setFloat(2, score);
+                                        
+                                        
+                                        preparedStmt.execute(); 
+                                        preparedStmt.close();
+                            }
                             
-                            String query = "insert into tblGameInfo(fldUserName, fldScore) " + 
-                            "values  (?, ?)";
-                           
-                            
-                            PreparedStatement preparedStmt = con.prepareStatement(query);
-                            preparedStmt.setString(1, userName);
-                            preparedStmt.setInt(2, score);
-                            
-                            
-                            preparedStmt.execute();
                                               
                 }
              catch (SQLException e) {
@@ -91,7 +110,8 @@ public class Database {
         
     }
     
-    public void loadGameData(){
+    public Map<String, Float> loadGameData(){
+        Map<String, Float> dictionary = new HashMap<String, Float>();
         try {
             Statement st = con.createStatement();
             
@@ -100,17 +120,32 @@ public class Database {
             ResultSet rs = st.executeQuery(query);
             
             while (rs.next()){
-                int id = rs.getInt("pmkGameId");
-                String user = rs.getString("fldUsername");
-                Timestamp t = rs.getTimestamp("fldTime");
-                int score = rs.getInt("fldScore");
+//                int id = rs.getInt("pmkGameId");
+//                String user = rs.getString("fldUsername");
+//                Timestamp t = rs.getTimestamp("fldTime");
+//                int score = rs.getInt("fldScore");
                 
-                System.out.format("%s, %s, %s, %s\n", id, user, t, score);
+                dictionary.put(rs.getString("fldUsername"), rs.getFloat("fldScore"));
+                
+//                System.out.format("%s, %s,\n");
             
             }
+            
+            
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+        
+        return dictionary;
+    }
+    
+    public static void printMap(Map mp) {
+        Iterator it = mp.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            System.out.println(pair.getKey() + " = " + pair.getValue());
+            it.remove(); // avoids a ConcurrentModificationException
         }
     }
 }

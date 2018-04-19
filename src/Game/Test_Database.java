@@ -1,9 +1,12 @@
 package Game;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Test_Database {
     
     static void saveDatabase(Database db){
-        db.saveGameData("Hello", 60);
+//        db.saveGameData("Hello", 60);
         db.saveGameData("Hello", 50);
         db.saveGameData("Test", 30);
         
@@ -23,11 +26,15 @@ public class Test_Database {
         
         Database db = new Database();
         //Test load data by user name
-        loadDatabaseByUser(db, "Hello");
+//        loadDatabaseByUser(db, "Hello");
         System.out.println();
         
+        
+        saveDatabase(db);
         //Test load whole database
-        loadDatabase(db);
+//        Map<String, Float> dictionary = new HashMap<String, Float>();
+//        dictionary = db.loadGameData();
+//        db.printMap(dictionary);
         
         
     }
