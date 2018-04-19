@@ -14,20 +14,20 @@ public class GamePiece implements Serializable{
     private boolean isSmart;
     private boolean isMean;
 
-    protected Color c;
-
     /**
+     * Default constructor for a GamePiece. Should only be used for player's pieces, as booleans are not defined and
+     * calling isMean or isSmart will result in a null pointer exception.
      *
      * @param color
      */
     public GamePiece(Enums.Color color) {
         this.color = color;
         this.boardSide = color.getSide();
-        this.c = color.getColor();
         this.movesLeft = 60;
     }
 
     /**
+     * Constructor for an opponent GamePiece.
      *
      * @param color
      * @param isSmart
@@ -35,7 +35,6 @@ public class GamePiece implements Serializable{
      */
     public GamePiece(Enums.Color color, boolean isSmart, boolean isMean){
         this.color = color;
-        this.c = color.getColor();
         this.isSmart = isSmart;
         this.isMean = isMean;
         this.boardSide = -1; // Initial value for home location
@@ -91,10 +90,18 @@ public class GamePiece implements Serializable{
     }
 
     /**
-     *
+     * Used to set the number of moves left for the GamePiece, use for bumping.
+     * @param movesLeft The number of places left to home
+     */
+    public void setMovesLeft(int movesLeft) {
+        this.movesLeft = movesLeft;
+    }
+
+    /**
+     * Used to set the number of moves left for the GamePiece, use for bumping.
      * @param deltaMoves The +/- change in moves
      */
-    public void setMovesLeft(int deltaMoves) {
+    public void adjustMovesLeft(int deltaMoves) {
         this.movesLeft += movesLeft;
     }
 
