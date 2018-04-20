@@ -44,6 +44,7 @@ public class Controller implements Serializable{
     public void playGame(){
         while(!game_over){
 
+
         }
     }
 
@@ -158,7 +159,7 @@ public class Controller implements Serializable{
         ArrayList<GamePiece> opponentsEligiblePieces = getEligiblePieces(opponentsPieces, card_num);
         GamePiece chosenPiece = ChoosePiece(opponentsEligiblePieces, card_num);
 
-        boolean over = isGame_over();
+        boolean over = isGame_over(opponentsPieces);
         if (over) {
             // go to game over screen
         } else {
@@ -172,15 +173,6 @@ public class Controller implements Serializable{
 
     }
 
-
-    /**
-     * TODO: WRITE TEST CASE
-     *
-     * Move piece
-     */
-    //public void MovePiece(GamePiece piece, int num_spaces) {
-        // update piece locations, including any pawns bumped as a result of the move
-    //}
 
     /**
      * List player's pieces
@@ -345,7 +337,16 @@ public class Controller implements Serializable{
         this.game_paused = game_paused;
     }
 
-    public boolean isGame_over() {
+    public boolean isGame_over(ArrayList<GamePiece> Pieces) {
+        int cumulativeDist = 0;
+        for (GamePiece piece : Pieces) {
+            cumulativeDist += piece.getMovesLeft();
+        }
+        if (cumulativeDist == 0) {
+            game_over = true;
+        } else {
+            game_over = false;
+        }
         return game_over;
     }
 
