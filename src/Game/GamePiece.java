@@ -1,24 +1,43 @@
 package Game;
 
-import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
+import java.io.Serializable;
 
 /**
  *
  */
-public class GamePiece extends Circle{
-    protected Enums.Color color;
-    protected int boardSide;
-    protected int innerLocation;
-
-    protected Color c;
+public class GamePiece implements Serializable{
+    private Enums.Color color;
+    private int boardSide;
+    private int innerLocation;
+    private int movesLeft;
+    private boolean isSmart;
+    private boolean isMean;
 
     /**
+     * Default constructor for a GamePiece. Should only be used for player's pieces, as booleans are not defined and
+     * calling isMean or isSmart will result in a null pointer exception.
      *
      * @param color
      */
     public GamePiece(Enums.Color color) {
         this.color = color;
+        this.boardSide = color.getSide();
+        this.movesLeft = 60;
+    }
+
+    /**
+     * Constructor for an opponent GamePiece.
+     *
+     * @param color
+     * @param isSmart
+     * @param isMean
+     */
+    public GamePiece(Enums.Color color, boolean isSmart, boolean isMean){
+        this.color = color;
+        this.isSmart = isSmart;
+        this.isMean = isMean;
+        this.boardSide = -1; // Initial value for home location
     }
 
     /**
@@ -37,6 +56,11 @@ public class GamePiece extends Circle{
         return boardSide;
     }
 
+
+    public void setLocation(int boardSide, int innerLocation){
+        this.boardSide = boardSide;
+        this.innerLocation = innerLocation;
+    }
     /**
      *
      * @param boardSide
@@ -61,12 +85,47 @@ public class GamePiece extends Circle{
         this.innerLocation = innerLocation;
     }
 
+    public int getMovesLeft() {
+        return movesLeft;
+    }
+
+    /**
+     * Used to set the number of moves left for the GamePiece, use for bumping.
+     * @param movesLeft The number of places left to home
+     */
+    public void setMovesLeft(int movesLeft) {
+        this.movesLeft = movesLeft;
+    }
+
+    /**
+     * Used to set the number of moves left for the GamePiece, use for bumping.
+     * @param deltaMoves The +/- change in moves
+     */
+    public void adjustMovesLeft(int deltaMoves) {
+        this.movesLeft += movesLeft;
+    }
+
     /**
      *
      * @return
      */
-    public Color getC() {
-        return c;
+    public Enums.Color getColor() {
+        return color;
     }
 
+    public boolean isSmart() {
+        return isSmart;
+    }
+
+    public void setSmart(boolean smart) {
+        isSmart = smart;
+    }
+
+    public boolean isMean() {
+        return isMean;
+    }
+
+    public void setMean(boolean mean) {
+        isMean = mean;
+    }
 }
