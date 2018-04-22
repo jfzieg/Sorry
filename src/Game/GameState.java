@@ -1,14 +1,19 @@
 package Game;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.border.EmptyBorder;
@@ -18,19 +23,12 @@ public class GameState implements Serializable {
     public GameState(){
     }
     
-    public void saveGameDataToFile(File file, Controller c){
+    public void saveGameDataToFile(File file, Controller con){
         try{
             FileOutputStream fileStream = new FileOutputStream(file);
             ObjectOutputStream objectStream = new ObjectOutputStream(fileStream);
             
-  
-                    objectStream.writeObject(c);
-
-//                    objectStream.writeObject(card);
-                    //Need to store enimies personality
-                    //Game mode
-                    //and Card
-                    
+                    objectStream.writeObject(con);
                     objectStream.close();
                     fileStream.close();
                     
@@ -40,16 +38,51 @@ public class GameState implements Serializable {
                 }
 }
     
-    public Controller loadGameControllerFromFile(File file) throws ClassNotFoundException, IOException{
+    public Controller loadControllerFromFile(File file) throws ClassNotFoundException, IOException{
         FileInputStream fileStream = new FileInputStream(file);
         ObjectInputStream objectStream = new ObjectInputStream(fileStream);
         
-        Controller c = (Controller) objectStream.readObject();
+        Controller con = (Controller) objectStream.readObject();
         
         objectStream.close();
         fileStream.close();
         System.out.println("Load game state successfully");
-        return c;
+        return con;
+    }
+    
+    public void saveOptions(String timeStamp, int count) throws IOException{
+        
+        
+        if( count <= 6){
+        FileWriter fw = new FileWriter("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\option.txt", true);
+        BufferedWriter bw = new BufferedWriter(fw);
+        fw.append(timeStamp);
+        bw.newLine();
+        bw.close();
+        fw.close();
+        }
+        else{
+            FileWriter fw = new FileWriter("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\option.txt", false);
+            BufferedWriter bw = new BufferedWriter(fw);
+            fw.append(timeStamp);
+            bw.newLine();
+            bw.close();
+            fw.close();
+        }
+    }
+    
+    public String[] loadOptions() throws IOException{
+        BufferedReader in = new BufferedReader(new FileReader("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\option.txt"));
+        String str;
+
+        List<String> list = new ArrayList<String>();
+        while((str = in.readLine()) != null){
+            list.add(str);
+        }
+
+        String[] stringArr = list.toArray(new String[0]);
+        
+        return stringArr;
     }
     
 //    public GamePiece[] loadPlayerPieceFromFile(File file) throws ClassNotFoundException, IOException{

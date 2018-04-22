@@ -28,7 +28,7 @@ public class GameBoard implements Serializable{
      */
     public GameBoard(Enums.Color color, GamePiece ... pieces){
         playerPieces = new GamePiece[4];
-        opponentsPieces = new ArrayList<>();
+        opponentsPieces = new ArrayList<>(4);
         for(int i = 0; i < 4; i++){
             playerPieces[i] = new GamePiece(color);
         }

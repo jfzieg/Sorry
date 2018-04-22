@@ -1,11 +1,11 @@
 package Game;
 
+import java.io.Serializable;
+
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
-
-public class Card {
-
+public class Card implements Serializable{
     protected Enums.CardType type;
 
     /**
