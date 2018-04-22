@@ -107,10 +107,10 @@ public class MenuControllers {
         colorChoice.setPadding(new Insets(Settings.X_SIZE * .01));
 
         colorChoice.getChildren().addAll(makeText("Choose Color", Settings.MEDIUM_FONT),
-                                            makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.RED),
-                                            makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.YELLOW),
-                                            makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.BLUE),
-                                            makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.GREEN));
+                                            circleButton(Settings.MEDIUM_FONT.getSize() / 2, Settings.RED),
+                                            circleButton(Settings.MEDIUM_FONT.getSize() / 2, Settings.YELLOW),
+                                            circleButton(Settings.MEDIUM_FONT.getSize() / 2, Settings.BLUE),
+                                            circleButton(Settings.MEDIUM_FONT.getSize() / 2, Settings.GREEN));
 
         innerOptions.getChildren().addAll(makeOpponent(Settings.YELLOW),
                                             makeOpponent(Settings.BLUE),
@@ -126,7 +126,6 @@ public class MenuControllers {
     }
 
     /**
-     * TODO: Create gameboard from GridPane, init colors and etc
      * TODO: Add menu items
      * @return
      */
@@ -137,10 +136,15 @@ public class MenuControllers {
         VBox leftMenu = new VBox();
         leftMenu.setSpacing(Settings.Y_SIZE * .05);
         leftMenu.setPadding(new Insets(Settings.X_SIZE * .01));
-        GridPane gameboard = makeBoard();
+        HBox cards = new HBox();
+        cards.setSpacing(Settings.Y_SIZE * .05);
+
         Text title = makeText("Sorry!", Settings.FONT);
         Button main = startButton();
+
         leftMenu.getChildren().addAll(title, main.getText());
+
+        GridPane gameboard = makeBoard();
 
         pane.setCenter(gameboard);
         pane.setLeft(leftMenu);
@@ -267,13 +271,41 @@ public class MenuControllers {
         Button main = startButton();
 
         // Instructions go here
-        Text filler = new Text("Objectives\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Integer hendrerit nunc a tortor lacinia, vel cursus massa fermentum. Aenean interdum ut turpis eu bibendum. Mauris at rhoncus arcu. Sed quis faucibus quam. Donec faucibus, urna vitae lacinia volutpat, nibh nulla tincidunt massa, ultrices eleifend augue massa ac odio. Aliquam vestibulum justo vitae nisi consequat fringilla. Pellentesque nisi tortor, dictum ullamcorper aliquam ut, scelerisque eu lacus. Duis quis elit magna. Integer ipsum arcu, laoreet sit amet nisl vel, imperdiet egestas justo.\n" +
-                "\n" +
-                "Gameplay\nProin malesuada nulla sed purus fermentum commodo. Nullam eget erat tristique tortor cursus accumsan. Aenean quam dolor, bibendum quis orci ac, vehicula pulvinar nisl. Sed dui libero, laoreet eu bibendum at, aliquam vel ex. In sagittis tempor ante a rhoncus. Vestibulum a metus id nunc auctor finibus a vel odio. Sed tincidunt turpis dui, a mattis sapien dictum eu. Curabitur augue nisl, molestie nec tristique at, vestibulum sed nisi. Nam tincidunt elit nec iaculis vehicula. Pellentesque condimentum nibh ipsum, nec egestas sapien luctus et. Vivamus rhoncus turpis dolor, elementum dignissim nulla imperdiet in. Proin vitae venenatis massa. Sed hendrerit cursus sodales. Nulla neque nulla, fermentum et interdum vitae, pellentesque id neque. Nam nec turpis vitae sem efficitur consequat.\n" +
-                "\n" +
-                "Rules\nVivamus iaculis augue sed nibh vulputate tempus. Phasellus a finibus turpis. Mauris tincidunt mollis arcu in interdum. Nullam cursus viverra malesuada. Pellentesque lacinia lacinia velit, ac pellentesque nulla commodo vel. Nunc venenatis orci vitae nulla finibus, eu sollicitudin nisl elementum. Donec in mi urna. Nullam consequat libero lectus, ac iaculis ex dignissim vitae. Aliquam malesuada eleifend semper. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed iaculis nisi quis ipsum euismod lacinia.\n" +
-                "\n" +
-                "Cras fringilla ligula et convallis ultricies. Proin aliquet non enim vitae facilisis. Phasellus sed tempor tortor. Suspendisse nibh eros, finibus elementum pulvinar et, hendrerit eget tortor. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce viverra ultricies lacus, et interdum massa vehicula a. Maecenas quis dignissim purus. Etiam tempor viverra malesuada. Etiam iaculis, felis quis pulvinar eleifend, nisi eros tempor leo, fermentum vehicula ex odio a mauris. Sed sollicitudin arcu sem, et facilisis eros tempor sit amet.");
+        Text filler = new Text("\nObjective " +
+                "\nThe objective is to be the first player to get all four of their colored pawns from their start " +
+                "space, around the board to their HOME space. Movement of pawns is directed by the drawing of a card. " +
+                "\n\nRules " +
+                "\nEach opponent gets four pawns of one color, which start in its START space. The human plays first. " +
+                "Each player in turn draws one card from the deck and follows its instructions. \n\nTo begin the game, all of " +
+                "a player's four pawns are restricted to START; a player can only move them out onto the rest of the board " +
+                "if he or she draws a 1 or 2 card. A 1 or a 2 places a pawn on the space directly outside of start (a 2 " +
+                "does not entitle the pawn to move a second space). " +
+                "\n\nA pawn can jump over any other pawn during its move. However, two pawns cannot occupy the same square; a " +
+                "pawn that lands on a square occupied by another player's pawn bumps that pawn back to its own START. " +
+                "Players cannot bump their own pawns back to START; if the only way to complete a move would result in " +
+                "a player bumping his or her own pawn, the player's pawns remain in place and the player loses his or her turn. " +
+                "\n\nIf a pawn lands at the start of a slide (except those of its own color), either by direct movement " +
+                "or as the result of a switch from an 11 card or a Sorry card, it immediately \"slides\" to the last " +
+                "square of the slide. All pawns on all spaces of the slide (including those belonging to the sliding player) " +
+                "are sent back to their respective START spaces. " +
+                "\n\nThe last five squares before each player's Home are SAFETY ZONES and are specially colored corresponding " +
+                "to the color of the HOME they lead to. Access is limited to pawns of the same color. Pawns inside the SAFETY ZONE " +
+                "are immune to being bumped by an opponent's pawns or being switched with opponents' pawns via 11 or Sorry! cards. " +
+                "However, if a pawn is forced to move backwards out of the SAFETY ZONE, it is no longer considered safe and may be " +
+                "bumped by or switched with opponents' pawns as usual until it re-enters the SAFETY ZONE. " +
+                "\n\nCards " +
+                "\n1: Move forward one space or move a piece from START. " +
+                "\n2: Move forward two spaces or more a piece from START." +
+                "\n3: Move forward three spaces. " +
+                "\n4: Move forward four spaces. (Change this if we implement moving backward) " +
+                "\n5: Move forward five spaces. " +
+                "\n7: Move forward seven spaces, or split the seven spaces between two pawns. " +
+                "\n8: Move forward 8 spaces. " +
+                "\n10: Move forward ten spaces.. (Or one space backward) " +
+                "\n11: Move forward eleven spaces. (Or switch places with an opponent) " +
+                "\n12: Move forward twelve spaces. " +
+                "\nSorry!: Take any one pawn from Start and move it directly to a square occupied by any opponent's pawn, " +
+                "sending that pawn back to its own Start.");
         filler.setFont(Settings.SMALL_FONT);
         filler.setFill(Settings.TEXT);
         filler.setWrappingWidth(Settings.X_SIZE * .98);
@@ -446,7 +478,7 @@ public class MenuControllers {
     private HBox makeOpponent(Color color){
         HBox options = new HBox();
         options.setSpacing(Settings.Y_SIZE * .05);
-        Circle opponent = makeCircle(Settings.MEDIUM_FONT.getSize() / 2, color);
+        Circle opponent = circleButton(Settings.MEDIUM_FONT.getSize() / 2, color);
         options.getChildren().addAll(opponent, difficultyButton().getText());
 
         return options;
@@ -461,11 +493,10 @@ public class MenuControllers {
 //        setButtonEventHandlers(resume);
         setResumeEventHandler(resume);
 
-        if(game.isNew_game()) {
+        if(game.isNewGame()) {
             resume.getText().setFill(resume.getColor().darker());
             resume.getText().setStroke(resume.getColor().darker());
         }
-
         return resume;
     }
 
@@ -543,18 +574,19 @@ public class MenuControllers {
         difficulty.getText().setOnMouseClicked(new EventHandler() {
             @Override
             public void handle(Event event) {
-//                if (difficulty.getText().toString().equals("Easy")) {
+                if (difficulty.getText().toString().equals("Easy")) {
                     difficulty.getText().setFill(difficulty.getColor().darker());
                     difficulty.getText().setStroke(difficulty.getColor().darker());
                     difficulty.setText(makeText("Hard", Settings.SMALL_FONT));
-//                } else {
-//                    difficulty.getText().setFill(difficulty.getColor().brighter());
-//                    difficulty.getText().setStroke(difficulty.getColor().brighter());
-//                    difficulty.setText(makeText("Easy", Settings.SMALL_FONT));
-//                }
+                    difficulty.getText().requestFocus();
+                } else {
+                    difficulty.getText().setFill(difficulty.getColor().brighter());
+                    difficulty.getText().setStroke(difficulty.getColor().brighter());
+                    difficulty.setText(makeText("Easy", Settings.SMALL_FONT));
+                    difficulty.getText().requestFocus();
+                }
             }
         });
-
         return difficulty;
     }
 
@@ -564,23 +596,24 @@ public class MenuControllers {
             @Override
             public void handle(MouseEvent event) {
                 circle.setFill(color.darker());
-                circle.setStroke(color.darker());
+                circle.setStroke(color.darker().darker());
             }
         });
         circle.setOnMouseExited(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                circle.setFill(color.brighter());
-                circle.setStroke(color.brighter());
+                circle.setFill(color);
+                circle.setStroke(color.darker());
             }
         });
-        circle.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        circle.setOnMouseReleased(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-
+                circle.setFill(color.darker());
+                circle.setStroke(color.darker().darker());
+                event.consume();
             }
         });
-
         return circle;
     }
 
@@ -592,8 +625,7 @@ public class MenuControllers {
         button.getText().setOnMouseReleased(new EventHandler() {
             @Override
             public void handle(Event event) {
-                if(game.isNew_game()) {
-
+                if(!game.isNewGame()) {
                     gameBoard.toFront();
                     gameBoard.requestFocus();
                 }

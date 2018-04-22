@@ -1,15 +1,10 @@
 package Game;
 
-
-import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
-
 import java.io.Serializable;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.Collections;
 
-
-public class Controller implements Serializable{
 
 public class Controller implements Serializable{
     private static boolean TEST = true;
@@ -375,38 +370,40 @@ public class Controller implements Serializable{
         } else {
             game_over = false;
         }
-
-    public void setGame_over(boolean game_over) {
-        this.game_over = game_over;
+        return game_over;
     }
 
-    public boolean isNew_game() {
-        return new_game;
-    }
+        public void setGame_over ( boolean game_over){
+            this.game_over = game_over;
+        }
 
-    public void setNew_game(boolean new_game) {
-        this.new_game = new_game;
-    }
+        public boolean isNewGame () {
+            return new_game;
+        }
 
-    /**
-     * DON'T THINK WE NEED THIS METHOD --> can loop through players in main
-     * @param current_player
-     * @return
-     */
+        public void setNew_game ( boolean new_game){
+            this.new_game = new_game;
+        }
 
-    public String nextPlayer(String current_player) {
-        ArrayList<String> players = new ArrayList<>();
-        players.add("USER");
-        players.add("C1");
-        players.add("C2");
-        players.add("C3");
-        int index = players.indexOf(current_player);
-        int next_index = (index + 1) % 4;
-        String next_player = players.get(next_index);
-        return next_player;
-    }
+        /**
+         * DON'T THINK WE NEED THIS METHOD --> can loop through players in main
+         * @param current_player
+         * @return
+         */
 
-    public void setMenuControllers(MenuControllers menus){
-        this.menus = menus;
+        public String nextPlayer (String current_player){
+            ArrayList<String> players = new ArrayList<>();
+            players.add("USER");
+            players.add("C1");
+            players.add("C2");
+            players.add("C3");
+            int index = players.indexOf(current_player);
+            int next_index = (index + 1) % 4;
+            String next_player = players.get(next_index);
+            return next_player;
+        }
+
+        public void setMenuControllers (MenuControllers menus){
+            this.menus = menus;
+        }
     }
-}
