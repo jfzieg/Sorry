@@ -28,9 +28,7 @@ public class GameState implements Serializable {
             FileOutputStream fileStream = new FileOutputStream(file);
             ObjectOutputStream objectStream = new ObjectOutputStream(fileStream);
             
-  
                     objectStream.writeObject(con);
-                    
                     objectStream.close();
                     fileStream.close();
                     

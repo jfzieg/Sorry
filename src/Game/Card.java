@@ -5,7 +5,6 @@ import java.io.Serializable;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
-
 public class Card implements Serializable{
     protected Enums.CardType type;
 
@@ -15,6 +14,7 @@ public class Card implements Serializable{
      */
     public Card(Enums.CardType card) {
         type = card;
+
     }
     public int getType() {
         return type.getNumber();

@@ -24,6 +24,7 @@ public class GamePiece implements Serializable{
         this.color = color;
         this.boardSide = color.getSide();
         this.movesLeft = 60;
+        this.boardSide = -1; // Initial value for home location
     }
 
     /**
@@ -34,10 +35,9 @@ public class GamePiece implements Serializable{
      * @param isMean
      */
     public GamePiece(Enums.Color color, boolean isSmart, boolean isMean){
-        this.color = color;
+        this(color);
         this.isSmart = isSmart;
         this.isMean = isMean;
-        this.boardSide = -1; // Initial value for home location
     }
 
     /**

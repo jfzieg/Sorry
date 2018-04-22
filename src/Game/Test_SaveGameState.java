@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javafx.embed.swing.JFXPanel;
+
 public class Test_SaveGameState {
-    
     static void TestSave(GameState gt, Controller con) throws IOException{
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
         
@@ -25,8 +26,6 @@ public class Test_SaveGameState {
         return con2;
     }
    
-    
-    
     public static void main (String[] args) throws ClassNotFoundException, IOException {
          Controller con = new Controller();
          GameState gt = new GameState();
