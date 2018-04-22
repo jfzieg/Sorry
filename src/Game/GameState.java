@@ -18,13 +18,13 @@ public class GameState implements Serializable {
     public GameState(){
     }
     
-    public void saveGameDataToFile(File file, GameBoard board){
+    public void saveGameDataToFile(File file, Controller c){
         try{
             FileOutputStream fileStream = new FileOutputStream(file);
             ObjectOutputStream objectStream = new ObjectOutputStream(fileStream);
             
   
-                    objectStream.writeObject(board);
+                    objectStream.writeObject(c);
 
 //                    objectStream.writeObject(card);
                     //Need to store enimies personality
@@ -40,16 +40,16 @@ public class GameState implements Serializable {
                 }
 }
     
-    public GameBoard loadGameBoardFromFile(File file) throws ClassNotFoundException, IOException{
+    public Controller loadGameControllerFromFile(File file) throws ClassNotFoundException, IOException{
         FileInputStream fileStream = new FileInputStream(file);
         ObjectInputStream objectStream = new ObjectInputStream(fileStream);
         
-        GameBoard board = (GameBoard) objectStream.readObject();
+        Controller c = (Controller) objectStream.readObject();
         
         objectStream.close();
         fileStream.close();
         System.out.println("Load game state successfully");
-        return board;
+        return c;
     }
     
 //    public GamePiece[] loadPlayerPieceFromFile(File file) throws ClassNotFoundException, IOException{
