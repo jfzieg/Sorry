@@ -5,6 +5,7 @@ import javafx.scene.text.Text;
 
 
 public class Card {
+
     protected Enums.CardType type;
 
     /**
@@ -13,6 +14,7 @@ public class Card {
      */
     public Card(Enums.CardType card) {
         type = card;
+
     }
     public int getType() {
         return type.getNumber();

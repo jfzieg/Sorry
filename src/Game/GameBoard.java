@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
-
  * @author Anh Phan
  * @date 2018-03-14
  * @version 1.0	
@@ -175,7 +174,7 @@ public class GameBoard implements Serializable{
     //using the last index of the tile 15 - the index that the piece is currently on and we have availableMove
     //Then we have the number of card minus available; therefore, we will know how much index we need to move in the new tile
     int changePiecePos(GamePiece piece, int card, int i, int j){
-      //temporary move variable for card
+        //temporary move variable for card
         int move = card;
         int availableMove = 15 - j;
         int needMove = move - availableMove;
@@ -250,6 +249,10 @@ public class GameBoard implements Serializable{
 
     public GamePiece[][] getTileList() {
         return tileList;
+    }
+
+    public ArrayList<GamePiece[]> getOpponentsPieces() {
+        return opponentsPieces;
     }
 }
 

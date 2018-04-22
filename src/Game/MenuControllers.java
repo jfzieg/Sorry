@@ -348,7 +348,6 @@ public class MenuControllers {
                     0.0, 0.0,
                     -longSide, Settings.TILE_SIZE / 2,
                     0.0, shortSide
-
                 });
                 break;
             //GREEN
@@ -369,7 +368,6 @@ public class MenuControllers {
 
                 });
                 default:
-
                 break;
         }
         return slide;
