@@ -79,7 +79,7 @@ public class Test_SaveGameState {
         
         JFXPanel jfxPanel = new JFXPanel();
         GameState gt = new GameState();
-        Controller c = new Controller(true);
+        Controller c = new Controller();
         //Save game state to a text file
         TestSave(gt, c);
         

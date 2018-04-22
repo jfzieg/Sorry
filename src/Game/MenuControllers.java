@@ -136,13 +136,13 @@ public class MenuControllers {
         VBox leftMenu = new VBox();
         leftMenu.setSpacing(Settings.Y_SIZE * .05);
         leftMenu.setPadding(new Insets(Settings.X_SIZE * .01));
-        HBox cards = new HBox();
-        cards.setSpacing(Settings.Y_SIZE * .05);
+
+        HBox cards = makeCards();
 
         Text title = makeText("Sorry!", Settings.FONT);
         Button main = startButton();
 
-        leftMenu.getChildren().addAll(title, main.getText());
+        leftMenu.getChildren().addAll(title, main.getText(), cards);
 
         GridPane gameboard = makeBoard();
 
@@ -248,8 +248,7 @@ public class MenuControllers {
     }
 
     /**
-     * TODO: Write instructions for game
-     * @return
+     * @return The help menu screen displaying instructions for the user.
      */
     public ScrollPane helpMenu() {
         //Initialize pane and prefs
@@ -406,7 +405,6 @@ public class MenuControllers {
     }
 
     /**
-     *
      * @param string
      * @param font
      * @return
@@ -429,7 +427,6 @@ public class MenuControllers {
         GridPane gameboard = new GridPane();
         gameboard.setPadding(new Insets(Settings.X_SIZE * .01));
 
-//        gameboard.add(new Rectangle( Settings.TILE_SIZE * 16, Settings.TILE_SIZE * 16, Color.WHITE), 0, 1, 15, 15);
         for(int i = 0; i < 16; i++){
             gameboard.add(makeTile(Color.WHITE), i, 0);
             gameboard.add(makeTile(Color.WHITE), i, 15);
@@ -473,6 +470,51 @@ public class MenuControllers {
         gameboard.add(makeSlide(Settings.GREEN, 2, 5), 15, 9, 1, 5);
 
         return gameboard;
+    }
+
+    private HBox makeCards(){
+        HBox cards = new HBox();
+        cards.setSpacing(Settings.Y_SIZE * .05);
+
+        Rectangle cardBack = new Rectangle(Settings.CARD_WIDTH, Settings.CARD_HEIGHT, Settings.CARD);
+        cardBack.setStrokeWidth(Settings.CARD_WIDTH * .05);
+        cardBack.setStroke(Settings.CARD.darker());
+
+
+        Rectangle cardFront = new Rectangle(Settings.CARD_WIDTH, Settings.CARD_HEIGHT, Settings.BACKGROUND);
+        cardFront.setStrokeWidth(Settings.CARD_WIDTH * .05);
+        cardFront.setStroke(Settings.BACKGROUND.darker());
+
+
+
+        cards.getChildren().addAll(cardBack, cardFront);
+
+        cardBack.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                cards.getChildren().remove(1);
+                cards.getChildren().add(makeCard(game.drawCard()));
+            }
+        });
+
+        return cards;
+    }
+
+    private StackPane makeCard(Card card){
+        StackPane container = new StackPane();
+        Rectangle cardFront = new Rectangle(Settings.CARD_WIDTH, Settings.CARD_HEIGHT, Settings.BACKGROUND.brighter().brighter());
+        cardFront.setStrokeWidth(Settings.CARD_WIDTH * .05);
+        cardFront.setStroke(Settings.BACKGROUND.brighter());
+        Text text;
+//        if(card.getType() !=0){text = makeText(Integer.toString(card.getType()), Settings.SMALL_FONT);}
+//        else {
+            text = makeText("Sorry", Settings.SMALL_FONT);
+            text.setRotate(45);
+            text.setFill(Color.BLACK);
+//        }
+        container.getChildren().addAll(cardFront, text);
+
+        return container;
     }
 
     private HBox makeOpponent(Color color){
@@ -592,6 +634,14 @@ public class MenuControllers {
 
     private Circle circleButton(double radius, Color color){
         Circle circle = makeCircle(radius, color);
+
+        circle.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                circle.setFill(color.darker());
+                circle.setStroke(color.darker().darker());
+            }
+        });
         circle.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -606,14 +656,7 @@ public class MenuControllers {
                 circle.setStroke(color.darker());
             }
         });
-        circle.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                circle.setFill(color.darker());
-                circle.setStroke(color.darker().darker());
-                event.consume();
-            }
-        });
+
         return circle;
     }
 
@@ -625,7 +668,7 @@ public class MenuControllers {
         button.getText().setOnMouseReleased(new EventHandler() {
             @Override
             public void handle(Event event) {
-                if(!game.isNewGame()) {
+                if(game.isNewGame()) {
                     gameBoard.toFront();
                     gameBoard.requestFocus();
                 }
@@ -659,8 +702,8 @@ public class MenuControllers {
         button.getText().setOnMouseReleased(new EventHandler() {
             @Override
             public void handle(Event event) {
-                gameBoard.toFront();
-                gameBoard.requestFocus();
+                loadMenu.toFront();
+                loadMenu.requestFocus();
             }
         });
     }

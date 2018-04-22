@@ -224,6 +224,7 @@ public class GameBoard implements Serializable{
     }
 
     /**
+     * TODO: work on better logic??
      * check for same color, bool true if bump, false otherwise
      * @param piece
      */

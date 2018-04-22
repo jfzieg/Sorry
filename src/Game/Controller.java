@@ -3,17 +3,13 @@ package Game;
 import java.io.Serializable;
 import java.util.Random;
 import java.util.ArrayList;
-import java.util.Collections;
-
 
 public class Controller implements Serializable{
     private static boolean TEST = true;
-
     private boolean game_paused;
     private boolean game_over;
     private boolean new_game;
     private ArrayList<Card> deck;
-
     private GameBoard board;
     private MenuControllers menus;
 
@@ -57,7 +53,6 @@ public class Controller implements Serializable{
             }
         }
     }
-
 
     /**
      * Initialize full deck
@@ -104,7 +99,6 @@ public class Controller implements Serializable{
         ArrayList<Card> ShuffledDeck = new ArrayList<>();
         ArrayList<Integer> rng_tracker = new ArrayList<>();
         while (ShuffledDeck.size() < deck.size()) {
-
             int r = rng.nextInt(deck.size());
             if (!rng_tracker.contains(r)) {
                 rng_tracker.add(r);
