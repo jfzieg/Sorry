@@ -20,6 +20,7 @@ public class Test_SaveGameState {
     }
    
     
+
 //    static void TestNewGameBoard(GameBoard gb2){
 //        GamePiece[][] tileListTest = gb2.getTileList();
 //        GamePiece[][] homeListTest = gb2.getHomeList();
@@ -44,6 +45,37 @@ public class Test_SaveGameState {
 //    }
     
     public static void main (String[] args) {
+        GamePiece[][] tileList = new GamePiece[4][16];
+        GamePiece[][] homeList = new GamePiece[4][6];
+        
+        //Add some random piece to tileList and homeList
+        GamePiece p = new GamePiece(Enums.Color.RED);
+        GamePiece p2 = new GamePiece(Enums.Color.RED);
+        GamePiece p3 = new GamePiece(Enums.Color.GREEN);
+        GamePiece p4 = new GamePiece(Enums.Color.GREEN);
+        tileList[2][5] = p;
+        tileList[3][7] = p2;
+        homeList[2][4] = p3;
+        homeList[2][3] = p4;
+        GameBoard gb = new GameBoard(Enums.Color.BLUE, new GamePiece(Enums.Color.RED, true, false));
+        
+//        Card c = new Card(Enums.CardType.EIGHT);
+//        Card c2 = new Card(Enums.CardType.SEVEN);
+//        ArrayList<Card> card = new ArrayList<Card>();
+//        card.add(c);
+//        card.add(c2);
+        
+        GamePiece p5 = new GamePiece(Enums.Color.BLUE);
+        GamePiece p6 = new GamePiece(Enums.Color.BLUE);
+        GamePiece[] player = new GamePiece[4];
+        player[0] = p5;
+        player[1] = p6;
+        
+        GamePiece[] opponent1 = new GamePiece[4];
+        GamePiece[] opponent2 = new GamePiece[4];
+        ArrayList<GamePiece[]> opponent = new ArrayList<GamePiece[]>();
+        opponent.add(opponent1);
+        opponent.add(opponent2);
         
         JFXPanel jfxPanel = new JFXPanel();
         GameState gt = new GameState();
