@@ -1,232 +1,257 @@
 package Game;
 
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * @author Anh Phan
  * @date 2018-03-14
- * @version 1.0	
+ * @version 1.0
  */
 
 
-public class GameBoard {
+public class GameBoard implements Serializable{
     //Variables for game board
+    private static final long serialVersionUID = -862206733593296676L;
     private GamePiece[][] tileList;
-    private GamePiece[][] homeList;
-    
-    //Constructor for GameBoard
-    public GameBoard(GamePiece[][] tileList, GamePiece[][] homeList){
-        this.tileList = tileList;
-        this.homeList = homeList;
-    }
-    
-    
-//void homeMove(GamePiece[][] tileList, GamePiece[][] homeList, GamePiece piece){
-//        int homeIndex = piece.getBoardSide();
-//        int i = 0;
-//        
-//}
+    private GamePiece[] playerPieces;
+    private ArrayList<GamePiece[]> opponentsPieces;
 
-//Slide method
-//tile list and a piece of a game are passed as parameters
-//Go through loop to check all the tiles. If at index 2 or 9 of a tile contains a piece and a tile is not the same
-//color as the piece, move the piece to index 5 or 13 of that tile
-void slide(GamePiece[][] tileList, GamePiece piece){
-    for(int i = 0; i < 4; i++){
-        if(tileList[i][2].equals(piece) && piece.getBoardSide() != i){
-            tileList[i][2] = null;
-            tileList[i][5] = piece;
+    /**
+     * Creates a new gameboard using the player's specified color pieces, and a placeholder GamePiece with user defined
+     * settings for each opponent. Expects that only max 3 opponents will be generated.
+     *
+     * Containers for the player's GamePieces and the opponents' GamePieces are created with GamePieces
+     * @param color
+     * @param pieces
+     */
+    public GameBoard(Enums.Color color, GamePiece ... pieces){
+        playerPieces = new GamePiece[4];
+        opponentsPieces = new ArrayList<>();
+        for(int i = 0; i < 4; i++){
+            playerPieces[i] = new GamePiece(color);
         }
-        if(tileList[i][9].equals(piece) && piece.getBoardSide() != i){
-            tileList[i][9] = null;
-            tileList[i][13] = piece;
+
+        for(GamePiece piece : pieces){
+            GamePiece[] opponent = new GamePiece[4];
+            for(int i = 0; i < 4; i++){
+                opponent[i] = new GamePiece(piece.getColor(), piece.isSmart(), piece.isMean());
+            }
+            opponentsPieces.add(opponent);
         }
     }
-}
-//Move Piece method or maybe just move forward method
-void movePiece(GamePiece[][] tileList, GamePiece[][] homeList, GamePiece piece, Card card){
-    //temporary move variable for card
-    int move = 0;
-   //Go through a nested loop
-   //First loop that go through 4 tiles
-   //Second loop that go through each slot in each tile
-    for(int i = 0; i < 4; i++){
-        for(int j = 0; j < 16; j++){
-           //If we find a a piece that we are looking for, we will check if it needs to change tile or if it needs to go home
-           //as you pick up the card. We are doing this by having 2 boolean variables that take boolean from checkChangeTile
-           // and checkhomeTile. We remove the piece from its current position.
-            if(tileList[i][j].equals(piece)){
-                boolean checkChangeTile = checkChangeTile(tileList, piece, card, i, j);
-                boolean checkHomeTile = checkHomeTile(tileList, piece, i, j);
-                tileList[i][j] = null;
-                //If the piece needs to change tile
-                if(checkChangeTile == true){
-                    //We calculate the move that need to move 
-                    int needMove = changeTile(tileList, piece, card, i, j);
-                    //Then we have to check if checkHomeTile is true and the move it needs to move is good in home
-                    if(checkHomeTile == true && needMove > 2 && needMove <= 8){
-                        //calculate home move by removing 2 index of the new tile and add the piece straight to some index
-                        //in home
-                        int homeMove = needMove - 2;
-                        homeList[i][homeMove - 1] = piece;
-                    } else{
-                     //Else we just add the piece to an index of next tile           
-                    tileList[i+1][needMove] = piece;
-                    }
+
+    /**
+     * Default move method for general moves. Moves the specified piece card # spaces, and checks for a bump or slide.
+     * Resets piece's location if move was unsuccessful.
+     * @param piece
+     * @param card
+     * @return true if move was successful, false otherwise
+     */
+    public boolean movePieceForward(GamePiece piece, int card){
+        // Move specified number of places on the same side
+        int oldSide = piece.getBoardSide(), oldLoc = piece.getInnerLocation(), oldMovesLeft = piece.getMovesLeft();
+
+        if(piece.getInnerLocation() + card < 16){
+            piece.adjustMovesLeft(-card);
+            piece.setInnerLocation(piece.getInnerLocation() + card);
+            piece.adjustMovesLeft(piece.getMovesLeft() - card);
+            checkSlide(piece);
+
+            // If a bump is possible, bump the target and update tileList
+            if(checkBump(piece)){
+                bumpPiece(piece);
+                tileList[oldSide][oldLoc] = null;
+                return true;
+            }
+            // If a bump isn't possible, check to see if the tile is free and update tileList
+            else {
+                if(tileList[piece.getBoardSide()][piece.getInnerLocation()] == null) {
+                    tileList[piece.getBoardSide()][piece.getInnerLocation()] = piece;
+                    tileList[oldSide][oldLoc] = null;
+                    return true;
                 }
-                else{
-                    //If everything up there is failed, we just move the piece in its current tile
-                    int needMove = j + move;
-                    tileList[i][needMove] = piece;
+                piece.setLocation(oldSide, oldLoc);
+                piece.setMovesLeft(oldMovesLeft);
+                return false;
+            }
+        }
+        // Move piece to next side, add remaining moves left
+        else{
+            piece.adjustMovesLeft(-card);
+            card -= (16 - piece.getInnerLocation());
+            piece.setLocation(changeBoardSide(piece.getBoardSide(), true), card);
+            checkSlide(piece);
+
+            // If a bump is possible, bump the target and update tileList
+            if(checkBump(piece)){
+                bumpPiece(piece);
+                tileList[oldSide][oldLoc] = null;
+                return true;
+            }
+            // If a bump isn't possible, check to see if the tile is free and update tileList
+            else {
+                if(tileList[piece.getBoardSide()][piece.getInnerLocation()] == null) {
+                    tileList[piece.getBoardSide()][piece.getInnerLocation()] = piece;
+                    tileList[oldSide][oldLoc] = null;
+                    return true;
                 }
+                piece.setLocation(oldSide, oldLoc);
+                piece.setMovesLeft(oldMovesLeft);
+                return false;
             }
         }
     }
-}
 
-//Only get called if checkChangeTile return true
-//temporary variable move represent the card number
-//Since each tile has 16 index, we calculate the available move in the tile that the piece is on by
-//using the last index of the tile 15 - the index that the piece is currently on and we have availableMove
-//Then we have the number of card minus available; therefore, we will know how much index we need to move in the new tile
-int changeTile(GamePiece[][] tileList, GamePiece piece, Card card, int i, int j){
-  //temporary move variable for card
-    int move = 0;
-    int needMove = 0;
-            if(tileList[i][j].equals(piece)){
-                int availableMove = 15 - j;
-                    needMove = move - availableMove;
-        }
-    return needMove;
-}
-
-//This method check if the piece is needed to change tile
-//tile list, a piece, a card, two int variables for the nested loops are passed as parameters
-//Since each tile has 16 index, we calculate the available move in the tile that the piece is on by
-//using the last index of the tile 15 - the index that the piece is currently on. 
-boolean checkChangeTile(GamePiece[][] tileList, GamePiece piece, Card card, int i, int j){
-  //temporary move variable for card
-    int move = 0;
-    boolean check = false;
-            if(tileList[i][j].equals(piece)){
-                int availableMove = 15 - j;
-                if(move >= availableMove){
-                    check = true;
-                } else{
-                    check = false;
-                }
+    /**
+     * Changes the side of the board a piece is on.
+     * @param boardSide the current side of the board
+     * @param forward whether the piece is moving forward (true) or backwards (false)
+     * @return the new boardSide
+     */
+    private int changeBoardSide(int boardSide, boolean forward){
+        if(forward) {
+            if (boardSide < 3 && boardSide >= 0) {
+                return boardSide++;
             }
-    
-    return check;
-}
-
-//This method check if the piece is about to get into home or not
-//tile list, a piece, a card, two int variables for the nested loops are passed as parameters
-//if the next tile or i + 1 equal the piece color or the piece is currently on the tile has the same color
-// and the piece has to be less or equal than index 2 since after 2, it needs to move up to home, return true
-// otherwise, false
-boolean checkHomeTile(GamePiece[][] tileList, GamePiece piece, int i, int j){
-    boolean check = false;
-    if(i + 1 == tileList[i][j].color.side || (tileList[i][j].color.side == i && j <= 2)){
-        check = true;
-    } else{
-        check = false;
-    }
-    
-    return check;
-}
-/**
- * @param tileList
- * @param piece
- * @param card
- */
-//Temporary variable i to represent the number in card
-// if card is either 1 or 2, get the board side of the piece
-// check if the spot to get out is occupy or not, if its not
-// add the piece to the spot.
-void homeGetOut(GamePiece[][] tileList, GamePiece piece, Card card){
-    int i = 1;
-    if(i == 1 || i == 2){
-        int homeIndex = piece.getBoardSide();
-        if(tileList[homeIndex][5] == null){
-            tileList[homeIndex][5] = piece;
+            return 0;
         }
         else{
-            System.out.println("There is a piece in the place");
+            if (boardSide <= 3 && boardSide > 0) {
+                return boardSide--;
+            }
+            return 3;
+        }
     }
-}
-    
-}
+
+    /**
+     * Checks whether a piece is able to slide (not on home side), and adjusts its position if needed.
+     * Slides piece 4 forward if piece lands on index 1, 5 forward if index 9.
+     *
+     * @param piece the GamePiece to check for a slide
+     */
+    void checkSlide(GamePiece piece){
+        if(piece.getBoardSide() != piece.getColor().getSide()){
+            if(piece.getInnerLocation() == 1){
+                piece.setInnerLocation(piece.getInnerLocation() + 4);
+                piece.adjustMovesLeft(-4);
+            }
+            if(piece.getInnerLocation() == 9){
+                piece.setInnerLocation(piece.getInnerLocation() + 5);
+                piece.adjustMovesLeft(-5);
+            }
+        }
+    }
+
+    /**
+     * Used for the #4 card only, moves piece backwards.
+     * @param piece
+     * @param card
+     */
+    void movePieceBackWard( GamePiece piece, int card){
+        // Move specified number of places on the same side
+        if(piece.getInnerLocation() - card > 0){
+            piece.adjustMovesLeft(+card);
+            piece.setInnerLocation(piece.getInnerLocation() - card);
+        }
+        // Move piece to next side, add remaining moves left
+        else{
+            piece.adjustMovesLeft(+card);
+            card -= piece.getInnerLocation();
+            piece.setBoardSide(changeBoardSide(piece.getBoardSide(), false));
+            piece.setInnerLocation(card);
+        }
+//        checkBump();
+        checkSlide(piece);
+
+    }
 
 
-boolean bump(GamePiece[][] tileList, GamePiece piece, Card card){
-    //temproray variable for card
-    int move = 0;
-    boolean checkBump = false;
-    //Go through a nested loop
-    //First loop that go through 4 tiles
-    //Second loop that go through each slot in each tile
-    for(int i = 0; i < 4; i++){
-        for(int j = 0; j < 16; j++){
-            //If we find a a piece that we are looking for, we will check if it needs to change tile or if it needs to go home
-            //as you pick up the card. We are doing this by having 2 boolean variables that take boolean from checkChangeTile
-            //and checkhomeTile. We remove the piece from its current position.
-            if(tileList[i][j].equals(piece)){
-                boolean checkChangeTile = checkChangeTile(tileList, piece, card, i, j);
-                boolean checkHomeTile = checkHomeTile(tileList, piece, i, j);
-                //If the piece needs to change tile
-                if(checkChangeTile == true){
-                    //We calculate the move that need to move 
-                    int needMove = changeTile(tileList, piece, card, i, j);
-                    //If checkHomeTile is true but the move makes the piece not get into home yet
-                    //We check if there anything ahead to bump, if yes, return true, else false
-                    if(checkHomeTile == true && needMove < 2){
-                        if(tileList[i+1][needMove] != null){
-                            checkBump = true;
-                            tileList[i+1][needMove] = null;
-                            tileList[i+1][needMove] = piece;
-                        } else{
-                            tileList[i+1][needMove] = piece;
-                        }
-                        }
-                    //If checkHomeTile is false
-                    //We check if there anything ahead to bump, if yes, return true, else false
-                    else if(checkHomeTile == false){
-                        if(tileList[i+1][needMove] != null){
-                            checkBump = true;
-                            tileList[i+1][needMove] = null;
-                            tileList[i+1][needMove] = piece;
-                        } else{
-                            tileList[i+1][needMove] = piece;
-                        }
+    //Only get called if checkChangeTile return true
+    //temporary variable move represent the card number
+    //Since each tile has 16 index, we calculate the available move in the tile that the piece is on by
+    //using the last index of the tile 15 - the index that the piece is currently on and we have availableMove
+    //Then we have the number of card minus available; therefore, we will know how much index we need to move in the new tile
+    int changePiecePos(GamePiece piece, int card, int i, int j){
+        //temporary move variable for card
+        int move = card;
+        int availableMove = 15 - j;
+        int needMove = move - availableMove;
+        return needMove;
+    }
+
+    /**
+     * Moves a piece out of the color-specified player's home if possible
+     * @param card the card, 1 or 2
+     * @param color the player's color
+     * @param player true if the player is human
+     * @return true if move was successful, false otherwise
+     */
+    boolean homeGetOut( int card, Enums.Color color, boolean player){
+
+        if (card == 1 || card == 2) {
+            if (player) {
+                for (GamePiece piece : playerPieces) {
+                    // Move a piece out of home if there is one
+                    if (piece.getBoardSide() == -1 && tileList[piece.getColor().getSide()][4] == null) {
+                        piece.setLocation(piece.getColor().getSide(), 4);
+                        tileList[piece.getBoardSide()][4] = piece;
+                        return true;
                     }
                 }
-                //Else check if bump in the same tile
-                else{
-                    int needMove = j + move;
-                    if(tileList[i][needMove] != null){
-                        checkBump = true;
-                        tileList[i][needMove] = null;
-                        tileList[i][needMove] = piece;
-                    } else{
-                        tileList[i][needMove] = piece;
+                return false;
+            }
+            // If the piece is an opponents
+            else {
+                for (GamePiece[] opponent : opponentsPieces) {
+                    // Find the opponent's array
+                    if (opponent[0].getColor() == color) {
+                        for (GamePiece piece : opponent) {
+                            // Move a piece out of home if there is one
+                            if (piece.getBoardSide() == -1 && tileList[piece.getColor().getSide()][4] == null) {
+                                piece.setLocation(piece.getColor().getSide(), 4);
+                                tileList[piece.getBoardSide()][4] = piece;
+                                return true;
+                            }
+                        }
+                        return false;
                     }
                 }
             }
         }
+        return false;  // Return false if card isn't 1, 2
     }
-    return checkBump;
+
+    /**
+     * check for same color, bool true if bump, false otherwise
+     * @param piece
+     */
+    boolean checkBump(GamePiece piece){
+        GamePiece bumped = tileList[piece.getBoardSide()][piece.getInnerLocation()];
+        if(bumped != null && bumped.getColor() != piece.getColor()){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    /**
+     * Takes the specified GamePiece, and uses it to bump the piece at it's location in tileList.
+     * @param piece The piece doing the bumping
+     */
+    private void bumpPiece(GamePiece piece){
+        GamePiece temp = tileList[piece.getBoardSide()][piece.getInnerLocation()];
+        tileList[piece.getBoardSide()][piece.getInnerLocation()] = piece;
+        temp.setBoardSide(-1);
+    }
+
+    public GamePiece[][] getTileList() {
+        return tileList;
+    }
+
+    public ArrayList<GamePiece[]> getOpponentsPieces() {
+        return opponentsPieces;
+    }
 }
-
-//void add(GamePiece[][] tileList, GamePiece[][] homeList, GamePiece piece){
-//    tileList[2][6] = piece;
-//}
-//void add2(GamePiece[][] tileList, GamePiece[][] homeList, GamePiece piece){
-//    tileList[1][5] = piece;
-//}
-}
-
-
-
-
-
