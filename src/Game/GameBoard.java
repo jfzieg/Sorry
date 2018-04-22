@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /**
  * @author Anh Phan
  * @date 2018-03-14
- * @version 1.0
+ * @version 1.0	
  */
 
 
@@ -255,3 +255,8 @@ public class GameBoard implements Serializable{
         return opponentsPieces;
     }
 }
+
+
+
+
+

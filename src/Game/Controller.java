@@ -1,5 +1,6 @@
 package Game;
 
+
 import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
 
 import java.io.Serializable;
@@ -10,6 +11,9 @@ import java.util.Collections;
 
 public class Controller implements Serializable{
 
+public class Controller implements Serializable{
+    private static boolean TEST = true;
+
     private boolean game_paused;
     private boolean game_over;
     private boolean new_game;
@@ -18,9 +22,13 @@ public class Controller implements Serializable{
     private GameBoard board;
     private MenuControllers menus;
 
-    public Controller(boolean test){
-        if(test){
-            setupNewGame(Enums.Color.BLUE, new GamePiece(Enums.Color.YELLOW, true, true));
+
+    /**
+     * Test Constructor
+     */
+    public Controller(){
+        if(TEST){
+            setupNewGame(Enums.Color.BLUE, new GamePiece(Enums.Color.YELLOW, true, true), new GamePiece(Enums.Color.RED, false, true));
         }
     }
 
@@ -182,6 +190,16 @@ public class Controller implements Serializable{
 
 
     /**
+
+     * TODO: WRITE TEST CASE
+     *
+     * Move piece
+     */
+    public void MovePiece(GamePiece piece, int num_spaces) {
+        // update piece locations, including any pawns bumped as a result of the move
+    }
+
+    /**
      * List player's pieces
      * @param color
      * @return ListOfPieces
@@ -234,7 +252,6 @@ public class Controller implements Serializable{
                 EligiblePieces.add(piece2);
             }
         }
-
         return EligiblePieces;
     }
 
@@ -313,18 +330,15 @@ public class Controller implements Serializable{
 
             }
         }
-
-
         return ChosenPiece;
-
     }
+
 
     public int scoreMove(GamePiece piece, int card_num) {
         int moveScore = piece.getMovesLeft();
         return moveScore;
     }
-
-    // below method not needed
+  
     private boolean CheckValidMove(GamePiece piece, int card_num){
 
         return true;
@@ -361,8 +375,6 @@ public class Controller implements Serializable{
         } else {
             game_over = false;
         }
-        return game_over;
-    }
 
     public void setGame_over(boolean game_over) {
         this.game_over = game_over;
@@ -397,5 +409,4 @@ public class Controller implements Serializable{
     public void setMenuControllers(MenuControllers menus){
         this.menus = menus;
     }
-
 }

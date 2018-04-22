@@ -68,7 +68,7 @@ public class MenuControllers {
 
         //Add the buttons and title to the pane
         options.getChildren().addAll(title, resume.getText(), start.getText(), load.getText(),
-                leaderboard.getText(), help.getText(), quit.getText());
+                                        leaderboard.getText(), help.getText(), quit.getText());
         pane.setLeft(options);
         pane.setCenter(graphic);
         pane.setAlignment(graphic, Pos.CENTER);
@@ -107,14 +107,14 @@ public class MenuControllers {
         colorChoice.setPadding(new Insets(Settings.X_SIZE * .01));
 
         colorChoice.getChildren().addAll(makeText("Choose Color", Settings.MEDIUM_FONT),
-                makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.RED),
-                makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.YELLOW),
-                makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.BLUE),
-                makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.GREEN));
+                                            makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.RED),
+                                            makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.YELLOW),
+                                            makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.BLUE),
+                                            makeCircle(Settings.MEDIUM_FONT.getSize() / 2, Settings.GREEN));
 
         innerOptions.getChildren().addAll(makeOpponent(Settings.YELLOW),
-                makeOpponent(Settings.BLUE),
-                makeOpponent(Settings.GREEN));
+                                            makeOpponent(Settings.BLUE),
+                                            makeOpponent(Settings.GREEN));
 
         options.getChildren().addAll(makeText("New Game!", Settings.FONT), colorChoice, innerOptions, startButton().getText());
         pane.setLeft(options);
@@ -345,10 +345,9 @@ public class MenuControllers {
             //YELLOW
             case 1:
                 slide.getPoints().addAll(new Double[]{
-                        0.0, 0.0,
-                        -longSide, Settings.TILE_SIZE / 2,
-                        0.0, shortSide
-
+                    0.0, 0.0,
+                    -longSide, Settings.TILE_SIZE / 2,
+                    0.0, shortSide
                 });
                 break;
             //GREEN
@@ -368,8 +367,7 @@ public class MenuControllers {
                         Settings.TILE_SIZE / 2, -longSide
 
                 });
-            default:
-
+                default:
                 break;
         }
         return slide;
@@ -392,7 +390,7 @@ public class MenuControllers {
     }
 
     /**
-     * TODO: Finish GUI buttons
+     * TODO: Finish GUI buttons, Add 1 more home tile
      * @return
      */
     private GridPane makeBoard(){
@@ -546,9 +544,9 @@ public class MenuControllers {
             @Override
             public void handle(Event event) {
 //                if (difficulty.getText().toString().equals("Easy")) {
-                difficulty.getText().setFill(difficulty.getColor().darker());
-                difficulty.getText().setStroke(difficulty.getColor().darker());
-                difficulty.setText(makeText("Hard", Settings.SMALL_FONT));
+                    difficulty.getText().setFill(difficulty.getColor().darker());
+                    difficulty.getText().setStroke(difficulty.getColor().darker());
+                    difficulty.setText(makeText("Hard", Settings.SMALL_FONT));
 //                } else {
 //                    difficulty.getText().setFill(difficulty.getColor().brighter());
 //                    difficulty.getText().setStroke(difficulty.getColor().brighter());
