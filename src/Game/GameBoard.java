@@ -40,6 +40,8 @@ public class GameBoard implements Serializable{
             }
             opponentsPieces.add(opponent);
         }
+        
+        tileList = new GamePiece[4][16];
     }
 
     /**
@@ -80,8 +82,9 @@ public class GameBoard implements Serializable{
         // Move piece to next side, add remaining moves left
         else{
             piece.adjustMovesLeft(-card);
-            card -= (16 - piece.getInnerLocation());
-            piece.setLocation(changeBoardSide(piece.getBoardSide(), true), card);
+            card -= (15 - piece.getInnerLocation());
+            int boardSide = changeBoardSide(piece.getBoardSide(), true);
+            piece.setLocation(boardSide, card);
             checkSlide(piece);
 
             // If a bump is possible, bump the target and update tileList
@@ -113,13 +116,15 @@ public class GameBoard implements Serializable{
     private int changeBoardSide(int boardSide, boolean forward){
         if(forward) {
             if (boardSide < 3 && boardSide >= 0) {
-                return boardSide++;
+                boardSide += 1;
+                return boardSide;
             }
             return 0;
         }
         else{
             if (boardSide <= 3 && boardSide > 0) {
-                return boardSide--;
+                boardSide -= 1;
+                return boardSide;
             }
             return 3;
         }
@@ -151,7 +156,7 @@ public class GameBoard implements Serializable{
      */
     void movePieceBackWard( GamePiece piece, int card){
         // Move specified number of places on the same side
-        if(piece.getInnerLocation() - card > 0){
+        if(piece.getInnerLocation() - card >= 0){
             piece.adjustMovesLeft(+card);
             piece.setInnerLocation(piece.getInnerLocation() - card);
         }
@@ -255,6 +260,12 @@ public class GameBoard implements Serializable{
     public ArrayList<GamePiece[]> getOpponentsPieces() {
         return opponentsPieces;
     }
+
+    public GamePiece[] getPlayerPieces() {
+        return playerPieces;
+    }
+    
+    
 }
 
 
