@@ -17,6 +17,7 @@ public class Settings {
     public static Font FONT = new Font("Arial Rounded MT Bold", Settings.TEXT_SIZE);
     public static Font SMALL_FONT = new Font("Arial Rounded MT Bold", Settings.TEXT_SIZE * .4);
     public static Font MEDIUM_FONT = new Font("Arial Rounded MT Bold", Settings.TEXT_SIZE * .6);
+    public static Font CARD_FONT = new Font("Arial Rounded MT Bold", Settings.TEXT_SIZE * .9);
 
     public static Color RED = Color.ORANGERED;
     public static Color BLUE = Color.ROYALBLUE;

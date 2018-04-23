@@ -1,6 +1,7 @@
 package Game;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -34,7 +35,6 @@ public class Controller implements Serializable{
         new_game = true; // if false, game is a resumed game
 
         deck = initializeFullDeck();
-        shuffleDeck(deck);
     }
 
     /**
@@ -64,48 +64,26 @@ public class Controller implements Serializable{
     public ArrayList<Card> initializeFullDeck() {
 
 
-        ArrayList<Card> Deck = new ArrayList<>();
+        ArrayList<Card> deck = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            Deck.add(new Card(Enums.CardType.ONE));
+            deck.add(new Card(Enums.CardType.ONE));
         }
 
         for (int i = 0; i < 4; i++) {
-            Deck.add(new Card(Enums.CardType.TWO));
-            Deck.add(new Card(Enums.CardType.THREE));
-            Deck.add(new Card(Enums.CardType.FOUR));
-            Deck.add(new Card(Enums.CardType.FIVE));
-            Deck.add(new Card(Enums.CardType.SEVEN));
-            Deck.add(new Card(Enums.CardType.EIGHT));
-            Deck.add(new Card(Enums.CardType.TEN));
-            Deck.add(new Card(Enums.CardType.ELEVEN));
-            Deck.add(new Card(Enums.CardType.TWELVE));
-            Deck.add(new Card(Enums.CardType.SORRY));
+            deck.add(new Card(Enums.CardType.TWO));
+            deck.add(new Card(Enums.CardType.THREE));
+            deck.add(new Card(Enums.CardType.FOUR));
+            deck.add(new Card(Enums.CardType.FIVE));
+            deck.add(new Card(Enums.CardType.SEVEN));
+            deck.add(new Card(Enums.CardType.EIGHT));
+            deck.add(new Card(Enums.CardType.TEN));
+            deck.add(new Card(Enums.CardType.ELEVEN));
+            deck.add(new Card(Enums.CardType.TWELVE));
+            deck.add(new Card(Enums.CardType.SORRY));
         }
+        Collections.shuffle(deck);
+        return deck;
 
-        return Deck;
-
-    }
-
-    /**
-     * Shuffle the deck
-     *
-     * HAS TEST CASE
-     *
-     * @param deck
-     * @return shuffled deck
-     */
-    public ArrayList<Card> shuffleDeck(ArrayList<Card> deck) {
-        Random rng = new Random();
-        ArrayList<Card> ShuffledDeck = new ArrayList<>();
-        ArrayList<Integer> rng_tracker = new ArrayList<>();
-        while (ShuffledDeck.size() < deck.size()) {
-            int r = rng.nextInt(deck.size());
-            if (!rng_tracker.contains(r)) {
-                rng_tracker.add(r);
-                ShuffledDeck.add(deck.get(r));
-            }
-        }
-        return ShuffledDeck;
     }
 
 
@@ -169,7 +147,6 @@ public class Controller implements Serializable{
         } else {
             if (checkDeckEmpty()) {
                 deck = initializeFullDeck();
-                shuffleDeck(deck);
             }
             // next player's turn
         }

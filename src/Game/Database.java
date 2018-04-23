@@ -106,10 +106,14 @@ public class Database {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
-        
+
+
     }
-    
+
+    /**
+     * Data for Leaderboard
+     * @return dictionary of users and their cumulative scores
+     */
     public Map<String, Float> loadGameData(){
         Map<String, Float> dictionary = new HashMap<String, Float>();
         try {

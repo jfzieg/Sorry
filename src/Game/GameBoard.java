@@ -248,6 +248,12 @@ public class GameBoard implements Serializable{
         temp.setBoardSide(-1);
     }
 
+    public void sorry(GamePiece piece, GamePiece victim){
+        tileList[piece.getBoardSide()][piece.getInnerLocation()] = null;
+        tileList[victim.getBoardSide()][victim.getInnerLocation()] = piece;
+        victim.setBoardSide(-1);
+    }
+
     public GamePiece[][] getTileList() {
         return tileList;
     }
