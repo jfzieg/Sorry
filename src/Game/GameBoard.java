@@ -154,21 +154,68 @@ public class GameBoard implements Serializable{
      * @param piece
      * @param card
      */
-    void movePieceBackWard( GamePiece piece, int card){
+    boolean movePieceBackWard( GamePiece piece, int card){
         // Move specified number of places on the same side
-        if(piece.getInnerLocation() - card >= 0){
+        
+        int oldSide = piece.getBoardSide(), oldLoc = piece.getInnerLocation(), oldMovesLeft = piece.getMovesLeft();
+        
+        if(piece.getInnerLocation() - card > 0){
             piece.adjustMovesLeft(+card);
             piece.setInnerLocation(piece.getInnerLocation() - card);
+            checkSlide(piece);
+            
+            // If a bump is possible, bump the target and update tileList
+            if(checkBump(piece)){
+                bumpPiece(piece);
+                tileList[oldSide][oldLoc] = null;
+                return true;
+            }
+            
+            else {
+                if(tileList[piece.getBoardSide()][piece.getInnerLocation()] == null) {
+                    tileList[piece.getBoardSide()][piece.getInnerLocation()] = piece;
+                    tileList[oldSide][oldLoc] = null;
+                    return true;
+                }
+                
+                piece.setLocation(oldSide, oldLoc);
+                piece.setMovesLeft(oldMovesLeft);
+                return false;
+            }
+            
         }
         // Move piece to next side, add remaining moves left
         else{
             piece.adjustMovesLeft(+card);
             card -= piece.getInnerLocation();
-            piece.setBoardSide(changeBoardSide(piece.getBoardSide(), false));
+            if(card == 0){
+                card = 15;
+            }
+            int boardSide = changeBoardSide(piece.getBoardSide(), false);
+            piece.setBoardSide(boardSide);
             piece.setInnerLocation(card);
+            checkSlide(piece);
+            
+         // If a bump is possible, bump the target and update tileList
+            if(checkBump(piece)){
+                bumpPiece(piece);
+                tileList[oldSide][oldLoc] = null;
+                return true;
+            }
+            
+            // If a bump isn't possible, check to see if the tile is free and update tileList
+            else {
+                if(tileList[piece.getBoardSide()][piece.getInnerLocation()] == null) {
+                    tileList[piece.getBoardSide()][piece.getInnerLocation()] = piece;
+                    tileList[oldSide][oldLoc] = null;
+                    return true;
+                }
+                
+                piece.setLocation(oldSide, oldLoc);
+                piece.setMovesLeft(oldMovesLeft);
+                return false;
+            }
         }
-//        checkBump();
-        checkSlide(piece);
 
     }
 
@@ -251,6 +298,12 @@ public class GameBoard implements Serializable{
         GamePiece temp = tileList[piece.getBoardSide()][piece.getInnerLocation()];
         tileList[piece.getBoardSide()][piece.getInnerLocation()] = piece;
         temp.setBoardSide(-1);
+    }
+    
+    public void sorry(GamePiece piece, GamePiece victim){
+        tileList[piece.getBoardSide()][piece.getInnerLocation()] = null;
+        tileList[victim.getBoardSide()][victim.getInnerLocation()] = piece;
+        victim.setBoardSide(-1);
     }
 
     public GamePiece[][] getTileList() {

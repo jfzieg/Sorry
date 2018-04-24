@@ -40,10 +40,25 @@ public class Test_GameBoard {
         
         b4.movePieceBackWard(b4.getOpponentsPieces().get(1)[0], 4);
         
+//        b4.movePieceBackWard(b4.getOpponentsPieces().get(1)[0], 4);
+        
+        b4.homeGetOut(1, Enums.Color.BLUE, false);
+        
+        b4.movePieceForward(b4.getOpponentsPieces().get(1)[0], 4);
+        
+        b4.homeGetOut(1, Enums.Color.GREEN, false);
+        
+        b4.movePieceForward(b4.getPlayerPieces()[0], 1);
+        
         b4.movePieceBackWard(b4.getOpponentsPieces().get(1)[0], 4);
         
-        b4.getTileList()[2][10] = new GamePiece(Enums.Color.BLUE);
-        b4.getTileList()[2][5] = new GamePiece(Enums.Color.YELLOW);
+//        b4.movePieceForward(b4.getPlayerPieces()[0], 6);
+        
+        b4.movePieceBackWard(b4.getPlayerPieces()[0], 3);
+        
+        b4.movePieceForward(b4.getPlayerPieces()[0], 4);
+        
+//        b4.movePieceBackWard(b4.getOpponentsPieces().get(1)[0], 1);
         
         System.out.println();
         
