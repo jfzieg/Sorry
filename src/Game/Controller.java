@@ -328,7 +328,7 @@ public class Controller implements Serializable{
                 ChosenPiece = EligiblePieces.get(r);
 
                 // move piece forward
-                if (card_num != 4) {
+                if (card_num != 4 && card_num != 7) {
 
                     if (ChosenPiece.isHome()) {
                         boolean pieceMoved = board.moveInHome(ChosenPiece, card_num);
@@ -347,19 +347,65 @@ public class Controller implements Serializable{
                     }
                 }
 
-                else {
+                if (card_num == 4) {
                     // What if the piece can't move backward 4? (As a result of bumping its own piece)
                     board.movePieceBackWard(ChosenPiece, card_num);
                 }
 
-                // if (card_num == 7)
+                if (card_num == 7) {
+                    rng = new Random();
+                    int r2 = rng.nextInt(EligiblePieces.size());
+                    while (r2 == r) {
+                        r2 = rng.nextInt(EligiblePieces.size());
+                    }
+                    GamePiece chosenPiece2 = EligiblePieces.get(r2);
+                    boolean piece1moved;
+                    if (chosenPiece2.isHome()) {
+                        piece1moved = board.moveInHome(ChosenPiece, 3);
+                    } else {
+                        piece1moved = board.movePieceForward(ChosenPiece, 3);
+                    }
+                    boolean piece2moved = true;
+                    if (piece1moved) {
+                        if (chosenPiece2.isHome()) {
+                            piece2moved = board.moveInHome(chosenPiece2, 4);
+                        } else {
+                            piece2moved = board.movePieceForward(chosenPiece2, 4);
+                        }
+                    }
+                    if (!piece1moved || !piece2moved) {
+                        if (ChosenPiece.isHome()) {
+                            piece1moved = board.moveInHome(ChosenPiece, card_num);
+                        } else {
+                            piece1moved = board.movePieceForward(ChosenPiece, card_num);
+                        }
 
-                // if (card_num == 10)
+                        int tryCounter = 1;
+                        while (!piece1moved) {
+                            if (tryCounter < 4) {
+                                rng = new Random();
+                                int r3 = rng.nextInt(EligiblePieces.size());
+                                while (r3 != r2 && r3 != r) {
+                                    ChosenPiece = EligiblePieces.get(r3);
+                                    r3 = rng.nextInt(EligiblePieces.size());
+                                }
+                                tryCounter += 1;
+                                if (ChosenPiece.isHome()) {
+                                    piece1moved = board.moveInHome(ChosenPiece, card_num);
+                                } else {
+                                    piece1moved = board.movePieceForward(ChosenPiece, card_num);
+                                }
+                            }
+                        }
+                    }
+                }
+        }
+
+                //if (card_num == 10)
 
                 // if (card_num == 11)
 
             }
-        }
 
     public int scoreMove(GamePiece piece, int card_num) {
         int moveScore = piece.getMovesLeft();
@@ -394,10 +440,15 @@ public class Controller implements Serializable{
 
     public boolean isGame_over(ArrayList<GamePiece> Pieces) {
         int cumulativeDist = 0;
+        int numPiecesHome = 0;
         for (GamePiece piece : Pieces) {
             cumulativeDist += piece.getMovesLeft();
+            if (piece.isHome()) {
+                numPiecesHome += 1;
+            }
         }
-        if (cumulativeDist == 0) {
+
+        if (cumulativeDist == 0 && numPiecesHome == 4) {
             game_over = true;
         } else {
             game_over = false;
