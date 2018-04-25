@@ -221,25 +221,11 @@ public class MenuControllers {
 
         Button main = startButton();
 
-        Database db = new Database();
-        Map<String, Float> dict = db.loadGameData();
-        Text[] arraytext = new Text[5];
-        Iterator it = dict.entrySet().iterator();
-        int count = 0;
+        GridPane leaderBoard = makeLeadboard();
 
-          while (it.hasNext()) {
-          Map.Entry pair = (Map.Entry)it.next();
-          arraytext[count] = makeText(String.valueOf(pair.getKey()) + ": " + String.valueOf(pair.getValue()), Settings.SMALL_FONT);;
-          count ++;
-          if (count == 5){
-              break;
-          }
-          it.remove(); // avoids a ConcurrentModificationException
-
-  }
-
-        options.getChildren().addAll(title, arraytext[0], arraytext[1], arraytext[2], arraytext[3], arraytext[4], main.getText());
+        options.getChildren().addAll(title, leaderBoard, main.getText());
         pane.setLeft(options);
+
 
         //Add references for object retrieval
         leaderboard = pane;
@@ -502,6 +488,38 @@ public class MenuControllers {
         gameboard.add(makeSlide(Settings.GREEN, 2, 5), 15, 9, 1, 5);
 
         return gameboard;
+    }
+
+    private GridPane makeLeadboard(){
+        GridPane leaderboard = new GridPane();
+        leaderboard.setHgap(20);
+        leaderboard.setVgap(5);
+        leaderboard.setPadding(new Insets(Settings.X_SIZE * .01));
+
+
+        leaderboard.add( makeText("User Name ", Settings.SMALL_FONT), 0, 0);
+        leaderboard.add( makeText("Score", Settings.SMALL_FONT), 1, 0);
+
+        Database db = new Database();
+        Map<String, Float> dict = db.loadGameData();
+        Iterator it = dict.entrySet().iterator();
+        int count = 1;
+
+          while (it.hasNext()) {
+          Map.Entry pair = (Map.Entry)it.next();
+          leaderboard.add( makeText(String.valueOf(pair.getKey()), Settings.SMALL_FONT), 0, count);
+          leaderboard.add( makeText(String.valueOf(pair.getValue()), Settings.SMALL_FONT), 1, count);
+
+          count ++;
+          if (count == 6){
+              break;
+          }
+          it.remove(); // avoids a ConcurrentModificationException
+
+  }
+          return leaderboard;
+
+
     }
 
     private HBox makeCards(){
