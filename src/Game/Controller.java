@@ -1,5 +1,9 @@
 package Game;
 
+/**
+ * @author Olivia Hurd
+ * */
+
 import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
 
 import java.io.Serializable;
