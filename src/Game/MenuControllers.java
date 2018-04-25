@@ -314,7 +314,7 @@ public class MenuControllers {
                 "\n1: Move forward one space or move a piece from START. " +
                 "\n2: Move forward two spaces or more a piece from START." +
                 "\n3: Move forward three spaces. " +
-                "\n4: Move forward four spaces. (Change this if we implement moving backward) " +
+                "\n4: Move backward four spaces.  " +
                 "\n5: Move forward five spaces. " +
                 "\n7: Move forward seven spaces, or split the seven spaces between two pawns. " +
                 "\n8: Move forward 8 spaces. " +
