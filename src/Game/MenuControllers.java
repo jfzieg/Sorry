@@ -1,12 +1,19 @@
 package Game;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -15,6 +22,7 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.util.Callback;
 
 import java.util.*;
 
@@ -28,6 +36,7 @@ public class MenuControllers {
     private Pane endMenu;
     private ScrollPane helpMenu;
     private Controller game;
+    private TableView<String> table;
 
     /**
      * Start menu pane constructor
@@ -205,8 +214,24 @@ public class MenuControllers {
 
         Button main = startButton();
 
+        Database db = new Database();
+        Map<String, Float> dict = db.loadGameData();
+        Text[] arraytext = new Text[5];
+        Iterator it = dict.entrySet().iterator();
+        int count = 0;
 
-        options.getChildren().addAll(title, main.getText());
+          while (it.hasNext()) {
+          Map.Entry pair = (Map.Entry)it.next();
+          arraytext[count] = makeText(String.valueOf(pair.getKey()) + ": " + String.valueOf(pair.getValue()), Settings.SMALL_FONT);;
+          count ++;
+          if (count == 5){
+              break;
+          }
+          it.remove(); // avoids a ConcurrentModificationException
+
+  }
+
+        options.getChildren().addAll(title, arraytext[0], arraytext[1], arraytext[2], arraytext[3], arraytext[4], main.getText());
         pane.setLeft(options);
 
         //Add references for object retrieval
@@ -793,4 +818,20 @@ public class MenuControllers {
     public ArrayList<Node> getMenus() {
         return menus;
     }
+
+//    public ObservableList<String> getScore(){
+//        ObservableList<String> leaderBoard = FXCollections.observableArrayList();
+//        Database db = new Database();
+//        Map<String, Float> dict = db.loadGameData();
+//
+//        Iterator it = dict.entrySet().iterator();
+//        int count = 0;
+//        while (it.hasNext()) {
+//            Map.Entry pair = (Map.Entry)it.next();
+//            leaderBoard.add(new String(pair.getKey() + " = " + pair.getValue()));
+//            it.remove(); // avoids a ConcurrentModificationException
+//
+//    }
+//        return leaderBoard;
+//    }
 }
