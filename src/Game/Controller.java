@@ -5,8 +5,6 @@ import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
 import java.io.Serializable;
 import java.util.Random;
 import java.util.ArrayList;
-import java.util.Collections;
-
 
 public class Controller implements Serializable{
 
@@ -26,7 +24,7 @@ public class Controller implements Serializable{
 
     /**
      * Setup for a new game
-     * Break this into multiple subfunctions --> how to code for user input from GUI?
+     * Set game fields appropriately
      */
     public void setupNewGame(Enums.Color color, GamePiece ... pieces) {
         this.board = new GameBoard(color, pieces);
@@ -38,7 +36,8 @@ public class Controller implements Serializable{
     }
 
     /**
-     * Main gameplay method call this for playing a game
+     * Main gameplay method
+     * Call this for playing a game
      */
     public void playGame() {
 
@@ -140,7 +139,7 @@ public class Controller implements Serializable{
     /**
      *
      * User takes a turn: draw and discard top card from the deck, choose a piece and move it, update board state, check game over, check deck emtpy
-     * @return deck after discarding
+     *
      */
     public void takeTurn(Enums.Color color) {
 
@@ -190,7 +189,7 @@ public class Controller implements Serializable{
 
 
     /**
-     * List players' pieces
+     * List a player's pieces
      * @param color
      * @return ListOfPieces
      */
@@ -209,7 +208,6 @@ public class Controller implements Serializable{
     }
 
     /**
-     *
      * List eligible pieces based on opponent being nice or mean
      * @param
      * @return EligiblePieces
@@ -237,7 +235,6 @@ public class Controller implements Serializable{
     }
 
     /**
-     *
      * Choose piece to move, and move it
      */
     public void ChoosePiece(ArrayList<GamePiece> EligiblePieces, int card_num) {
@@ -400,13 +397,13 @@ public class Controller implements Serializable{
                     }
                 }
         }
+    }
 
-                //if (card_num == 10)
-
-                // if (card_num == 11)
-
-            }
-
+    /**
+     * Score a move
+     * @param piece and card_num
+     * @return integer score
+     */
     public int scoreMove(GamePiece piece, int card_num) {
         int moveScore = piece.getMovesLeft();
         if (card_num == 4) {
@@ -418,26 +415,55 @@ public class Controller implements Serializable{
         return moveScore;
     }
 
+    /**
+     * Check if a move will result in a bum
+     *
+     * USED GameBoard method for this!
+     *
+     * @param piece and card_num
+     * @return boolean
+     */
     private boolean checkBump(GamePiece piece, int card_num){
         return true;
     }
 
+    /**
+     * @return the deck
+     */
     public ArrayList<Card> getDeck() {
         return deck;
     }
 
+    /**
+     * @param deck
+     *
+     */
     public void setDeck(ArrayList<Card> deck) {
         this.deck = deck;
     }
 
+    /**
+     * Check if game is paused
+     * @return boolean game over
+     */
     public boolean isGame_paused() {
         return game_paused;
     }
 
+    /**
+     * Set paused game
+     * @param boolean game paused
+     *
+     */
     public void setGame_paused(boolean game_paused) {
         this.game_paused = game_paused;
     }
 
+    /**
+     * checks if game is over
+     * @param Pieces
+     * @return boolean
+     */
     public boolean isGame_over(ArrayList<GamePiece> Pieces) {
         int cumulativeDist = 0;
         int numPiecesHome = 0;
@@ -456,18 +482,33 @@ public class Controller implements Serializable{
         return game_over;
     }
 
+    /**
+     * Sets game to over
+     * @param boolean game over
+     */
     public void setGame_over(boolean game_over) {
         this.game_over = game_over;
     }
 
+    /**
+     * checks to see if it's a new game
+     * @return boolean new game
+     */
     public boolean isNew_game() {
         return new_game;
     }
 
+    /**
+     * Set a new game
+     * @param boolean new game
+     */
     public void setNew_game(boolean new_game) {
         this.new_game = new_game;
     }
 
+    /**
+     * @param Menucontrollers
+     */
     public void setMenuControllers(MenuControllers menus){
         this.menus = menus;
     }
