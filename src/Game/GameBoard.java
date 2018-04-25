@@ -33,12 +33,14 @@ public class GameBoard implements Serializable{
             playerPieces[i] = new GamePiece(color);
         }
 
-        for(GamePiece piece : pieces){
-            GamePiece[] opponent = new GamePiece[4];
-            for(int i = 0; i < 4; i++){
-                opponent[i] = new GamePiece(piece.getColor(), piece.isSmart(), piece.isMean());
+        for(GamePiece piece : pieces) {
+            if (piece != null) {
+                GamePiece[] opponent = new GamePiece[4];
+                for (int i = 0; i < 4; i++) {
+                    opponent[i] = new GamePiece(piece.getColor(), piece.isSmart(), piece.isMean());
+                }
+                opponentsPieces.add(opponent);
             }
-            opponentsPieces.add(opponent);
         }
     }
 
@@ -260,6 +262,10 @@ public class GameBoard implements Serializable{
 
     public ArrayList<GamePiece[]> getOpponentsPieces() {
         return opponentsPieces;
+    }
+
+    public GamePiece[] getPlayerPieces() {
+        return playerPieces;
     }
 }
 

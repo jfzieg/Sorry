@@ -6,14 +6,13 @@ import java.util.Random;
 import java.util.ArrayList;
 
 public class Controller implements Serializable{
-    private static boolean TEST = true;
+    private static boolean TEST = false;
     private boolean game_paused;
     private boolean game_over;
     private boolean new_game;
     private ArrayList<Card> deck;
     private GameBoard board;
     private MenuControllers menus;
-
 
     /**
      * Test Constructor
@@ -113,15 +112,36 @@ public class Controller implements Serializable{
 
     /**
      * Checks to see if the game is over
-     * @param board
      * @return bool
      */
-//    public boolean CheckGameOver(GameBoard board) {
-//        boolean GameOver;
-//        // if all pieces of one color in HOME, GameOver = True
-//        // else, GameOver = False
-//        // return GameOver
-//    }
+    public boolean checkGameOver() {
+        int count = 0;
+        for(GamePiece piece : board.getPlayerPieces()){
+            if(piece.getMovesLeft() == 0){
+                count++;
+            }
+        }
+        // player win case
+        if(count == 4){
+            game_over = true;
+            return true;
+        }
+
+        for(GamePiece[] pieces : board.getOpponentsPieces()){
+            count = 0;
+            for(GamePiece piece : pieces) {
+                if (piece.getMovesLeft() == 0) {
+                    count++;
+                }
+            }
+            // opponent win case
+            if(count == 4){
+                game_over = true;
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      *
@@ -152,17 +172,6 @@ public class Controller implements Serializable{
         }
         // What if there are no valid moves?
 
-    }
-
-
-    /**
-
-     * TODO: WRITE TEST CASE
-     *
-     * Move piece
-     */
-    public void MovePiece(GamePiece piece, int num_spaces) {
-        // update piece locations, including any pawns bumped as a result of the move
     }
 
     /**

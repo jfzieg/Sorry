@@ -58,7 +58,7 @@ public class GameState implements Serializable {
         
         if( count <= 6){
 //        FileWriter fw = new FileWriter("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\option.txt", true);
-            FileWriter fw = new FileWriter("./saves/options.txt");
+            FileWriter fw = new FileWriter("./saves/options.txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
             fw.append(timeStamp);
             bw.newLine();
@@ -67,7 +67,7 @@ public class GameState implements Serializable {
         }
         else{
 //            FileWriter fw = new FileWriter("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\option.txt", false);
-            FileWriter fw = new FileWriter("./saves/options.txt");
+            FileWriter fw = new FileWriter("./saves/options.txt", false);
             BufferedWriter bw = new BufferedWriter(fw);
             fw.append(timeStamp);
             bw.newLine();

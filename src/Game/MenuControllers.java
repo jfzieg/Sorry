@@ -8,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -24,11 +25,14 @@ public class MenuControllers {
     private Pane newGameMenu;
     private Pane loadMenu;
     private Pane leaderboard;
-    private Pane gameBoard;
+    private BorderPane gameBoard;
     private Pane endMenu;
     private ScrollPane helpMenu;
-    private Controller game;
 
+    private Controller game;
+    private HBox deck;
+    private GamePiece[] players;
+    private Card card;
     /**
      * Start menu pane constructor
      * @return A start menu pane
@@ -82,6 +86,8 @@ public class MenuControllers {
 
     /**
      * TODO: Add button functionalities for choosing color, opponents and difficulties
+     *
+     * TODO: Add index specific handlers for player circles and index specific handlers for opponents
      * @return
      */
     public BorderPane newGameMenu() {
@@ -106,17 +112,40 @@ public class MenuControllers {
         colorChoice.setSpacing(Settings.Y_SIZE * .05);
         colorChoice.setPadding(new Insets(Settings.X_SIZE * .01));
 
+        players = new GamePiece[4];
+
+
+
+
         colorChoice.getChildren().addAll(makeText("Choose Color", Settings.MEDIUM_FONT),
-                                            circleButton(Settings.MEDIUM_FONT.getSize() / 2, Settings.RED),
-                                            circleButton(Settings.MEDIUM_FONT.getSize() / 2, Settings.YELLOW),
-                                            circleButton(Settings.MEDIUM_FONT.getSize() / 2, Settings.BLUE),
-                                            circleButton(Settings.MEDIUM_FONT.getSize() / 2, Settings.GREEN));
+                                            circleButton(Settings.MEDIUM_FONT.getSize() / 2, Settings.RED, 0),
+                                            circleButton(Settings.MEDIUM_FONT.getSize() / 2, Settings.YELLOW, 0),
+                                            circleButton(Settings.MEDIUM_FONT.getSize() / 2, Settings.BLUE, 0),
+                                            circleButton(Settings.MEDIUM_FONT.getSize() / 2, Settings.GREEN, 0));
 
-        innerOptions.getChildren().addAll(makeOpponent(Settings.YELLOW),
-                                            makeOpponent(Settings.BLUE),
-                                            makeOpponent(Settings.GREEN));
+        colorChoice.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (players[0] != null) {
+                    Enums.Color[] OpponentColors = new Enums.Color[]{Enums.Color.RED, Enums.Color.YELLOW, Enums.Color.GREEN, Enums.Color.BLUE};
+                    innerOptions.getChildren().clear();
+                    for (Enums.Color color : OpponentColors) {
+                        if (!color.equals(players[0].getColor())) {
+                            innerOptions.getChildren().add(makeOpponent(color.getColor(), color.getSide()));
+                        }
+                    }
+                }
+            }
+        });
 
-        options.getChildren().addAll(makeText("New Game!", Settings.FONT), colorChoice, innerOptions, startButton().getText());
+
+        HBox menuButtons = new HBox();
+        menuButtons.setLayoutY(Settings.Y_SIZE);
+        menuButtons.setSpacing(Settings.Y_SIZE * .05);
+
+        menuButtons.getChildren().addAll(startButton().getText(), startGameButton().getText());
+
+        options.getChildren().addAll(makeText("New Game!", Settings.FONT), colorChoice, innerOptions, menuButtons);
         pane.setLeft(options);
 
         newGameMenu = pane;
@@ -126,7 +155,6 @@ public class MenuControllers {
     }
 
     /**
-     * TODO: Add menu items
      * @return
      */
     public BorderPane gameBoard() {
@@ -137,12 +165,12 @@ public class MenuControllers {
         leftMenu.setSpacing(Settings.Y_SIZE * .05);
         leftMenu.setPadding(new Insets(Settings.X_SIZE * .01));
 
-        HBox cards = makeCards();
+        deck = makeCards();
 
         Text title = makeText("Sorry!", Settings.FONT);
         Button main = startButton();
 
-        leftMenu.getChildren().addAll(title, cards, main.getText());
+        leftMenu.getChildren().addAll(title, deck, main.getText());
 
         GridPane gameboard = makeBoard();
 
@@ -319,6 +347,41 @@ public class MenuControllers {
         return pane;
     }
 
+    public void playGame(){
+        userDraw();
+    }
+
+    /**
+     *
+     * @return
+     */
+    private Card userDraw(){
+        deck.getChildren().get(0).setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                Card card = game.drawCard();
+                setCard(card);
+                deck.getChildren().remove(1);
+                deck.getChildren().add(makeCard(card));
+            }
+        });
+        return card;
+    }
+
+    /**
+     *
+     * @return
+     */
+    private Card opponentDraw(){
+        Card card = game.drawCard();
+        deck.getChildren().remove(1);
+        deck.getChildren().add(makeCard(card));
+        return card;
+    }
+
+    private void setCard(Card card){
+        this.card = card;
+    }
 
     //
     // GUI Element Constructors
@@ -435,9 +498,9 @@ public class MenuControllers {
         }
         for(int j = 1; j < 6; j++){
             gameboard.add(makeTile(Settings.RED), 2, j);
-            gameboard.add(makeTile(Settings.YELLOW), 13, 15 - j);
+            gameboard.add(makeTile(Settings.GREEN), 13, 15 - j);
             gameboard.add(makeTile(Settings.BLUE), j, 13);
-            gameboard.add(makeTile(Settings.GREEN), 15 - j, 2);
+            gameboard.add(makeTile(Settings.YELLOW), 15 - j, 2);
         }
 
         gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.RED),2, 5 , 2, 2);
@@ -448,12 +511,12 @@ public class MenuControllers {
         gameboard.add(makeSlide(Settings.RED, 0, 5), 9, 0, 5, 1);
 
 
-        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.YELLOW),12, 9, 2, 2);
-        gameboard.add(makeTile(Settings.YELLOW), 11,14);
-        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.YELLOW),10, 13, 2, 2);
+        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.GREEN),12, 9, 2, 2);
+        gameboard.add(makeTile(Settings.GREEN), 11,14);
+        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.GREEN),10, 13, 2, 2);
 
-        gameboard.add(makeSlide(Settings.YELLOW, 1, 4), 11, 15, 4, 1);
-        gameboard.add(makeSlide(Settings.YELLOW, 1, 5), 2, 15, 5, 1);
+        gameboard.add(makeSlide(Settings.GREEN, 1, 4), 11, 15, 4, 1);
+        gameboard.add(makeSlide(Settings.GREEN, 1, 5), 2, 15, 5, 1);
 
         gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.BLUE),5, 12 , 2, 2);
         gameboard.add(makeTile(Settings.BLUE), 1,11);
@@ -462,43 +525,36 @@ public class MenuControllers {
         gameboard.add(makeSlide(Settings.BLUE, 3, 4), 0, 11, 1, 4);
         gameboard.add(makeSlide(Settings.BLUE, 3, 5), 0, 2, 1, 5);
 
-        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.GREEN),9, 2 , 2, 2);
-        gameboard.add(makeTile(Settings.GREEN), 14,4);
-        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.GREEN),13, 4, 2, 2 );
+        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.YELLOW),9, 2 , 2, 2);
+        gameboard.add(makeTile(Settings.YELLOW), 14,4);
+        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.YELLOW),13, 4, 2, 2 );
 
-        gameboard.add(makeSlide(Settings.GREEN, 2, 4), 15, 1, 1, 4);
-        gameboard.add(makeSlide(Settings.GREEN, 2, 5), 15, 9, 1, 5);
+        gameboard.add(makeSlide(Settings.YELLOW, 2, 4), 15, 1, 1, 4);
+        gameboard.add(makeSlide(Settings.YELLOW, 2, 5), 15, 9, 1, 5);
 
         return gameboard;
     }
 
+
     /**
      * TODO: adjust handler to work only on player's turn, probably ext method for displaying card
-     * Setup for GUI representation of Card deck and discard pile. Currently set up to draw a card from deck whenever clicked.
+     * Setup for GUI representation of Card deck and discard pile.
      * @return
      */
     private HBox makeCards(){
-        HBox cards = new HBox();
-        cards.setSpacing(Settings.Y_SIZE * .05);
-        //Initial display for card deck
-        Rectangle cardBack = new Rectangle(Settings.CARD_WIDTH, Settings.CARD_HEIGHT, Settings.CARD);
-        cardBack.setStrokeWidth(Settings.CARD_WIDTH * .05);
-        cardBack.setStroke(Settings.CARD.darker());
+            HBox cards = new HBox();
+            cards.setSpacing(Settings.Y_SIZE * .05);
+            //Initial display for card deck
+            Rectangle cardBack = new Rectangle(Settings.CARD_WIDTH, Settings.CARD_HEIGHT, Settings.CARD);
+            cardBack.setStrokeWidth(Settings.CARD_WIDTH * .05);
+            cardBack.setStroke(Settings.CARD.darker());
 
         Rectangle cardFront = new Rectangle(Settings.CARD_WIDTH, Settings.CARD_HEIGHT, Settings.BACKGROUND);
         cardFront.setStrokeWidth(Settings.CARD_WIDTH * .05);
         cardFront.setStroke(Settings.BACKGROUND.darker());
+
         cards.getChildren().addAll(cardBack, cardFront);
-
-        cardBack.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                Card card = game.drawCard();
-                cards.getChildren().remove(1);
-                cards.getChildren().add(makeCard(card));
-            }
-        });
-
+        deck = cards;
         return cards;
     }
 
@@ -528,11 +584,11 @@ public class MenuControllers {
         return container;
     }
 
-    private HBox makeOpponent(Color color){
+    private HBox makeOpponent(Color color, int index){
         HBox options = new HBox();
         options.setSpacing(Settings.Y_SIZE * .05);
-        Circle opponent = circleButton(Settings.MEDIUM_FONT.getSize() / 2, color);
-        options.getChildren().addAll(opponent, difficultyButton());
+        Circle opponent = circleButton(Settings.MEDIUM_FONT.getSize() / 2, color, index);
+        options.getChildren().addAll(opponent, difficultyButton(index));
 
         return options;
     }
@@ -607,6 +663,24 @@ public class MenuControllers {
         return help;
     }
 
+    private Button startGameButton(){
+        Button help = new Button("Start Game", Settings.MEDIUM_FONT);
+
+        help.getText().setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                game = new Controller();
+                game.setupNewGame(players[0].getColor(), players[1], players[2], players[3]);
+                gameBoard.toFront();
+                gameBoard.requestFocus();
+
+                playGame();
+            }
+        });
+
+        return help;
+    }
+
     /**
      *
      * @return
@@ -619,35 +693,70 @@ public class MenuControllers {
     }
 
     /**
-     *
      * @return
      */
-    private HBox difficultyButton(){
+    private HBox difficultyButton(int index){
         HBox parent = new HBox();
-        Button difficulty = new Button("Easy", Settings.MEDIUM_FONT);
-        parent.getChildren().add(difficulty.getText());
-        parent.setOnMouseReleased(new EventHandler() {
+        parent.setSpacing(Settings.X_SIZE * .02);
+        Text mean = makeText("Mean", Settings.MEDIUM_FONT);
+        Text nice = makeText("Nice", Settings.MEDIUM_FONT);
+        Text smart = makeText("Smart", Settings.MEDIUM_FONT);
+        Text dumb = makeText("Dumb", Settings.MEDIUM_FONT);
+        parent.getChildren().addAll(mean, nice, smart, dumb);
+
+        mean.setOnMouseReleased(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(Event event) {
-                if (difficulty.getText().toString().equals("Easy")) {
-                    parent.getChildren().remove(0);
-                    difficulty.getText().setFill(difficulty.getColor().darker());
-                    difficulty.getText().setStroke(difficulty.getColor().darker());
-                    difficulty.setText(makeText("Hard", Settings.MEDIUM_FONT));
-                    parent.getChildren().addAll(difficulty.getText());
-                } else {
-                    parent.getChildren().remove(0);
-                    difficulty.getText().setFill(difficulty.getColor().brighter());
-                    difficulty.getText().setStroke(difficulty.getColor().brighter());
-                    difficulty.setText(makeText("Easy", Settings.MEDIUM_FONT));
-                    parent.getChildren().addAll(difficulty.getText());
-                }
+            public void handle(MouseEvent event) {
+                switchButtons(mean, nice);
+                players[index].setMean(true);
             }
         });
+
+        nice.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                switchButtons(nice, mean);
+                players[index].setMean(false);
+            }
+        });
+
+        smart.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                switchButtons(smart, dumb);
+                players[index].setSmart(true);
+            }
+        });
+        dumb.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                switchButtons(dumb, smart);
+                players[index].setSmart(false);
+            }
+        });
+
         return parent;
     }
 
-    private Circle circleButton(double radius, Color color){
+    /**
+     *
+     * @param active
+     * @param inactive
+     */
+    private void switchButtons(Text active, Text inactive){
+        active.setFill(Settings.TEXT.darker());
+        inactive.setStroke(Settings.TEXT.darker());
+
+        inactive.setFill(Settings.TEXT);
+        inactive.setStroke(Settings.TEXT);
+    }
+
+    /**
+     * @param radius
+     * @param color
+     * @return
+     */
+    private Circle circleButton(double radius, Color color, int index){
         Circle circle = makeCircle(radius, color);
 
         circle.setOnMouseReleased(new EventHandler<MouseEvent>() {
@@ -655,30 +764,22 @@ public class MenuControllers {
             public void handle(MouseEvent event) {
                 circle.setFill(color.darker());
                 circle.setStroke(color.darker().darker());
-            }
-        });
-        circle.setOnMouseEntered(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                circle.setFill(color.darker());
-                circle.setStroke(color.darker().darker());
-            }
-        });
-        circle.setOnMouseExited(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                circle.setFill(color);
-                circle.setStroke(color.darker());
-            }
-        });
+                players[index] = new GamePiece(colorToEnum(color));
 
+            }
+        });
         return circle;
     }
+
+
 
     //
     // Event Handlers
     //
-
+    /**
+     * TODO Remember to change when newGameMenu is complete.
+     * @param button
+     */
     private void setResumeEventHandler(Button button) {
         button.getText().setOnMouseReleased(new EventHandler() {
             @Override
@@ -758,6 +859,8 @@ public class MenuControllers {
     public class Button {
         private Text text;
         private Color c = Settings.TEXT;
+        EventHandler darkenText;
+        EventHandler brightenText;
 
         public Button(String innerText, Font font) {
             text = new Text(innerText);
@@ -766,22 +869,21 @@ public class MenuControllers {
             text.setStroke(c.brighter());
             text.setStrokeWidth(font.getSize() * .05);
 
-            text.setOnMouseEntered(new EventHandler() {
+            text.setOnMouseEntered(new EventHandler<MouseEvent>() {
                 @Override
-                public void handle(Event event) {
+                public void handle(MouseEvent event) {
                     text.setFill(c.darker());
                     text.setStroke(c.darker());
                 }
             });
 
-            text.setOnMouseExited(new EventHandler() {
+            text.setOnMouseExited(new EventHandler<MouseEvent>() {
                 @Override
-                public void handle(Event event) {
+                public void handle(MouseEvent event) {
                     text.setFill(c.brighter());
                     text.setStroke(c.brighter());
                 }
             });
-
         }
 
         public Text getText() {
@@ -807,5 +909,21 @@ public class MenuControllers {
 
     public ArrayList<Node> getMenus() {
         return menus;
+    }
+
+    private Enums.Color colorToEnum(Color color){
+        if(color == Settings.RED){
+            return Enums.Color.RED;
+        }
+        if(color == Settings.YELLOW){
+            return Enums.Color.YELLOW;
+        }
+        if(color == Settings.GREEN){
+            return Enums.Color.GREEN;
+        }
+        if(color == Settings.BLUE){
+            return Enums.Color.BLUE;
+        }
+        return Enums.Color.RED;
     }
 }
