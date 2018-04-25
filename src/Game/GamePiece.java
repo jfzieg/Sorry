@@ -13,6 +13,7 @@ public class GamePiece implements Serializable{
     private int movesLeft;
     private boolean isSmart;
     private boolean isMean;
+    private boolean isHome;
 
     /**
      * Default constructor for a GamePiece. Should only be used for player's pieces, as booleans are not defined and
@@ -23,7 +24,17 @@ public class GamePiece implements Serializable{
     public GamePiece(Enums.Color color) {
         this.color = color;
         this.boardSide = color.getSide();
-        this.movesLeft = 60;
+        this.movesLeft = 58;
+        this.boardSide = -1; // Initial value for home location
+        this.isHome = false;
+    }
+
+    public boolean isHome() {
+        return isHome;
+    }
+
+    public void setHome(boolean isHome) {
+        this.isHome = isHome;
     }
 
     /**
@@ -34,10 +45,9 @@ public class GamePiece implements Serializable{
      * @param isMean
      */
     public GamePiece(Enums.Color color, boolean isSmart, boolean isMean){
-        this.color = color;
+        this(color);
         this.isSmart = isSmart;
         this.isMean = isMean;
-        this.boardSide = -1; // Initial value for home location
     }
 
     /**
@@ -102,7 +112,7 @@ public class GamePiece implements Serializable{
      * @param deltaMoves The +/- change in moves
      */
     public void adjustMovesLeft(int deltaMoves) {
-        this.movesLeft += movesLeft;
+        this.movesLeft += deltaMoves;
     }
 
     /**
