@@ -1,18 +1,12 @@
 package Game;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -22,8 +16,8 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.util.Callback;
 
+import java.io.IOException;
 import java.util.*;
 
 public class MenuControllers {
@@ -168,8 +162,9 @@ public class MenuControllers {
     /**
      * TODO: Add FileIO for loading saved serialized versions of Controller
      * @return
+     * @throws IOException
      */
-    public BorderPane loadMenu(){
+    public BorderPane loadMenu() throws IOException{
         //Initialize pane and prefs
         BorderPane pane = new BorderPane();
         pane.setBackground(new Background(new BackgroundFill(Settings.BACKGROUND, null, null)));
@@ -184,8 +179,20 @@ public class MenuControllers {
 
         Button main = startButton();
 
+        GameState gt = new GameState();
+        String[] option = gt.loadOptions();
+        Button[] optButton = new Button[option.length];
 
-        options.getChildren().addAll(title, main.getText());
+
+        options.getChildren().add(title);
+
+        for(int i = 0; i < optButton.length; i++){
+            optButton[i] = loadOptionButton(option[i]);
+            options.getChildren().add(optButton[i].getText());
+        }
+
+        options.getChildren().add(main.getText());
+
         pane.setLeft(options);
 
         //Add references for object retrieval
@@ -655,6 +662,14 @@ public class MenuControllers {
             }
         });
         return difficulty;
+    }
+
+    private Button loadOptionButton(String s){
+        Button option = new Button(s, Settings.MEDIUM_FONT);
+
+        setResumeEventHandler(option);
+
+        return option;
     }
 
     private Circle circleButton(double radius, Color color){
