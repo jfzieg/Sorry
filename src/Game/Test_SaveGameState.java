@@ -9,7 +9,8 @@ public class Test_SaveGameState {
     static void TestSave(GameState gt, Controller con) throws IOException{
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
         
-        File file = new File("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\" + timeStamp +".txt");
+//        File file = new File("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\" + timeStamp +".txt");
+        File file = new File("./saves/" + timeStamp +".txt");
         
         String[] arr = gt.loadOptions();
         
@@ -20,8 +21,9 @@ public class Test_SaveGameState {
 
     // Test load game from a text file
     static Controller TestLoadGameBoard(GameState gt) throws ClassNotFoundException, IOException {
-        String time = "2018.04.25.21.33.28";
-        Controller con2 = gt.loadControllerFromFile(time);
+        String ap_time = "2018.04.25.21.33.28";
+        String jz_time = "2018.04.26.10.56.07";
+        Controller con2 = gt.loadControllerFromFile(ap_time);
         return con2;
     }
 

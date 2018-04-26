@@ -96,8 +96,8 @@ public class GameState implements Serializable {
         String workingDir = System.getProperty("user.dir");
 
         if (count <= 6) {
-            FileWriter fw = new FileWriter(workingDir + "\\" + "option.txt", true);
-//            FileWriter fw = new FileWriter("./saves/options.txt", false);
+//            FileWriter fw = new FileWriter(workingDir + "\\" + "option.txt", true);
+            FileWriter fw = new FileWriter("./saves/options.txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
             fw.append(timeStamp);
             bw.newLine();
@@ -122,7 +122,8 @@ public class GameState implements Serializable {
      */
     public String[] loadOptions() throws IOException {
         String workingDir = System.getProperty("user.dir");
-        BufferedReader in = new BufferedReader(new FileReader(workingDir + "\\" + "option.txt"));
+//        BufferedReader in = new BufferedReader(new FileReader(workingDir + "\\" + "option.txt"));
+        BufferedReader in = new BufferedReader(new FileReader("./saves/options.txt"));
         String str;
 
         List<String> list = new ArrayList<String>();
@@ -144,7 +145,8 @@ public class GameState implements Serializable {
     public boolean openOptions() {
         String workingDir = System.getProperty("user.dir");
         try {
-            BufferedReader in = new BufferedReader(new FileReader(workingDir + "\\" + "option.txt"));
+//            BufferedReader in = new BufferedReader(new FileReader(workingDir + "\\" + "option.txt"));
+            BufferedReader in = new BufferedReader(new FileReader("./saves/options.txt"));
             return true;
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
