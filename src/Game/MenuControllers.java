@@ -457,9 +457,10 @@ public class MenuControllers {
             //YELLOW
             case 1:
                 slide.getPoints().addAll(new Double[]{
-                    0.0, 0.0,
-                    -longSide, Settings.TILE_SIZE / 2,
-                    0.0, shortSide
+                        0.0, 0.0,
+                        -longSide, Settings.TILE_SIZE / 2,
+                        0.0, shortSide
+
                 });
                 break;
             //GREEN
@@ -479,7 +480,8 @@ public class MenuControllers {
                         Settings.TILE_SIZE / 2, -longSide
 
                 });
-                default:
+            default:
+
                 break;
         }
         return slide;
@@ -501,6 +503,7 @@ public class MenuControllers {
     }
 
     /**
+     * TODO: Finish GUI buttons
      *
      * @return
      */

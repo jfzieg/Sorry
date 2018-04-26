@@ -12,7 +12,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         //Initialize menu overlays
         MenuControllers menus = new MenuControllers();
-        Controller game = new Controller();
+        Controller game = new Controller(true);
 
         // Initialize game from load or new game, set references for logic loop <-> event handlers
 //        game.setupNewGame();

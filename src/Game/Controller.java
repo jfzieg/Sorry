@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.ArrayList;
 
+/**
+ * @author Olivia Hurd
+ * */
 public class Controller implements Serializable{
     private static boolean TEST = false;
     private boolean game_paused;
@@ -25,7 +28,7 @@ public class Controller implements Serializable{
 
     /**
      * Setup for a new game
-     * Break this into multiple subfunctions --> how to code for user input from GUI?
+     * Set game fields appropriately
      */
     public void setupNewGame(Enums.Color color, GamePiece ... pieces) {
         this.board = new GameBoard(color, pieces);
@@ -37,7 +40,8 @@ public class Controller implements Serializable{
     }
 
     /**
-     * Main gameplay method call this for playing a game
+     * Main gameplay method
+     * Call this for playing a game
      */
     public void playGame(){
         ArrayList<Enums.Color> colorList = new ArrayList<>();
@@ -98,7 +102,7 @@ public class Controller implements Serializable{
     }
 
     /**
-     * Draw a card (get its value), and remove from deck
+     * Draw a card (get its value), and remove it from the deck
      *
      * HAS TEST CASE
      *
@@ -152,15 +156,46 @@ public class Controller implements Serializable{
      */
     public void takeTurn(Enums.Color color) {
 
-        // how many opponents are there? what colors are they?
-
         int card_num = drawCard().getType();
         // set a color for testing
         Enums.Color currentColor = color;
-        ArrayList<GamePiece> opponentsPieces = getPlayersPieces(currentColor);
-        ArrayList<GamePiece> opponentsEligiblePieces = getEligiblePieces(opponentsPieces, card_num);
-        GamePiece chosenPiece = ChoosePiece(opponentsEligiblePieces, card_num);
+        if (card_num == 0) {
+            ArrayList<GamePiece> opponentsPieces = getPlayersPieces(currentColor);
+            GamePiece chosenPiece = opponentsPieces.get(0);
+            int i = 1;
+            while (chosenPiece.isHome()) {
+                if (i < 4) {
+                    chosenPiece = opponentsPieces.get(i);
+                    i += 1;
+                }
+            }
+            ArrayList<GamePiece[]> OpponentsPieces = this.board.getOpponentsPieces();
+            GamePiece[] victimOpponent = OpponentsPieces.get(0);
+            int j = 1;
+            while (victimOpponent[0].getColor() == color) {
+                if (j < 3) {
+                    victimOpponent = OpponentsPieces.get(j);
+                    j += 1;
+                }
+            }
+            GamePiece victimPiece = victimOpponent[0];
+            board.sorry(chosenPiece,victimPiece);
 
+        } else {
+
+            ArrayList<GamePiece> opponentsPieces = getPlayersPieces(currentColor);
+            ArrayList<GamePiece> opponentsEligiblePieces = getEligiblePieces(opponentsPieces, card_num);
+            ChoosePiece(opponentsEligiblePieces, card_num);
+
+
+            boolean over = isGame_over(opponentsPieces);
+            if (over) {
+                setGame_over(true);
+            } else {
+                if (checkDeckEmpty()) {
+                    deck = initializeFullDeck();
+                    shuffleDeck(deck);
+                }
         boolean over = isGame_over(opponentsPieces);
         if (over) {
             // go to game over screen
@@ -168,11 +203,9 @@ public class Controller implements Serializable{
             if (checkDeckEmpty()) {
                 deck = initializeFullDeck();
             }
-            // next player's turn
         }
-        // What if there are no valid moves?
-
     }
+
 
     /**
      * List player's pieces
@@ -189,23 +222,10 @@ public class Controller implements Serializable{
                 }
             }
         }
-        //board.getPlayersPieces();
-        // make a list (AllPieces) of all the pieces
-        // for (GamePiece piece : AllPieces) {
-        // if (piece.color == color) {
-        // PlayersPieces.add(piece);
-        //}
-        //}
-
         return opponentPieces;
     }
 
     /**
-     *
-     * TODO: WRITE TEST CASE
-     *
-     * Maybe convert
-     *
      * List eligible pieces based on opponent being nice or mean
      * @param
      * @return EligiblePieces
@@ -222,63 +242,123 @@ public class Controller implements Serializable{
             }
         }
 
-        for (GamePiece piece2 : PlayersPieces) {
-            if (EligiblePieces.size() == 0) {
+        // if there are no eligible pieces, add a piece to the eligible piece list anyway
+        if (EligiblePieces.size() == 0) {
+            for (GamePiece piece2 : PlayersPieces) {
                 EligiblePieces.add(piece2);
             }
         }
         return EligiblePieces;
     }
 
-
-
     /**
-     *
-     * TODO: WRITE TEST CASE
-     *
-     * Choose piece to move
+     * Choose piece to move, and move it
      */
-    public GamePiece ChoosePiece(ArrayList<GamePiece> EligiblePieces, int card_num) {
+    public void ChoosePiece(ArrayList<GamePiece> EligiblePieces, int card_num) {
+
         GamePiece ChosenPiece = EligiblePieces.get(0);
         Enums.Color color = ChosenPiece.getColor();
+        // move a piece out of home if possible
         boolean leaveHome = false;
         if (card_num == 1 | card_num == 2) {
             leaveHome = board.homeGetOut(card_num, color, false);
         }
+
+        // if unable to leave home, or card not 1 or 2 ...
         if (!leaveHome) {
             if (ChosenPiece.isSmart()) {
 
-                GamePiece currentPiece = ChosenPiece;
-                ArrayList<GamePiece> pieceList = new ArrayList<>();
-                pieceList.add(currentPiece);
-                // score is cumulative distance from home, so we want to minimize it
+                if (card_num != 4 && card_num != 11) {
 
-                int currentScore = scoreMove(ChosenPiece, card_num);
-                ArrayList<Integer> scoreList = new ArrayList<>();
-                scoreList.add(currentScore);
+                    GamePiece currentPiece = ChosenPiece;
+                    ArrayList<GamePiece> pieceList = new ArrayList<>();
+                    pieceList.add(currentPiece);
+                    // score is cumulative distance from home, so we want to minimize it
+
+                    int currentScore = scoreMove(ChosenPiece, card_num);
+                    ArrayList<Integer> scoreList = new ArrayList<>();
+                    scoreList.add(currentScore);
 
 
-                for (GamePiece piece : EligiblePieces) {
-                    int newScore = scoreMove(piece, card_num);
-                    if (newScore < currentScore) {
-                        pieceList.add(0, piece);
-                        scoreList.add(0, newScore);
-                    } else {
-                        pieceList.add(piece);
-                        scoreList.add(newScore);
+                    for (GamePiece piece : EligiblePieces) {
+                        int newScore = scoreMove(piece, card_num);
+                        if (newScore < currentScore) {
+                            pieceList.add(0, piece);
+                            scoreList.add(0, newScore);
+                        } else {
+                            pieceList.add(piece);
+                            scoreList.add(newScore);
+                        }
                     }
-
+                    boolean pieceMoved = false;
+                    //boolean pieceMoved = board.movePieceForward(ChosenPiece, card_num);
+                    int index = 1;
+                    while (pieceMoved == false) {
+                        if (index < pieceList.size()) {
+                            GamePiece newPiece = pieceList.get(index);
+                            if (newPiece.isHome()) {
+                                pieceMoved = board.moveInHome(newPiece, card_num);
+                            } else {
+                                pieceMoved = board.movePieceForward(newPiece, card_num);
+                                index += 1;
+                            }
+                        }
+                    }
                 }
 
-                boolean pieceMoved = board.movePieceForward(ChosenPiece, card_num);
-                int index = 1;
-                while (pieceMoved == false) {
-                    if (index < pieceList.size()) {
-                        GamePiece newPiece = pieceList.get(index);
-                        pieceMoved = board.movePieceForward(newPiece, card_num);
-                        index += 1;
+                if (card_num == 4) {
+
+                    GamePiece currentPiece = ChosenPiece;
+                    ArrayList<GamePiece> pieceList = new ArrayList<>();
+                    pieceList.add(currentPiece);
+
+                    int currentScore = scoreMove(ChosenPiece, card_num);
+                    ArrayList<Integer> scoreList = new ArrayList<>();
+                    scoreList.add(currentScore);
+
+
+                    for (GamePiece piece : EligiblePieces) {
+                        int newScore = scoreMove(piece, card_num);
+                        if (newScore > currentScore) {
+                            pieceList.add(0, piece);
+                            scoreList.add(0, newScore);
+                        } else {
+                            pieceList.add(piece);
+                            scoreList.add(newScore);
+                        }
+
                     }
-                }
+
+                    GamePiece newPiece = pieceList.get(0);
+                    board.movePieceBackWard(newPiece, card_num);
+                    }
+
+                 if (card_num == 11) {
+                    ArrayList<GamePiece[]> pieces = board.getOpponentsPieces();
+                    int distance = 100;
+                    int max_dist = 0;
+                    for (GamePiece playersPiece : board.getPlayerPieces()) {
+                        if (playersPiece.getMovesLeft() > max_dist) {
+                            max_dist = playersPiece.getMovesLeft();
+                            ChosenPiece = playersPiece;
+                        }
+                    }
+                    GamePiece VictimPiece = pieces.get(0)[0];
+                    for (GamePiece[] colorPieces : pieces) {
+                        if (colorPieces[0].getColor() != ChosenPiece.getColor()) {
+                            VictimPiece = colorPieces[0];
+                            for (GamePiece piece : colorPieces) {
+                                if (piece.getMovesLeft() < distance) {
+                                    distance = piece.getMovesLeft();
+                                    VictimPiece = piece;
+                                }
+                            }
+                        }
+                    }
+
+                    board.switchPiece(ChosenPiece, VictimPiece);
+                 }
+            }
 
             } else {
 
@@ -288,62 +368,154 @@ public class Controller implements Serializable{
                 ChosenPiece = EligiblePieces.get(r);
 
                 // move piece forward
-                boolean pieceMoved = board.movePieceForward(ChosenPiece, card_num);
-                while (board.movePieceForward(ChosenPiece, card_num) == false) {
-                    r = rng.nextInt(EligiblePieces.size());
-                    ChosenPiece = EligiblePieces.get(r);
-                    pieceMoved = board.movePieceForward(ChosenPiece, card_num);
+                if (card_num != 4 && card_num != 7) {
+
+                    if (ChosenPiece.isHome()) {
+                        boolean pieceMoved = board.moveInHome(ChosenPiece, card_num);
+                        while (board.movePieceForward(ChosenPiece, card_num) == false) {
+                            r = rng.nextInt(EligiblePieces.size());
+                            ChosenPiece = EligiblePieces.get(r);
+                            pieceMoved = board.moveInHome(ChosenPiece, card_num);
+                        }
+                    } else {
+                        boolean pieceMoved = board.movePieceForward(ChosenPiece, card_num);
+                        while (board.movePieceForward(ChosenPiece, card_num) == false) {
+                            r = rng.nextInt(EligiblePieces.size());
+                            ChosenPiece = EligiblePieces.get(r);
+                            pieceMoved = board.movePieceForward(ChosenPiece, card_num);
+                        }
+                    }
                 }
 
+                if (card_num == 4) {
+                    // What if the piece can't move backward 4? (As a result of bumping its own piece)
+                    board.movePieceBackWard(ChosenPiece, card_num);
+                }
 
-                // if (card_num == 7)
+                if (card_num == 7) {
+                    rng = new Random();
+                    int r2 = rng.nextInt(EligiblePieces.size());
+                    while (r2 == r) {
+                        r2 = rng.nextInt(EligiblePieces.size());
+                    }
+                    GamePiece chosenPiece2 = EligiblePieces.get(r2);
+                    boolean piece1moved;
+                    if (chosenPiece2.isHome()) {
+                        piece1moved = board.moveInHome(ChosenPiece, 3);
+                    } else {
+                        piece1moved = board.movePieceForward(ChosenPiece, 3);
+                    }
+                    boolean piece2moved = true;
+                    if (piece1moved) {
+                        if (chosenPiece2.isHome()) {
+                            piece2moved = board.moveInHome(chosenPiece2, 4);
+                        } else {
+                            piece2moved = board.movePieceForward(chosenPiece2, 4);
+                        }
+                    }
+                    if (!piece1moved || !piece2moved) {
+                        if (ChosenPiece.isHome()) {
+                            piece1moved = board.moveInHome(ChosenPiece, card_num);
+                        } else {
+                            piece1moved = board.movePieceForward(ChosenPiece, card_num);
+                        }
 
-                // if (card_num == 10)
+                        int tryCounter = 1;
+                        while (!piece1moved) {
+                            if (tryCounter < 4) {
+                                rng = new Random();
+                                int r3 = rng.nextInt(EligiblePieces.size());
+                                while (r3 != r2 && r3 != r) {
+                                    ChosenPiece = EligiblePieces.get(r3);
+                                    r3 = rng.nextInt(EligiblePieces.size());
+                                }
+                                tryCounter += 1;
+                                if (ChosenPiece.isHome()) {
+                                    piece1moved = board.moveInHome(ChosenPiece, card_num);
+                                } else {
+                                    piece1moved = board.movePieceForward(ChosenPiece, card_num);
+                                }
+                            }
+                        }
+                    }
+                }
 
-                // if (card_num == 11)
-
-
-            }
         }
-        return ChosenPiece;
     }
 
-
+    /**
+     * Score a move
+     * @param piece and card_num
+     * @return integer score
+     */
     public int scoreMove(GamePiece piece, int card_num) {
         int moveScore = piece.getMovesLeft();
+        if (card_num == 4) {
+            int movesLeft = piece.getMovesLeft();
+            if (movesLeft < 55) {
+                moveScore = 1;
+            }
+        }
         return moveScore;
     }
-  
-    private boolean CheckValidMove(GamePiece piece, int card_num){
 
-        return true;
-    }
-
+    /**
+     * Check if a move will result in a bum
+     *
+     * USED GameBoard method for this!
+     *
+     * @param piece and card_num
+     * @return boolean
+     */
     private boolean checkBump(GamePiece piece, int card_num){
-
         return true;
     }
 
+    /**
+     * @return the deck
+     */
     public ArrayList<Card> getDeck() {
         return deck;
     }
 
+    /**
+     * @param deck
+     *
+     */
     public void setDeck(ArrayList<Card> deck) {
         this.deck = deck;
     }
 
+    /**
+     * Check if game is paused
+     * @return boolean game over
+     */
     public boolean isGame_paused() {
         return game_paused;
     }
 
+    /**
+     * Set paused game
+     * @param  game_paused
+     *
+     */
     public void setGame_paused(boolean game_paused) {
         this.game_paused = game_paused;
     }
 
+    /**
+     * checks if game is over
+     * @param Pieces
+     * @return boolean
+     */
     public boolean isGame_over(ArrayList<GamePiece> Pieces) {
         int cumulativeDist = 0;
+        int numPiecesHome = 0;
         for (GamePiece piece : Pieces) {
             cumulativeDist += piece.getMovesLeft();
+            if (piece.isHome()) {
+                numPiecesHome += 1;
+            }
         }
         if (cumulativeDist == 0) {
             game_over = true;
@@ -353,37 +525,35 @@ public class Controller implements Serializable{
         return game_over;
     }
 
-        public void setGame_over ( boolean game_over){
-            this.game_over = game_over;
-        }
-
-        public boolean isNewGame () {
-            return new_game;
-        }
-
-        public void setNew_game ( boolean new_game){
-            this.new_game = new_game;
-        }
-
-        /**
-         * DON'T THINK WE NEED THIS METHOD --> can loop through players in main
-         * @param current_player
-         * @return
-         */
-
-        public String nextPlayer (String current_player){
-            ArrayList<String> players = new ArrayList<>();
-            players.add("USER");
-            players.add("C1");
-            players.add("C2");
-            players.add("C3");
-            int index = players.indexOf(current_player);
-            int next_index = (index + 1) % 4;
-            String next_player = players.get(next_index);
-            return next_player;
-        }
-
-        public void setMenuControllers (MenuControllers menus){
-            this.menus = menus;
-        }
+    /**
+     * Sets game to over
+     * @param game_over
+     */
+    public void setGame_over(boolean game_over) {
+        this.game_over = game_over;
     }
+
+    /**
+     * checks to see if it's a new game
+     * @return boolean new game
+     */
+    public boolean isNewGame() {
+        return new_game;
+    }
+
+    /**
+     * Set a new game
+     * @param new_game
+     */
+    public void setNew_game(boolean new_game) {
+        this.new_game = new_game;
+    }
+
+    /**
+     * @param menus
+     */
+    public void setMenuControllers(MenuControllers menus){
+        this.menus = menus;
+    }
+
+}
