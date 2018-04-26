@@ -1,34 +1,29 @@
 package Game;
 
-import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import javafx.embed.swing.JFXPanel;
 
 public class Test_SaveGameState {
-    static void TestSave(GameState gt, Controller con) throws IOException{
 
+    // Test save game to text file
+    static void TestSave(GameState gt, Controller con) throws IOException {
         gt.saveGameDataToFile(con);
     }
 
-    static Controller TestLoadGameBoard(GameState gt) throws ClassNotFoundException, IOException{
-        File file = new File("save.txt");
-        Controller con2 = gt.loadControllerFromFile(file);
+    // Test load game from a text file
+    static Controller TestLoadGameBoard(GameState gt) throws ClassNotFoundException, IOException {
+        String time = "2018.04.25.21.33.28";
+        Controller con2 = gt.loadControllerFromFile(time);
         return con2;
     }
 
-    public static void main (String[] args) throws ClassNotFoundException, IOException {
-         Controller con = new Controller();
-         GameState gt = new GameState();
+    public static void main(String[] args) throws ClassNotFoundException, IOException {
+        Controller con = new Controller();
+        GameState gt = new GameState();
 
-         TestSave(gt, con);
-         Controller gt2;
-//         gt2 = TestLoadGameBoard(gt);
-
-
-         System.out.println();
+        TestSave(gt, con);
+        // Load a saved controller to a new controller
+        Controller gt2;
+        gt2 = TestLoadGameBoard(gt);
 
     }
 }
