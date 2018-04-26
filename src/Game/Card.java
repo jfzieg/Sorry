@@ -6,6 +6,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 public class Card implements Serializable{
+
+
     protected Enums.CardType type;
 
     /**

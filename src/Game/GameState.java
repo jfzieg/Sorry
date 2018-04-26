@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -22,39 +24,53 @@ public class GameState implements Serializable {
 
     public GameState(){
     }
-    
-    public void saveGameDataToFile(File file, Controller con){
+
+    public void saveGameDataToFile(Controller con){
         try{
+            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+            String workingDir = System.getProperty("user.dir");
+
+            File file = new File( workingDir + "\\" + timeStamp +".txt");
+            if(openOptions() == true){
+
+            String[] arr = loadOptions();
+
+            saveOptions(timeStamp, arr.length);
+            } else{
+                saveOptions(timeStamp, 0);
+            }
+
             FileOutputStream fileStream = new FileOutputStream(file);
             ObjectOutputStream objectStream = new ObjectOutputStream(fileStream);
-            
+
                     objectStream.writeObject(con);
                     objectStream.close();
                     fileStream.close();
-                    
+
                     System.out.println("Save game state successfully");
                 } catch(Exception e){
                     System.out.println("Fail to save game state");
                 }
 }
-    
+
     public Controller loadControllerFromFile(File file) throws ClassNotFoundException, IOException{
         FileInputStream fileStream = new FileInputStream(file);
         ObjectInputStream objectStream = new ObjectInputStream(fileStream);
-        
+
         Controller con = (Controller) objectStream.readObject();
-        
+
+
         objectStream.close();
         fileStream.close();
         System.out.println("Load game state successfully");
         return con;
     }
-    
+
     public void saveOptions(String timeStamp, int count) throws IOException{
-        
-        
+        String workingDir = System.getProperty("user.dir");
+
         if( count <= 6){
-        FileWriter fw = new FileWriter("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\option.txt", true);
+        FileWriter fw = new FileWriter(workingDir + "\\" + "option.txt", true);
         BufferedWriter bw = new BufferedWriter(fw);
         fw.append(timeStamp);
         bw.newLine();
@@ -62,7 +78,7 @@ public class GameState implements Serializable {
         fw.close();
         }
         else{
-            FileWriter fw = new FileWriter("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\option.txt", false);
+            FileWriter fw = new FileWriter(workingDir + "\\" + "option.txt", false);
             BufferedWriter bw = new BufferedWriter(fw);
             fw.append(timeStamp);
             bw.newLine();
@@ -70,9 +86,10 @@ public class GameState implements Serializable {
             fw.close();
         }
     }
-    
+
     public String[] loadOptions() throws IOException{
-        BufferedReader in = new BufferedReader(new FileReader("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\option.txt"));
+        String workingDir = System.getProperty("user.dir");
+        BufferedReader in = new BufferedReader(new FileReader( workingDir + "\\" + "option.txt"));
         String str;
 
         List<String> list = new ArrayList<String>();
@@ -81,46 +98,19 @@ public class GameState implements Serializable {
         }
 
         String[] stringArr = list.toArray(new String[0]);
-        
+
         return stringArr;
     }
-    
-//    public GamePiece[] loadPlayerPieceFromFile(File file) throws ClassNotFoundException, IOException{
-//        FileInputStream fileStream = new FileInputStream(file);
-//        ObjectInputStream objectStream = new ObjectInputStream(fileStream);
-//        GamePiece[] player = new GamePiece[4];
-//        
-//        player = (GamePiece[]) objectStream.readObject();
-//        
-//        objectStream.close();
-//        fileStream.close();
-//        System.out.println("Load game state successfully");
-//        return player;
-//    }
-//    
-//    public ArrayList<GamePiece[]> loadOpponentFromFile(File file) throws ClassNotFoundException, IOException{
-//        FileInputStream fileStream = new FileInputStream(file);
-//        ObjectInputStream objectStream = new ObjectInputStream(fileStream);
-//        ArrayList<GamePiece[]> opponent = new ArrayList<GamePiece[]>();
-//        
-//        opponent = (ArrayList<GamePiece[]>) objectStream.readObject();
-//        
-//        objectStream.close();
-//        fileStream.close();
-//        System.out.println("Load game state successfully");
-//        return opponent;
-//    }
-//    
-//    public ArrayList<Card> loadCardFromFile(File file) throws ClassNotFoundException, IOException{
-//        FileInputStream fileStream = new FileInputStream(file);
-//        ObjectInputStream objectStream = new ObjectInputStream(fileStream);
-//        ArrayList<Card> card = new ArrayList<Card>();
-//        
-//        card = (ArrayList<Card>) objectStream.readObject();
-//        
-//        objectStream.close();
-//        fileStream.close();
-//        System.out.println("Load game state successfully");
-//        return card;
-//    }
+
+    public boolean openOptions(){
+        String workingDir = System.getProperty("user.dir");
+        try {
+            BufferedReader in = new BufferedReader(new FileReader( workingDir + "\\" + "option.txt"));
+            return true;
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            return false;
+        }
+    }
+
 }
