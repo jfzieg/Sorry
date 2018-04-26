@@ -77,7 +77,8 @@ public class GameState implements Serializable {
     }
 
     public String[] loadOptions() throws IOException{
-        BufferedReader in = new BufferedReader(new FileReader("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\option.txt"));
+//        BufferedReader in = new BufferedReader(new FileReader("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\option.txt"));
+        BufferedReader in = new BufferedReader(new FileReader("./saves/options.txt"));
         String str;
 
         List<String> list = new ArrayList<String>();

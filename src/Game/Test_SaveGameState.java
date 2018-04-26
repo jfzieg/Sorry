@@ -17,7 +17,7 @@ public class Test_SaveGameState {
         
         gt.saveOptions(timeStamp, arr.length);
                     
-        gt.saveGameDataToFile(file, con);
+        gt.saveGameDataToFile(con);
     }
     
     static Controller TestLoadGameBoard(GameState gt) throws ClassNotFoundException, IOException{
