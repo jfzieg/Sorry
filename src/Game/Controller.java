@@ -255,7 +255,7 @@ public class Controller implements Serializable{
         if (!leaveHome) {
             if (ChosenPiece.isSmart()) {
 
-                if (card_num != 4) {
+                if (card_num != 4 && card_num != 11) {
 
                     GamePiece currentPiece = ChosenPiece;
                     ArrayList<GamePiece> pieceList = new ArrayList<>();
@@ -319,6 +319,32 @@ public class Controller implements Serializable{
                     GamePiece newPiece = pieceList.get(0);
                     board.movePieceBackWard(newPiece, card_num);
                     }
+
+                 if (card_num == 11) {
+                    ArrayList<GamePiece[]> pieces = board.getOpponentsPieces();
+                    int distance = 100;
+                    int max_dist = 0;
+                    for (GamePiece playersPiece : board.getPlayerPieces()) {
+                        if (playersPiece.getMovesLeft() > max_dist) {
+                            max_dist = playersPiece.getMovesLeft();
+                            ChosenPiece = playersPiece;
+                        }
+                    }
+                    GamePiece VictimPiece = pieces.get(0)[0];
+                    for (GamePiece[] colorPieces : pieces) {
+                        if (colorPieces[0].getColor() != ChosenPiece.getColor()) {
+                            VictimPiece = colorPieces[0];
+                            for (GamePiece piece : colorPieces) {
+                                if (piece.getMovesLeft() < distance) {
+                                    distance = piece.getMovesLeft();
+                                    VictimPiece = piece;
+                                }
+                            }
+                        }
+                    }
+
+                    board.switchPiece(ChosenPiece, VictimPiece);
+                 }
             }
 
             } else {
@@ -400,6 +426,7 @@ public class Controller implements Serializable{
                         }
                     }
                 }
+
         }
     }
 
@@ -456,7 +483,7 @@ public class Controller implements Serializable{
 
     /**
      * Set paused game
-     * @param boolean game paused
+     * @param  game_paused
      *
      */
     public void setGame_paused(boolean game_paused) {
@@ -488,7 +515,7 @@ public class Controller implements Serializable{
 
     /**
      * Sets game to over
-     * @param boolean game over
+     * @param game_over
      */
     public void setGame_over(boolean game_over) {
         this.game_over = game_over;
@@ -498,13 +525,13 @@ public class Controller implements Serializable{
      * checks to see if it's a new game
      * @return boolean new game
      */
-    public boolean isNew_game() {
+    public boolean isNewGame() {
         return new_game;
     }
 
     /**
      * Set a new game
-     * @param boolean new game
+     * @param new_game
      */
     public void setNew_game(boolean new_game) {
         this.new_game = new_game;
