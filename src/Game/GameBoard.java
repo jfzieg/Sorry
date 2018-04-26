@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /**
  * @author Anh Phan
  * @date 2018-03-14
- * @version 1.0	
+ * @version 1.0
  */
 
 
@@ -15,6 +15,7 @@ public class GameBoard implements Serializable{
     //Variables for game board
     private static final long serialVersionUID = -862206733593296676L;
     private GamePiece[][] tileList;
+    private GamePiece[][] homeList;
     private GamePiece[] playerPieces;
     private ArrayList<GamePiece[]> opponentsPieces;
 
@@ -42,6 +43,9 @@ public class GameBoard implements Serializable{
                 opponentsPieces.add(opponent);
             }
         }
+
+        tileList = new GamePiece[4][16];
+        homeList = new GamePiece[4][5];
     }
 
     /**
@@ -58,7 +62,27 @@ public class GameBoard implements Serializable{
         if(piece.getInnerLocation() + card < 16){
             piece.adjustMovesLeft(-card);
             piece.setInnerLocation(piece.getInnerLocation() + card);
-            piece.adjustMovesLeft(piece.getMovesLeft() - card);
+
+            //Check if the piece can get into home or not
+            //If it can move to home, adjust the piece's info and have variable isHome to true
+            if(checkHome(piece)){
+                piece.setInnerLocation(Math.abs(piece.getMovesLeft() + 1));
+                int boardSide = piece.getColor().getSide();
+                piece.setMovesLeft( 4 - piece.getInnerLocation());
+                piece.setHome(true);
+
+                if (homeList[boardSide][piece.getInnerLocation()] == null){
+                    homeList[boardSide][piece.getInnerLocation()] = piece;
+                    tileList[oldSide][oldLoc] = null;
+                    return true;
+                } else{
+                    piece.setLocation(oldSide, oldLoc);
+                    piece.setMovesLeft(oldMovesLeft);
+                    piece.setHome(false);
+                    return false;
+                }
+            }
+
             checkSlide(piece);
 
             // If a bump is possible, bump the target and update tileList
@@ -82,9 +106,30 @@ public class GameBoard implements Serializable{
         // Move piece to next side, add remaining moves left
         else{
             piece.adjustMovesLeft(-card);
-            card -= (16 - piece.getInnerLocation());
-            piece.setLocation(changeBoardSide(piece.getBoardSide(), true), card);
+            card -= (15 - piece.getInnerLocation());
+            int boardSide = changeBoardSide(piece.getBoardSide(), true);
+            piece.setLocation(boardSide, card);
             checkSlide(piece);
+
+            //Check if the piece can get into home or not
+            //If it can move to home, adjust the piece's info and have variable isHome to true
+            if(checkHome(piece)){
+                piece.setInnerLocation(Math.abs(piece.getMovesLeft() + 1));
+                int boardSide2 = piece.getColor().getSide();
+                piece.setMovesLeft( 4 - piece.getInnerLocation());
+                piece.setHome(true);
+
+                if (homeList[boardSide2][piece.getInnerLocation()] == null){
+                    homeList[boardSide2][piece.getInnerLocation()] = piece;
+                    tileList[oldSide][oldLoc] = null;
+                    return true;
+                } else{
+                    piece.setLocation(oldSide, oldLoc);
+                    piece.setMovesLeft(oldMovesLeft);
+                    piece.setHome(false);
+                    return false;
+                }
+            }
 
             // If a bump is possible, bump the target and update tileList
             if(checkBump(piece)){
@@ -115,13 +160,15 @@ public class GameBoard implements Serializable{
     private int changeBoardSide(int boardSide, boolean forward){
         if(forward) {
             if (boardSide < 3 && boardSide >= 0) {
-                return boardSide++;
+                boardSide += 1;
+                return boardSide;
             }
             return 0;
         }
         else{
             if (boardSide <= 3 && boardSide > 0) {
-                return boardSide--;
+                boardSide -= 1;
+                return boardSide;
             }
             return 3;
         }
@@ -147,40 +194,74 @@ public class GameBoard implements Serializable{
     }
 
     /**
-     * Used for the #4 card only, moves piece backwards.
+     * Used for the #4 card and #10 card only, moves piece backwards.
      * @param piece
      * @param card
+     * @return true if it can move backward, false otherwise
      */
-    void movePieceBackWard( GamePiece piece, int card){
+    boolean movePieceBackWard( GamePiece piece, int card){
         // Move specified number of places on the same side
+
+        int oldSide = piece.getBoardSide(), oldLoc = piece.getInnerLocation(), oldMovesLeft = piece.getMovesLeft();
+
         if(piece.getInnerLocation() - card > 0){
             piece.adjustMovesLeft(+card);
             piece.setInnerLocation(piece.getInnerLocation() - card);
+            checkSlide(piece);
+
+            // If a bump is possible, bump the target and update tileList
+            if(checkBump(piece)){
+                bumpPiece(piece);
+                tileList[oldSide][oldLoc] = null;
+                return true;
+            }
+
+            else {
+                if(tileList[piece.getBoardSide()][piece.getInnerLocation()] == null) {
+                    tileList[piece.getBoardSide()][piece.getInnerLocation()] = piece;
+                    tileList[oldSide][oldLoc] = null;
+                    return true;
+                }
+
+                piece.setLocation(oldSide, oldLoc);
+                piece.setMovesLeft(oldMovesLeft);
+                return false;
+            }
+
         }
         // Move piece to next side, add remaining moves left
         else{
             piece.adjustMovesLeft(+card);
             card -= piece.getInnerLocation();
-            piece.setBoardSide(changeBoardSide(piece.getBoardSide(), false));
+            if(card == 0){
+                card = 15;
+            }
+            int boardSide = changeBoardSide(piece.getBoardSide(), false);
+            piece.setBoardSide(boardSide);
             piece.setInnerLocation(card);
+            checkSlide(piece);
+
+         // If a bump is possible, bump the target and update tileList
+            if(checkBump(piece)){
+                bumpPiece(piece);
+                tileList[oldSide][oldLoc] = null;
+                return true;
+            }
+
+            // If a bump isn't possible, check to see if the tile is free and update tileList
+            else {
+                if(tileList[piece.getBoardSide()][piece.getInnerLocation()] == null) {
+                    tileList[piece.getBoardSide()][piece.getInnerLocation()] = piece;
+                    tileList[oldSide][oldLoc] = null;
+                    return true;
+                }
+
+                piece.setLocation(oldSide, oldLoc);
+                piece.setMovesLeft(oldMovesLeft);
+                return false;
+            }
         }
-//        checkBump();
-        checkSlide(piece);
 
-    }
-
-
-    //Only get called if checkChangeTile return true
-    //temporary variable move represent the card number
-    //Since each tile has 16 index, we calculate the available move in the tile that the piece is on by
-    //using the last index of the tile 15 - the index that the piece is currently on and we have availableMove
-    //Then we have the number of card minus available; therefore, we will know how much index we need to move in the new tile
-    int changePiecePos(GamePiece piece, int card, int i, int j){
-        //temporary move variable for card
-        int move = card;
-        int availableMove = 15 - j;
-        int needMove = move - availableMove;
-        return needMove;
     }
 
     /**
@@ -226,9 +307,10 @@ public class GameBoard implements Serializable{
     }
 
     /**
-     * TODO: work on better logic??
+     *
      * check for same color, bool true if bump, false otherwise
      * @param piece
+     * @return return true if it can bump, false otherwise
      */
     boolean checkBump(GamePiece piece){
         GamePiece bumped = tileList[piece.getBoardSide()][piece.getInnerLocation()];
@@ -249,12 +331,165 @@ public class GameBoard implements Serializable{
         tileList[piece.getBoardSide()][piece.getInnerLocation()] = piece;
         temp.setBoardSide(-1);
     }
+    /**
+     * Send a victim piece to start and have your piece at the victim's location
+     * @param piece
+     * @param victim
+     * @return true if a piece can bump a victim, false otherwise
+     * Not all victim can be bumped, you can only bump the piece that will benefit you.
+     */
+    public boolean sorry(GamePiece piece, GamePiece victim){
+        //Calculate the distant between 2 pieces
+        int count = calPieceDistant(piece, victim);
+        if(piece.getMovesLeft() - count < 0){
+            return false;
+        }
 
-    public void sorry(GamePiece piece, GamePiece victim){
+        //Check if piece can be switched
         tileList[piece.getBoardSide()][piece.getInnerLocation()] = null;
         tileList[victim.getBoardSide()][victim.getInnerLocation()] = piece;
+
+        //Adjust piece and victim information
+        piece.setBoardSide(victim.getBoardSide());
+        piece.setInnerLocation(victim.getInnerLocation());
+
+        piece.adjustMovesLeft(-count);
+
         victim.setBoardSide(-1);
+        victim.setMovesLeft(58);
+        return true;
     }
+
+    /**
+     * Switch place between two pieces
+     * Call this when card 11 is activated
+     * @param piece
+     * @param victim
+     * @return true if you can switch place with a victim, false otherwise
+     * Not all victim can be switched, you can only switch the piece that will benefit you.
+     */
+    public boolean switchPiece (GamePiece piece, GamePiece victim){
+        //Calculate the distant between 2 pieces
+        int count = calPieceDistant(piece, victim);
+
+        //Check if piece can be switched
+        if(piece.getMovesLeft() - count < 0){
+            return false;
+        }
+        //Switch the position of the two pieces in tileList
+        tileList[piece.getBoardSide()][piece.getInnerLocation()] = victim;
+        tileList[victim.getBoardSide()][victim.getInnerLocation()] = piece;
+
+        int tempBoardSide = piece.getBoardSide();
+        int tempInnerLocation = piece.getInnerLocation();
+
+        //Adjust piece and victim information
+        piece.setBoardSide(victim.getBoardSide());
+        piece.setInnerLocation(victim.getInnerLocation());
+        piece.adjustMovesLeft(-count);
+
+        victim.setBoardSide(tempBoardSide);
+        victim.setInnerLocation(tempInnerLocation);
+        victim.adjustMovesLeft(count);
+        return true;
+
+    }
+
+    /** Go through the tile list, get the piece that want to switch
+     * then calculate how many step that needs to go to the victim
+     *
+     * @param piece
+     * @param victim
+     * @return a distant between 2 piece from the piece that want to switch
+     */
+    int calPieceDistant(GamePiece piece, GamePiece victim){
+        int count = 0;
+        boolean check = false;
+        boolean check2 = false;
+        boolean check3 = false;
+
+        //Go through 2 nested loop for the 2D array
+        //If it can find the piece, check boolean to true and then we can increment the count
+        //If i and j reach to the end and cannot find the victim, switch i back to 0
+        //Go through the loop again to find the victim, keep incrementing count until victim is found
+        //If victim is found, break out of the loop
+        for(int i = 0; i < 4; i++){
+
+            if(check2 == true){
+                i -= 1;
+            }
+
+            for (int j = 1; j < 16; j++){
+                if (check == true){
+                    count ++;
+                    if(tileList[i][j] == victim){
+                        check3 = true;
+                        break;
+
+                    } else if(i == 3 && j == 15){
+                        i = 0;
+                        check2 = true;
+
+                    } else if(i == 0 && j == 15){
+                        check2 = false;
+                    }
+                }
+
+                if(tileList[i][j] == piece){
+                    check = true;
+
+                }
+        }
+            if (check3 == true){
+                break;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Check movesLeft in piece to see if it can get into homeTile or not
+     * @param piece
+     * @return a true if it can get to homeTile, false otherwise
+     */
+    boolean checkHome(GamePiece piece){
+        if(piece.getMovesLeft() < 0){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Called when piece is in home (boolean isHome = true)
+     * Piece won't move if there is a piece in front of it or the move is unavailable
+     * MovesLeft is updated when a piece is get to home
+     * @param piece
+     * @param card
+     * @return true if move was successful, false otherwise
+     */
+    boolean moveInHome(GamePiece piece, int card){
+        // Move specified number of places on the same side
+        int oldSide = piece.getBoardSide(), oldLoc = piece.getInnerLocation(), oldMovesLeft = piece.getMovesLeft();
+
+        //If move is not exceed moveLeft
+        if(piece.getInnerLocation() + card < 5){
+            piece.adjustMovesLeft(-card);
+            piece.setInnerLocation(piece.getInnerLocation() + card);
+            //If nothing in the place, you can move
+            if(homeList[piece.getBoardSide()][piece.getInnerLocation()] == null || piece.getInnerLocation() == 4){
+                homeList[piece.getBoardSide()][piece.getInnerLocation()] = piece;
+                homeList[oldSide][oldLoc] = null;
+                return true;
+            }
+
+            piece.setLocation(oldSide, oldLoc);
+            piece.setMovesLeft(oldMovesLeft);
+            return false;
+        }
+
+        return false;
+    }
+
 
     public GamePiece[][] getTileList() {
         return tileList;
