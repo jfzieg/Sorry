@@ -59,6 +59,7 @@ public class GameState implements Serializable {
 
         Controller con = (Controller) objectStream.readObject();
 
+
         objectStream.close();
         fileStream.close();
         System.out.println("Load game state successfully");
