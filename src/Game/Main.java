@@ -12,7 +12,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         //Initialize menu overlays
         MenuControllers menus = new MenuControllers();
-        Controller game = new Controller();
+        Controller game = new Controller(true);
 
         // Initialize game from load or new game, set references for logic loop <-> event handlers
 //        game.setupNewGame();
@@ -20,7 +20,8 @@ public class Main extends Application {
 //        game.setMenuControllers(menus);
 
 
-        Parent root = new StackPane(menus.startMenu(), menus.newGameMenu(), menus.loadMenu(), menus.leaderboardMenu(), menus.helpMenu(), menus.endMenu(), menus.gameBoard());
+        Parent root = new StackPane(menus.startMenu(), menus.gameBoard(), menus.newGameMenu(), menus.loadMenu(), menus.leaderboardMenu(), menus.helpMenu(), menus.endMenu());
+
         menus.getMenus().get(0).toFront();
 
         primaryStage.setTitle("Sorry!");

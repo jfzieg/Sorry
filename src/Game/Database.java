@@ -21,13 +21,13 @@ public class Database {
         String url = properties.getString("URL");
         String admin_user = properties.getString("ADMIN_USER");
         String admin_pass = properties.getString("ADMIN_PASS");
-        try {
+        try{
 
             Class.forName("com.mysql.jdbc.Driver");
             con = DriverManager.getConnection(url, admin_user, admin_pass);
             st = con.createStatement();
 
-        } catch (Exception ex) {
+        } catch(Exception ex){
             System.out.println("Error: " + ex);
         }
     }
@@ -101,6 +101,7 @@ public class Database {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
 
     }
 

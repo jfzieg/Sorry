@@ -1,6 +1,7 @@
 package Game;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class TestMethods {
@@ -54,7 +55,7 @@ public class TestMethods {
 //            System.out.println(Arrays.toString(testDeck));
         }
 
-        testDeck = game.shuffleDeck(testDeck);
+        Collections.shuffle(testDeck);
         numCorrect = 0;
         for(int i = 0; i < sampleDeck.size(); i++){
             if(sampleDeck.get(i).getType() != testDeck.get(i).getType()){

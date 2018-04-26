@@ -1,11 +1,20 @@
 package Game;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Test_SaveGameState {
-
-    // Test save game to text file
-    static void TestSave(GameState gt, Controller con) throws IOException {
+    static void TestSave(GameState gt, Controller con) throws IOException{
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+        
+        File file = new File("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\" + timeStamp +".txt");
+        
+        String[] arr = gt.loadOptions();
+        
+        gt.saveOptions(timeStamp, arr.length);
+                    
         gt.saveGameDataToFile(con);
     }
 
@@ -25,5 +34,6 @@ public class Test_SaveGameState {
         Controller gt2;
         gt2 = TestLoadGameBoard(gt);
 
+         System.out.println();
     }
 }

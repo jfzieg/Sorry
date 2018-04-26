@@ -34,12 +34,14 @@ public class GameBoard implements Serializable{
             playerPieces[i] = new GamePiece(color);
         }
 
-        for(GamePiece piece : pieces){
-            GamePiece[] opponent = new GamePiece[4];
-            for(int i = 0; i < 4; i++){
-                opponent[i] = new GamePiece(piece.getColor(), piece.isSmart(), piece.isMean());
+        for(GamePiece piece : pieces) {
+            if (piece != null) {
+                GamePiece[] opponent = new GamePiece[4];
+                for (int i = 0; i < 4; i++) {
+                    opponent[i] = new GamePiece(piece.getColor(), piece.isSmart(), piece.isMean());
+                }
+                opponentsPieces.add(opponent);
             }
-            opponentsPieces.add(opponent);
         }
 
         tileList = new GamePiece[4][16];
@@ -261,7 +263,6 @@ public class GameBoard implements Serializable{
         }
 
     }
-
 
     /**
      * Moves a piece out of the color-specified player's home if possible
@@ -501,8 +502,6 @@ public class GameBoard implements Serializable{
     public GamePiece[] getPlayerPieces() {
         return playerPieces;
     }
-
-
 }
 
 

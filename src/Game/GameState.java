@@ -97,6 +97,7 @@ public class GameState implements Serializable {
 
         if (count <= 6) {
             FileWriter fw = new FileWriter(workingDir + "\\" + "option.txt", true);
+//            FileWriter fw = new FileWriter("./saves/options.txt", false);
             BufferedWriter bw = new BufferedWriter(fw);
             fw.append(timeStamp);
             bw.newLine();
