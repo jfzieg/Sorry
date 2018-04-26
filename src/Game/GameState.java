@@ -17,48 +17,65 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-import javax.swing.border.EmptyBorder;
-
 public class GameState implements Serializable {
 
-    public GameState(){
+    /**
+     * GameState Constructor
+     */
+    public GameState() {
     }
 
-    public void saveGameDataToFile(Controller con){
-        try{
+    /**
+     * Save a whole controller to a text file Text file will be name as the
+     * current timeStamp The timeStamp will also be stored in an another text
+     * file to keep track of different saved file
+     *
+     * @param con
+     */
+    public void saveGameDataToFile(Controller con) {
+        try {
             String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
             String workingDir = System.getProperty("user.dir");
 
-            File file = new File( workingDir + "\\" + timeStamp +".txt");
-            if(openOptions() == true){
+            File file = new File(workingDir + "\\" + timeStamp + ".txt");
+            if (openOptions() == true) {
 
-            String[] arr = loadOptions();
+                String[] arr = loadOptions();
 
-            saveOptions(timeStamp, arr.length);
-            } else{
+                saveOptions(timeStamp, arr.length);
+            } else {
                 saveOptions(timeStamp, 0);
             }
 
             FileOutputStream fileStream = new FileOutputStream(file);
             ObjectOutputStream objectStream = new ObjectOutputStream(fileStream);
 
-                    objectStream.writeObject(con);
-                    objectStream.close();
-                    fileStream.close();
+            objectStream.writeObject(con);
+            objectStream.close();
+            fileStream.close();
 
-                    System.out.println("Save game state successfully");
-                } catch(Exception e){
-                    System.out.println("Fail to save game state");
-                }
-}
+            System.out.println("Save game state successfully");
+        } catch (Exception e) {
+            System.out.println("Fail to save game state");
+        }
+    }
 
-    public Controller loadControllerFromFile(File file) throws ClassNotFoundException, IOException{
+    /**
+     * Load the whole controller to a new controller A correct timeStamp string
+     * need to be passed in in order to load
+     *
+     * @param time
+     * @return a new controller that contains all the saved data
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
+    public Controller loadControllerFromFile(String time) throws ClassNotFoundException, IOException {
+        String workingDir = System.getProperty("user.dir");
+        File file = new File(workingDir + "\\" + time + ".txt");
         FileInputStream fileStream = new FileInputStream(file);
         ObjectInputStream objectStream = new ObjectInputStream(fileStream);
 
         Controller con = (Controller) objectStream.readObject();
-
 
         objectStream.close();
         fileStream.close();
@@ -66,18 +83,26 @@ public class GameState implements Serializable {
         return con;
     }
 
-    public void saveOptions(String timeStamp, int count) throws IOException{
+    /**
+     * Save all the name of the saved file to one file If the file has more than
+     * 6 saved name All the name will be deleted and a new saved name will be
+     * put in
+     *
+     * @param timeStamp
+     * @param count
+     * @throws IOException
+     */
+    public void saveOptions(String timeStamp, int count) throws IOException {
         String workingDir = System.getProperty("user.dir");
 
-        if( count <= 6){
-        FileWriter fw = new FileWriter(workingDir + "\\" + "option.txt", true);
-        BufferedWriter bw = new BufferedWriter(fw);
-        fw.append(timeStamp);
-        bw.newLine();
-        bw.close();
-        fw.close();
-        }
-        else{
+        if (count <= 6) {
+            FileWriter fw = new FileWriter(workingDir + "\\" + "option.txt", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            fw.append(timeStamp);
+            bw.newLine();
+            bw.close();
+            fw.close();
+        } else {
             FileWriter fw = new FileWriter(workingDir + "\\" + "option.txt", false);
             BufferedWriter bw = new BufferedWriter(fw);
             fw.append(timeStamp);
@@ -87,13 +112,20 @@ public class GameState implements Serializable {
         }
     }
 
-    public String[] loadOptions() throws IOException{
+    /**
+     * Load the all the name for the saved file and have them in an string array
+     * This array will be used to display all the save in the loadMenu
+     *
+     * @return a array of string
+     * @throws IOException
+     */
+    public String[] loadOptions() throws IOException {
         String workingDir = System.getProperty("user.dir");
-        BufferedReader in = new BufferedReader(new FileReader( workingDir + "\\" + "option.txt"));
+        BufferedReader in = new BufferedReader(new FileReader(workingDir + "\\" + "option.txt"));
         String str;
 
         List<String> list = new ArrayList<String>();
-        while((str = in.readLine()) != null){
+        while ((str = in.readLine()) != null) {
             list.add(str);
         }
 
@@ -102,10 +134,16 @@ public class GameState implements Serializable {
         return stringArr;
     }
 
-    public boolean openOptions(){
+    /**
+     * Make sure if there is a option.txt file if there is, return true,
+     * otherwise false
+     *
+     * @return a boolean
+     */
+    public boolean openOptions() {
         String workingDir = System.getProperty("user.dir");
         try {
-            BufferedReader in = new BufferedReader(new FileReader( workingDir + "\\" + "option.txt"));
+            BufferedReader in = new BufferedReader(new FileReader(workingDir + "\\" + "option.txt"));
             return true;
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
