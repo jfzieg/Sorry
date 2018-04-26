@@ -3,6 +3,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -26,7 +27,7 @@ public class Database {
             System.out.println("Error: " + ex);
         }
     }
-    
+
     public void getData(){
         try{
             String query = "select * from class_info";
@@ -106,8 +107,8 @@ public class Database {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-
+        
+        
     }
 
     /**
@@ -115,35 +116,35 @@ public class Database {
      * @return dictionary of users and their cumulative scores
      */
     public Map<String, Float> loadGameData(){
-        Map<String, Float> dictionary = new HashMap<String, Float>();
+        Map<String, Float> dictionary = new LinkedHashMap<String, Float>();
         try {
             Statement st = con.createStatement();
-            
-            String query = "SELECT * FROM tblGameInfo";
-            
+
+            String query = "SELECT * FROM tblGameInfo ORDER BY fldScore DESC";
+
             ResultSet rs = st.executeQuery(query);
-            
+
             while (rs.next()){
 //                int id = rs.getInt("pmkGameId");
 //                String user = rs.getString("fldUsername");
 //                Timestamp t = rs.getTimestamp("fldTime");
 //                int score = rs.getInt("fldScore");
-                
+
                 dictionary.put(rs.getString("fldUsername"), rs.getFloat("fldScore"));
-                
+
 //                System.out.format("%s, %s,\n");
-            
+
             }
-            
-            
+
+
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
         return dictionary;
     }
-    
+
     public static void printMap(Map mp) {
         Iterator it = mp.entrySet().iterator();
         while (it.hasNext()) {

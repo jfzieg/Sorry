@@ -7,8 +7,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -17,6 +17,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+import java.io.IOException;
 import java.util.*;
 
 public class MenuControllers {
@@ -30,6 +31,8 @@ public class MenuControllers {
     private ScrollPane helpMenu;
 
     private Controller game;
+    private TableView<String> table;
+
     private HBox deck;
     private GamePiece[] players;
     private Card card;
@@ -187,8 +190,9 @@ public class MenuControllers {
     /**
      * TODO: Add FileIO for loading saved serialized versions of Controller
      * @return
+     * @throws IOException
      */
-    public BorderPane loadMenu(){
+    public BorderPane loadMenu() throws IOException{
         //Initialize pane and prefs
         BorderPane pane = new BorderPane();
         pane.setBackground(new Background(new BackgroundFill(Settings.BACKGROUND, null, null)));
@@ -203,8 +207,20 @@ public class MenuControllers {
 
         Button main = startButton();
 
+        GameState gt = new GameState();
+        String[] option = gt.loadOptions();
+        Button[] optButton = new Button[option.length];
 
-        options.getChildren().addAll(title, main.getText());
+
+        options.getChildren().add(title);
+
+        for(int i = 0; i < optButton.length; i++){
+            optButton[i] = loadOptionButton(option[i]);
+            options.getChildren().add(optButton[i].getText());
+        }
+
+        options.getChildren().add(main.getText());
+
         pane.setLeft(options);
 
         //Add references for object retrieval
@@ -233,9 +249,11 @@ public class MenuControllers {
 
         Button main = startButton();
 
+        GridPane leaderBoard = makeLeadboard();
 
-        options.getChildren().addAll(title, main.getText());
+        options.getChildren().addAll(title, leaderBoard, main.getText());
         pane.setLeft(options);
+
 
         //Add references for object retrieval
         leaderboard = pane;
@@ -324,7 +342,7 @@ public class MenuControllers {
                 "\n1: Move forward one space or move a piece from START. " +
                 "\n2: Move forward two spaces or more a piece from START." +
                 "\n3: Move forward three spaces. " +
-                "\n4: Move forward four spaces. (Change this if we implement moving backward) " +
+                "\n4: Move backward four spaces.  " +
                 "\n5: Move forward five spaces. " +
                 "\n7: Move forward seven spaces, or split the seven spaces between two pawns. " +
                 "\n8: Move forward 8 spaces. " +
@@ -541,6 +559,38 @@ public class MenuControllers {
      * Setup for GUI representation of Card deck and discard pile.
      * @return
      */
+    private GridPane makeLeadboard(){
+        GridPane leaderboard = new GridPane();
+        leaderboard.setHgap(20);
+        leaderboard.setVgap(5);
+        leaderboard.setPadding(new Insets(Settings.X_SIZE * .01));
+
+
+        leaderboard.add( makeText("User Name ", Settings.SMALL_FONT), 0, 0);
+        leaderboard.add( makeText("Score", Settings.SMALL_FONT), 1, 0);
+
+        Database db = new Database();
+        Map<String, Float> dict = db.loadGameData();
+        Iterator it = dict.entrySet().iterator();
+        int count = 1;
+
+          while (it.hasNext()) {
+          Map.Entry pair = (Map.Entry)it.next();
+          leaderboard.add( makeText(String.valueOf(pair.getKey()), Settings.SMALL_FONT), 0, count);
+          leaderboard.add( makeText(String.valueOf(pair.getValue()), Settings.SMALL_FONT), 1, count);
+
+          count ++;
+          if (count == 6){
+              break;
+          }
+          it.remove(); // avoids a ConcurrentModificationException
+
+  }
+          return leaderboard;
+
+
+    }
+
     private HBox makeCards(){
             HBox cards = new HBox();
             cards.setSpacing(Settings.Y_SIZE * .05);
@@ -738,6 +788,14 @@ public class MenuControllers {
         return parent;
     }
 
+    private Button loadOptionButton(String s){
+        Button option = new Button(s, Settings.MEDIUM_FONT);
+
+        setResumeEventHandler(option);
+
+        return option;
+    }
+
     /**
      *
      * @param active
@@ -884,6 +942,7 @@ public class MenuControllers {
                     text.setStroke(c.brighter());
                 }
             });
+
         }
 
         public Text getText() {
@@ -926,4 +985,20 @@ public class MenuControllers {
         }
         return Enums.Color.RED;
     }
+
+//    public ObservableList<String> getScore(){
+//        ObservableList<String> leaderBoard = FXCollections.observableArrayList();
+//        Database db = new Database();
+//        Map<String, Float> dict = db.loadGameData();
+//
+//        Iterator it = dict.entrySet().iterator();
+//        int count = 0;
+//        while (it.hasNext()) {
+//            Map.Entry pair = (Map.Entry)it.next();
+//            leaderBoard.add(new String(pair.getKey() + " = " + pair.getValue()));
+//            it.remove(); // avoids a ConcurrentModificationException
+//
+//    }
+//        return leaderBoard;
+//    }
 }

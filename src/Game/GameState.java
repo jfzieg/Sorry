@@ -53,9 +53,9 @@ public class GameState implements Serializable {
         System.out.println("Load game state successfully");
         return con;
     }
-    
+
     public void saveOptions(String timeStamp, int count) throws IOException{
-        
+
         if( count <= 6){
 //        FileWriter fw = new FileWriter("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\option.txt", true);
             FileWriter fw = new FileWriter("./saves/options.txt", true);
@@ -76,14 +76,8 @@ public class GameState implements Serializable {
         }
     }
 
-    /**
-     * Only saving most recent option
-     * @return
-     * @throws IOException
-     */
     public String[] loadOptions() throws IOException{
-//        BufferedReader in = new BufferedReader(new FileReader("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\option.txt"));
-        BufferedReader in = new BufferedReader(new FileReader("./saves/options.txt"));
+        BufferedReader in = new BufferedReader(new FileReader("C:\\Users\\phand\\Desktop\\CS205\\Final Project\\Sorry\\option.txt"));
         String str;
 
         List<String> list = new ArrayList<String>();
@@ -92,7 +86,7 @@ public class GameState implements Serializable {
         }
 
         String[] stringArr = list.toArray(new String[0]);
-        
+
         return stringArr;
     }
     
