@@ -17,6 +17,7 @@ public class Controller implements Serializable{
     private GameBoard board;
     private MenuControllers menus;
 
+
     /**
      * Test Constructor
      */
@@ -39,23 +40,23 @@ public class Controller implements Serializable{
         deck = initializeFullDeck();
     }
 
-    /**
-     * Main gameplay method
-     * Call this for playing a game
-     */
-    public void playGame(){
-        ArrayList<Enums.Color> colorList = new ArrayList<>();
-        ArrayList<GamePiece[]> piecesList = this.board.getOpponentsPieces();
-        for (GamePiece[] pieces : piecesList) {
-            colorList.add(pieces[0].getColor());
-        }
-        while(!game_over){
-
-            for (Enums.Color color : colorList) {
-                takeTurn(color);
-            }
-        }
-    }
+//    /**
+//     * Main gameplay method
+//     * Call this for playing a game
+//     */
+//    public void playGame(){
+//        ArrayList<Enums.Color> colorList = new ArrayList<>();
+//        ArrayList<GamePiece[]> piecesList = this.board.getOpponentsPieces();
+//        for (GamePiece[] pieces : piecesList) {
+//            colorList.add(pieces[0].getColor());
+//        }
+//        while(!game_over){
+//
+//            for (Enums.Color color : colorList) {
+//                takeTurn(color);
+//            }
+//        }
+//    }
 
     /**
      * Initialize full deck
@@ -120,6 +121,7 @@ public class Controller implements Serializable{
      */
     public boolean checkGameOver() {
         int count = 0;
+
         for(GamePiece piece : board.getPlayerPieces()){
             if(piece.getMovesLeft() == 0){
                 count++;
@@ -151,12 +153,12 @@ public class Controller implements Serializable{
      *
      * TODO: WRITE TEST CASE
      *
-     * User takes a turn: draw and discard top card from the deck, choose a piece and move it, update board state, check game over, check deck emtpy
+     * User takes a turn: draw and discard top card from the deck, choose a piece and move it, update board state, check game over, check deck empty
      * @return deck after discarding
      */
-    public void takeTurn(Enums.Color color) {
+    public void takeTurn(Enums.Color color, Card card) {
 
-        int card_num = drawCard().getType();
+        int card_num = card.getType();
         // set a color for testing
         Enums.Color currentColor = color;
         if (card_num == 0) {
@@ -188,15 +190,15 @@ public class Controller implements Serializable{
             ChoosePiece(opponentsEligiblePieces, card_num);
 
 
-            boolean over = isGame_over(opponentsPieces);
-            if (over) {
-                setGame_over(true);
+            ;
+            if (checkGameOver()) {
+                setGameOver(true);
             } else {
                 if (checkDeckEmpty()) {
                     deck = initializeFullDeck();
                 }
-                over = isGame_over(opponentsPieces);
-                if (over) {
+
+                if (checkGameOver()) {
                     // go to game over screen
                 } else {
                     if (checkDeckEmpty()) {
@@ -263,6 +265,7 @@ public class Controller implements Serializable{
                 boolean leaveHome = false;
                 if (card_num == 1 | card_num == 2) {
                     leaveHome = board.homeGetOut(card_num, color, false);
+
                 }
 
                 // if unable to leave home, or card not 1 or 2 ...
@@ -491,7 +494,7 @@ public class Controller implements Serializable{
              * Check if game is paused
              * @return boolean game over
              */
-            public boolean isGame_paused () {
+            public boolean isGamePaused() {
                 return game_paused;
             }
 
@@ -500,7 +503,7 @@ public class Controller implements Serializable{
              * @param  game_paused
              *
              */
-            public void setGame_paused ( boolean game_paused){
+            public void setGamePaused(boolean game_paused){
                 this.game_paused = game_paused;
             }
 
@@ -509,7 +512,7 @@ public class Controller implements Serializable{
              * @param Pieces
              * @return boolean
              */
-            public boolean isGame_over (ArrayList < GamePiece > Pieces) {
+            public boolean isGameOver(ArrayList < GamePiece > Pieces) {
                 int cumulativeDist = 0;
                 int numPiecesHome = 0;
                 for (GamePiece piece : Pieces) {
@@ -530,7 +533,7 @@ public class Controller implements Serializable{
              * Sets game to over
              * @param game_over
              */
-            public void setGame_over ( boolean game_over){
+            public void setGameOver(boolean game_over){
                 this.game_over = game_over;
             }
 
@@ -546,7 +549,7 @@ public class Controller implements Serializable{
              * Set a new game
              * @param new_game
              */
-            public void setNew_game ( boolean new_game){
+            public void setNewGame(boolean new_game){
                 this.new_game = new_game;
             }
 
@@ -555,5 +558,8 @@ public class Controller implements Serializable{
              */
             public void setMenuControllers (MenuControllers menus){
                 this.menus = menus;
+            }
+            public GameBoard getVirtualBoard(){
+                return board;
             }
 }

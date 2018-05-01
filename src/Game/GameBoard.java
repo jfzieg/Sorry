@@ -18,6 +18,8 @@ public class GameBoard implements Serializable{
     private GamePiece[][] homeList;
     private GamePiece[] playerPieces;
     private ArrayList<GamePiece[]> opponentsPieces;
+    private ArrayList<GamePiece> activePieces;
+
 
     /**
      * Creates a new gameboard using the player's specified color pieces, and a placeholder GamePiece with user defined
@@ -43,7 +45,7 @@ public class GameBoard implements Serializable{
                 opponentsPieces.add(opponent);
             }
         }
-
+        activePieces = new ArrayList<>();
         tileList = new GamePiece[4][16];
         homeList = new GamePiece[4][5];
     }
@@ -280,6 +282,7 @@ public class GameBoard implements Serializable{
                     if (piece.getBoardSide() == -1 && tileList[piece.getColor().getSide()][4] == null) {
                         piece.setLocation(piece.getColor().getSide(), 4);
                         tileList[piece.getBoardSide()][4] = piece;
+                        activePieces.add(piece);
                         return true;
                     }
                 }
@@ -295,6 +298,7 @@ public class GameBoard implements Serializable{
                             if (piece.getBoardSide() == -1 && tileList[piece.getColor().getSide()][4] == null) {
                                 piece.setLocation(piece.getColor().getSide(), 4);
                                 tileList[piece.getBoardSide()][4] = piece;
+                                activePieces.add(piece);
                                 return true;
                             }
                         }
@@ -330,6 +334,7 @@ public class GameBoard implements Serializable{
         GamePiece temp = tileList[piece.getBoardSide()][piece.getInnerLocation()];
         tileList[piece.getBoardSide()][piece.getInnerLocation()] = piece;
         temp.setBoardSide(-1);
+//        activePieces.remove(temp);
     }
     /**
      * Send a victim piece to start and have your piece at the victim's location
@@ -357,7 +362,8 @@ public class GameBoard implements Serializable{
 
         victim.setBoardSide(-1);
         victim.setMovesLeft(58);
-        return true;
+        activePieces.remove(victim);
+         return true;
     }
 
     /**
@@ -488,11 +494,6 @@ public class GameBoard implements Serializable{
         }
 
         return false;
-    }
-
-
-    public GamePiece[][] getTileList() {
-        return tileList;
     }
 
     public ArrayList<GamePiece[]> getOpponentsPieces() {

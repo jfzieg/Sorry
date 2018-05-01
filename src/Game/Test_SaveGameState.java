@@ -16,14 +16,14 @@ public class Test_SaveGameState {
         
         gt.saveOptions(timeStamp, arr.length);
                     
-        gt.saveGameDataToFile(con);
+        gt.saveGameDataToFile(con, timeStamp);
     }
 
     // Test load game from a text file
     static Controller TestLoadGameBoard(GameState gt) throws ClassNotFoundException, IOException {
         String ap_time = "2018.04.25.21.33.28";
         String jz_time = "2018.04.26.10.56.07";
-        Controller con2 = gt.loadControllerFromFile(ap_time);
+        Controller con2 = gt.loadControllerFromFile(gt.loadOptions()[0]);
         return con2;
     }
 

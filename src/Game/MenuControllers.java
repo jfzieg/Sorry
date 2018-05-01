@@ -18,6 +18,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class MenuControllers {
@@ -34,8 +35,14 @@ public class MenuControllers {
     private TableView<String> table;
 
     private HBox deck;
+    private GridPane board;
     private GamePiece[] players;
     private Card card;
+    private boolean userTurn;
+    private ArrayList<Piece> pieces;
+    private Piece activePiece;
+    private Tile activeTile;
+    private boolean canDrawCard;
     /**
      * Start menu pane constructor
      * @return A start menu pane
@@ -45,13 +52,13 @@ public class MenuControllers {
         BorderPane pane = new BorderPane();
         pane.setBackground(new Background(new BackgroundFill(Settings.BACKGROUND, null, null)));
 
-        //Initalize container and prefs
+        //Initialize container and prefs
         VBox options = new VBox();
         options.setLayoutY(Settings.Y_SIZE);
         options.setSpacing(Settings.Y_SIZE * .05);
         options.setPadding(new Insets(Settings.X_SIZE * .01));
 
-        //Initalize title TEXT and buttons
+        //Initialize title TEXT and buttons
         Text title = makeText("Sorry!", Settings.FONT);
         Button resume = resumeButton();
         Button start = newGameButton();
@@ -173,7 +180,24 @@ public class MenuControllers {
         Text title = makeText("Sorry!", Settings.FONT);
         Button main = startButton();
 
-        leftMenu.getChildren().addAll(title, deck, main.getText());
+        Text save =  makeText("Save Game", Settings.MEDIUM_FONT);
+        save.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                GameState gt = new GameState();
+                String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+
+                try {
+                    int options = gt.loadOptions().length;
+                    gt.saveOptions(timeStamp, options);
+                    gt.saveGameDataToFile(game,timeStamp);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        leftMenu.getChildren().addAll(title, deck, save, main.getText());
 
         GridPane gameboard = makeBoard();
 
@@ -231,7 +255,6 @@ public class MenuControllers {
     }
 
     /**
-     * TODO: Pull info from database to display for user
      * @return
      */
     public BorderPane leaderboardMenu(){
@@ -294,6 +317,8 @@ public class MenuControllers {
     }
 
     /**
+     * TODO Add user choice for GamePiece
+     *
      * @return The help menu screen displaying instructions for the user.
      */
     public ScrollPane helpMenu() {
@@ -366,7 +391,20 @@ public class MenuControllers {
     }
 
     public void playGame(){
-        userDraw();
+        canDrawCard = true;
+//        while(game.checkGameOver()){
+            Card card = userDraw();
+//            game.takeTurn(players[0].getColor(), card);
+//            updateBoard();
+
+//            userTurn = false;
+//            for(int i = 1; i < 4; i++){
+//                card = opponentDraw();
+//                game.takeTurn(players[i].getColor(), card);
+//            }
+
+
+//        }
     }
 
     /**
@@ -377,10 +415,17 @@ public class MenuControllers {
         deck.getChildren().get(0).setOnMouseReleased(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                Card card = game.drawCard();
-                setCard(card);
-                deck.getChildren().remove(1);
-                deck.getChildren().add(makeCard(card));
+                if(canDrawCard) {
+                    if(game.getDeck().size() == 0){
+                        game.initializeFullDeck();
+                    }
+                    Card card = game.drawCard();
+                    setCard(card);
+                    deck.getChildren().remove(1);
+                    deck.getChildren().add(makeCard(card));
+                    updateBoard();
+//                    canDrawCard = false;
+                }
             }
         });
         return card;
@@ -406,12 +451,25 @@ public class MenuControllers {
     //
 
     /**
+     * TODO Add GUI update
+     */
+    private void updateBoard(){
+            System.out.println(activeTile.col + ' ' + activeTile.row);
+
+            activePiece.setCol(activeTile.col);
+            activePiece.setRow(activeTile.row);
+            board.getChildren().remove(activePiece.vPiece);
+            board.add(activePiece.vPiece, activePiece.col, activePiece.row, 1, 1);
+                canDrawCard = true;
+    }
+
+    /**
      *
      * @param radius
      * @param color
      * @return
      */
-    private Circle makeCircle(double radius, Color color){
+    protected Circle makeCircle(double radius, Color color){
         Circle circle = new Circle(radius, color);
         circle.setStroke(color.darker());
         circle.setStrokeWidth(radius * .1);
@@ -427,6 +485,7 @@ public class MenuControllers {
         Rectangle tile = new Rectangle(Settings.TILE_SIZE, Settings.TILE_SIZE, color);
         tile.setStroke(color.darker());
         tile.setStrokeWidth(Settings.TILE_SIZE * .05);
+
         return tile;
     }
 
@@ -512,47 +571,85 @@ public class MenuControllers {
         gameboard.setPadding(new Insets(Settings.X_SIZE * .05));
 
         for(int i = 0; i < 16; i++){
-            gameboard.add(makeTile(Color.WHITE), i, 0);
-            gameboard.add(makeTile(Color.WHITE), i, 15);
-            gameboard.add(makeTile(Color.WHITE), 0, i);
-            gameboard.add(makeTile(Color.WHITE), 15, i);
+            gameboard.add(new Tile(i, 0, Color.WHITE).tile, i, 0);
+            gameboard.add(new Tile(i, 15, Color.WHITE).tile, i, 15);
+            gameboard.add(new Tile(0,i, Color.WHITE).tile, 0, i);
+            gameboard.add(new Tile(15, i, Color.WHITE).tile, 15, i);
         }
         for(int j = 1; j < 6; j++){
-            gameboard.add(makeTile(Settings.RED), 2, j);
-            gameboard.add(makeTile(Settings.GREEN), 13, 15 - j);
-            gameboard.add(makeTile(Settings.BLUE), j, 13);
-            gameboard.add(makeTile(Settings.YELLOW), 15 - j, 2);
+            gameboard.add(new Tile(2, j, Settings.RED).tile, 2, j);
+            gameboard.add(new Tile(13, 15 - j, Settings.GREEN).tile, 13, 15 - j);
+            gameboard.add(new Tile(j, 13, Settings.BLUE).tile, j, 13);
+            gameboard.add(new Tile(15 - j, 2, Settings.YELLOW).tile, 15 - j, 2);
         }
 
         gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.RED),2, 5 , 2, 2);
         gameboard.add(makeTile(Settings.RED), 4,1);
-        gameboard.add(makeCircle(Settings.TILE_SIZE , Settings.RED),4, 1, 2, 2);
+
+        Circle redHome = makeCircle(Settings.TILE_SIZE , Settings.RED);
+        redHome.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                Piece piece = new Piece(new GamePiece(Enums.Color.RED));
+                gameboard.add(piece.vPiece, 4, 0, 1, 1);
+            }
+        });
+        gameboard.add(redHome ,4, 1, 2, 2);
 
         gameboard.add(makeSlide(Settings.RED, 0, 4), 1, 0, 5, 1);
         gameboard.add(makeSlide(Settings.RED, 0, 5), 9, 0, 5, 1);
 
 
+        Circle greenHome = makeCircle(Settings.TILE_SIZE , Settings.GREEN);
+        greenHome.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                Piece piece = new Piece(new GamePiece(Enums.Color.GREEN));
+                gameboard.add(piece.vPiece, 11, 15, 1, 1);
+            }
+        });
+
         gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.GREEN),12, 9, 2, 2);
         gameboard.add(makeTile(Settings.GREEN), 11,14);
-        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.GREEN),10, 13, 2, 2);
+        gameboard.add(greenHome,10, 13, 2, 2);
 
         gameboard.add(makeSlide(Settings.GREEN, 1, 4), 11, 15, 4, 1);
         gameboard.add(makeSlide(Settings.GREEN, 1, 5), 2, 15, 5, 1);
 
         gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.BLUE),5, 12 , 2, 2);
         gameboard.add(makeTile(Settings.BLUE), 1,11);
-        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.BLUE),1, 10, 2, 2);
+
+        Circle blueHome = makeCircle(Settings.TILE_SIZE , Settings.BLUE);
+        blueHome.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                Piece piece = new Piece(new GamePiece(Enums.Color.BLUE));
+                gameboard.add(piece.vPiece, 0, 11, 1, 1);
+            }
+        });
+        gameboard.add(blueHome, 1, 10, 2, 2);
 
         gameboard.add(makeSlide(Settings.BLUE, 3, 4), 0, 11, 1, 4);
         gameboard.add(makeSlide(Settings.BLUE, 3, 5), 0, 2, 1, 5);
 
         gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.YELLOW),9, 2 , 2, 2);
         gameboard.add(makeTile(Settings.YELLOW), 14,4);
-        gameboard.add(makeCircle(Settings.TILE_SIZE, Settings.YELLOW),13, 4, 2, 2 );
+
+        Circle yellowHome = makeCircle(Settings.TILE_SIZE , Settings.YELLOW);
+        yellowHome.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                Piece piece = new Piece(new GamePiece(Enums.Color.YELLOW));
+                gameboard.add(piece.vPiece, 15, 4, 1, 1);
+            }
+        });
+        gameboard.add(yellowHome, 13, 4, 2, 2);
+
 
         gameboard.add(makeSlide(Settings.YELLOW, 2, 4), 15, 1, 1, 4);
         gameboard.add(makeSlide(Settings.YELLOW, 2, 5), 15, 9, 1, 5);
 
+        board = gameboard;
         return gameboard;
     }
 
@@ -796,6 +893,8 @@ public class MenuControllers {
 
         setResumeEventHandler(option);
 
+
+
         return option;
     }
 
@@ -846,6 +945,20 @@ public class MenuControllers {
             @Override
             public void handle(Event event) {
                 if(game.isNewGame()) {
+                    gameBoard.toFront();
+                    gameBoard.requestFocus();
+                }
+                else{
+                    GameState gt = new GameState();
+                    try {
+                        String time = button.getText().getText();
+                        game = gt.loadControllerFromFile(time);
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    deck = makeCards();
                     gameBoard.toFront();
                     gameBoard.requestFocus();
                 }
@@ -989,19 +1102,123 @@ public class MenuControllers {
         return Enums.Color.RED;
     }
 
-//    public ObservableList<String> getScore(){
-//        ObservableList<String> leaderBoard = FXCollections.observableArrayList();
-//        Database db = new Database();
-//        Map<String, Float> dict = db.loadGameData();
-//
-//        Iterator it = dict.entrySet().iterator();
-//        int count = 0;
-//        while (it.hasNext()) {
-//            Map.Entry pair = (Map.Entry)it.next();
-//            leaderBoard.add(new String(pair.getKey() + " = " + pair.getValue()));
-//            it.remove(); // avoids a ConcurrentModificationException
-//
-//    }
-//        return leaderBoard;
-//    }
+    private Color enumToColor(Enums.Color color){
+        switch(color){
+            case RED:
+                return Settings.RED;
+            case YELLOW:
+                return Settings.YELLOW;
+            case GREEN:
+                return Settings.GREEN;
+            case BLUE:
+                return Settings.BLUE;
+            default:
+                return Settings.CARD;
+        }
+    }
+
+    private class Piece{
+        private GamePiece piece;
+        private Circle vPiece;
+        int col, row;
+
+        public Piece(GamePiece piece){
+            this.piece = piece;
+            vPiece = makeCircle(Settings.PIECE_RADIUS, enumToColor(piece.getColor()));
+            vPiece.setOnMouseReleased(new EventHandler<>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    activePiece = getSelf();
+                    canDrawCard = false;
+                    System.out.println("Piece select");
+                }
+            });
+        }
+
+        public GamePiece getPiece() {
+            return piece;
+        }
+
+        public void convertCoords(){
+            if(piece.getBoardSide() != -1) {
+                switch (piece.getBoardSide()) {
+                    case 0:
+                        row = piece.getBoardSide();
+                        col = piece.getInnerLocation();
+                        break;
+                    case 1:
+                        col = 15;
+                        row = piece.getInnerLocation();
+                        break;
+                    case 2:
+                        row = 15;
+                        col = 15 - piece.getInnerLocation();
+                        break;
+                    case 3:
+                        col = 0;
+                        row = 15 - piece.getInnerLocation();
+                        break;
+                    default:
+                        col = 7;
+                        row = 7;
+                }
+            }
+        }
+
+        public int getCol() {
+            return col;
+        }
+
+        public int getRow() {
+            return row;
+        }
+
+        public void setCol(int col) {
+            this.col = col;
+        }
+
+        public void setRow(int row) {
+            this.row = row;
+        }
+
+        private Piece getSelf(){
+            return this;
+        }
+    }
+
+    private class Tile{
+        int col, row;
+        Rectangle tile;
+
+        Tile(int col, int row, Color color){
+            tile = makeTile(color);
+            this.col = col;
+            this.row = row;
+
+            tile.setOnMouseReleased(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    activeTile = getThis();
+                    System.out.println("Ping!");
+                    System.out.println(col + " " + row);
+
+                    try {
+                        activePiece.setCol(col);
+                        activePiece.setRow(row);
+                        board.getChildren().remove(activePiece.vPiece);
+                        board.add(activePiece.vPiece, activePiece.col, activePiece.row, 1, 1);
+                        canDrawCard = true;
+                    }
+                    catch (Exception e){
+                        System.out.println(e.getStackTrace().toString());
+                    }
+                }
+            });
+        }
+
+        private Tile getThis(){
+            return this;
+        }
+
+    }
 }

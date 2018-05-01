@@ -7,10 +7,10 @@ public class Settings {
     public static double X_SIZE = 1200;
     public static double Y_SIZE = 800;
     public static double TEXT_SIZE =  Y_SIZE / 10;
-    public static double TILE_SIZE = 40;
+    public static double TILE_SIZE = X_SIZE / 30;
     public static double PIECE_RADIUS = TILE_SIZE / 2;
-    public static double CARD_WIDTH = 100; // Ratio should be 5:7 (playing card ratio)
-    public static double CARD_HEIGHT = 140;
+    public static double CARD_WIDTH = X_SIZE / 8; // Ratio should be 5:7 (playing card ratio)
+    public static double CARD_HEIGHT = X_SIZE / 6;
 
     public static Color BACKGROUND = Color.GRAY;
     public static Color TEXT = new Color(1, 1, 1, .8);

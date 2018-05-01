@@ -30,14 +30,18 @@ public class GameState implements Serializable {
      * current timeStamp The timeStamp will also be stored in an another text
      * file to keep track of different saved file
      *
+     * change fw for Mac vs Windows
+     *
      * @param con
+     * @param timeStamp
      */
-    public void saveGameDataToFile(Controller con) {
+    public void saveGameDataToFile(Controller con, String timeStamp) {
         try {
-            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+//            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
             String workingDir = System.getProperty("user.dir");
 
-            File file = new File(workingDir + "\\" + timeStamp + ".txt");
+            File file = new File(workingDir + "/" + timeStamp + ".txt");
+            //        File file = new File(workingDir + "\\" + timeStamp + ".txt");
             if (openOptions() == true) {
 
                 String[] arr = loadOptions();
@@ -64,6 +68,8 @@ public class GameState implements Serializable {
      * Load the whole controller to a new controller A correct timeStamp string
      * need to be passed in in order to load
      *
+     * change fw for Mac vs Windows
+     *
      * @param time
      * @return a new controller that contains all the saved data
      * @throws ClassNotFoundException
@@ -71,7 +77,8 @@ public class GameState implements Serializable {
      */
     public Controller loadControllerFromFile(String time) throws ClassNotFoundException, IOException {
         String workingDir = System.getProperty("user.dir");
-        File file = new File(workingDir + "\\" + time + ".txt");
+        File file = new File(workingDir + "/" + time + ".txt");
+//        File file = new File(workingDir + "\\" + time + ".txt");
         FileInputStream fileStream = new FileInputStream(file);
         ObjectInputStream objectStream = new ObjectInputStream(fileStream);
 
@@ -88,6 +95,8 @@ public class GameState implements Serializable {
      * 6 saved name All the name will be deleted and a new saved name will be
      * put in
      *
+     * change fw for Mac vs Windows
+     *
      * @param timeStamp
      * @param count
      * @throws IOException
@@ -96,8 +105,8 @@ public class GameState implements Serializable {
         String workingDir = System.getProperty("user.dir");
 
         if (count <= 6) {
-//            FileWriter fw = new FileWriter(workingDir + "\\" + "option.txt", true);
-            FileWriter fw = new FileWriter("./saves/options.txt", true);
+            FileWriter fw = new FileWriter(workingDir + "/" + "options.txt", true);
+//            FileWriter fw = new FileWriter(workingDir + "\\options.txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
             fw.append(timeStamp);
             bw.newLine();
@@ -117,13 +126,15 @@ public class GameState implements Serializable {
      * Load the all the name for the saved file and have them in an string array
      * This array will be used to display all the save in the loadMenu
      *
+     * change fw for Mac vs Windows
+     *
      * @return a array of string
      * @throws IOException
      */
     public String[] loadOptions() throws IOException {
         String workingDir = System.getProperty("user.dir");
-//        BufferedReader in = new BufferedReader(new FileReader(workingDir + "\\" + "option.txt"));
-        BufferedReader in = new BufferedReader(new FileReader("./saves/options.txt"));
+//        BufferedReader in = new BufferedReader(new FileReader(workingDir + "\\" + "options.txt"));
+        BufferedReader in = new BufferedReader(new FileReader(  workingDir + "/options.txt"));
         String str;
 
         List<String> list = new ArrayList<String>();
@@ -140,13 +151,15 @@ public class GameState implements Serializable {
      * Make sure if there is a option.txt file if there is, return true,
      * otherwise false
      *
+     * in is
+     *
      * @return a boolean
      */
     public boolean openOptions() {
         String workingDir = System.getProperty("user.dir");
         try {
-//            BufferedReader in = new BufferedReader(new FileReader(workingDir + "\\" + "option.txt"));
-            BufferedReader in = new BufferedReader(new FileReader("./saves/options.txt"));
+//            BufferedReader in = new BufferedReader(new FileReader(workingDir + "\\" + "options.txt"));
+            BufferedReader in = new BufferedReader(new FileReader(workingDir +  "/options.txt"));
             return true;
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
